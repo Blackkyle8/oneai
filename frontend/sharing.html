@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One AI - AI 쉐어링</title>
+    <style>
+        :root {
+            /* Design Tokens - Surface System (Dark Theme Default) */
+            --surface-base: #000000;
+            --surface-raised: #f5f5f5;
+            --surface-elevated: #111111;
+            --surface-overlay: #1a1a1a;
+            --surface-modal: #222222;
+            
+            /* Design Tokens - Text System */
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-tertiary: #a3a3a3;
+            --text-quaternary: #737373;
+            --text-disabled: #525252;
+            
+            /* Design Tokens - Brand Colors */
+            --color-primary-200: #a7f3d0;
+            --color-primary-400: #34d399;
+            --color-primary-500: #10b981;
+            --color-primary-600: #059669;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-info: #3b82f6;
+            
+            /* AI Service Brand Colors */
+            --ai-gpt-gradient: linear-gradient(135deg, #10a37f, #1a7f72);
+            --ai-gemini-gradient: linear-gradient(135deg, #4285f4, #ea4335);
+            --ai-perplexity-gradient: linear-gradient(135deg, #20c997, #17a2b8);
+            --ai-midjourney-gradient: linear-gradient(135deg, #000, #333);
+            --ai-claude-gradient: linear-gradient(135deg, #ff6b35, #f7931e);
+            --ai-copilot-gradient: linear-gradient(135deg, #24292e, #4078c0);
+            
+            /* Design Tokens - Typography */
+            --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 24px;
+            --font-size-2xl: 32px;
+            
+            /* Design Tokens - Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            
+            /* Design Tokens - Border Radius */
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-2xl: 16px;
+            
+            /* Design Tokens - Layout */
+            --header-height: 64px;
+            --sidebar-width: 56px;
+            
+            /* Design Tokens - Z-Index */
+            --z-index-base: 0;
+            --z-index-sidebar: 10;
+            --z-index-dropdown: 20;
+            --z-index-modal: 40;
+            --z-index-toast: 50;
+            --z-index-tooltip: 60;
+            
+            /* Design Tokens - Shadows */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            
+            /* Motion Presets */
+            --motion-standard: 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
+            --motion-fast: 150ms cubic-bezier(0.4, 0.0, 0.2, 1);
+            --motion-toast: 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        /* Light Theme Variables */
+        [data-theme="light"] {
+            --surface-base: #ffffff;
+            --surface-raised: #f5f5f5;
+            --surface-elevated: #eaeaea;
+            --surface-overlay: #dddddd;
+            --surface-modal: #cccccc;
+            
+            --text-primary: #111111;
+            --text-secondary: #444444;
+            --text-tertiary: #666666;
+            --text-quaternary: #888888;
+            --text-disabled: #aaaaaa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-primary);
+            background: var(--surface-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color var(--motion-standard), color var(--motion-standard);
+        }
+
+        /* Layout Components */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+
+        /* Header Component */
+        .header {
+            height: var(--header-height);
+            background: var(--surface-elevated);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--spacing-2xl);
+            position: sticky;
+            top: 0;
+            z-index: var(--z-index-sidebar);
+            transition: background-color var(--motion-standard);
+        }
+
+        .header__logo {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header__spacer {
+            flex: 1;
+        }
+
+        .header__actions {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        /* Button Component */
+        .btn {
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--motion-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn--primary {
+            background: var(--color-primary-500);
+            color: white;
+            padding: 12px 24px;
+        }
+
+        .btn--primary * {
+            color: white !important;
+        }
+
+        .btn--primary:hover:not(:disabled) {
+            background: var(--color-primary-400);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn--primary:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn--primary:active {
+            background: var(--color-primary-600);
+            transform: translateY(0);
+        }
+
+        .btn--primary:disabled {
+            background: var(--color-primary-200);
+            color: rgba(255, 255, 255, 0.6);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn--secondary {
+            background: transparent;
+            color: var(--color-primary-500);
+            border: 1px solid var(--color-primary-500);
+            padding: 10px 20px;
+        }
+
+        .btn--secondary:hover:not(:disabled) {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        .btn--danger {
+            background: transparent;
+            color: var(--color-error);
+            border: 1px solid var(--color-error);
+            padding: 10px 20px;
+        }
+
+        .btn--danger:hover:not(:disabled) {
+            background: var(--color-error);
+            color: white;
+        }
+
+        .btn--header {
+            padding: 10px 20px;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn--header:hover {
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn--full {
+            width: 100%;
+            padding: 12px;
+        }
+
+        .btn__icon {
+            font-size: var(--font-size-base);
+            font-weight: 400;
+        }
+
+        /* Profile Component */
+        .header__profile {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profile-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid var(--color-primary-500);
+            background: var(--surface-modal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--motion-fast);
+            color: var(--text-primary);
+        }
+
+        .profile-avatar:hover {
+            border-color: var(--color-primary-400);
+            background: var(--surface-elevated);
+            transform: scale(1.05);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 240px;
+            background: var(--surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            z-index: var(--z-index-dropdown);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all var(--motion-fast);
+        }
+
+        .profile-dropdown--show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .profile-dropdown__header {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .profile-name {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .profile-status {
+            font-size: var(--font-size-xs);
+            color: var(--color-primary-500);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            align-self: flex-start;
+        }
+
+        .profile-dropdown__divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: var(--spacing-sm) 0;
+        }
+
+        .profile-dropdown__item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: var(--font-size-sm);
+            transition: all var(--motion-fast);
+        }
+
+        .profile-dropdown__item:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .profile-dropdown__item--danger {
+            color: var(--color-error);
+        }
+
+        .profile-dropdown__item--danger:hover {
+            color: white;
+            background: var(--color-error);
+        }
+
+        .profile-dropdown__icon {
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Sharing Header Component */
+        .sharing-header {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+            background: linear-gradient(135deg, var(--surface-elevated), var(--surface-modal));
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background var(--motion-standard);
+        }
+
+        .sharing-header__title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sharing-header__subtitle {
+            color: var(--text-secondary);
+            font-size: var(--font-size-base);
+            max-width: 600px;
+            margin: 0 auto var(--spacing-lg);
+        }
+
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .stat-card {
+            background: var(--surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            text-align: center;
+            transition: all var(--motion-fast);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--color-primary-500);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card__number {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--color-primary-500);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-card__label {
+            font-size: var(--font-size-sm);
+            color: var(--text-tertiary);
+        }
+
+        /* Tab System */
+        .tab-container {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: var(--surface-elevated);
+            border-radius: var(--radius-xl);
+            padding: 6px;
+            gap: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-tertiary);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all var(--motion-fast);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn--active {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn var(--motion-standard);
+        }
+
+        .tab-content--active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Sharing Grid */
+        .sharing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        /* Sharing Card Component */
+        .sharing-card {
+            background: var(--surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-lg);
+            transition: all var(--motion-fast);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sharing-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .sharing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--ai-service-gradient);
+            border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+        }
+
+        .sharing-card__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        /* AI Service Badge */
+        .ai-service-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            color: white;
+        }
+
+        .ai-service-badge--gpt { 
+            background: var(--ai-gpt-gradient);
+            --ai-service-gradient: var(--ai-gpt-gradient);
+        }
+        .ai-service-badge--claude { 
+            background: var(--ai-claude-gradient);
+            --ai-service-gradient: var(--ai-claude-gradient);
+        }
+        .ai-service-badge--midjourney { 
+            background: var(--ai-midjourney-gradient);
+            --ai-service-gradient: var(--ai-midjourney-gradient);
+        }
+        .ai-service-badge--perplexity { 
+            background: var(--ai-perplexity-gradient);
+            --ai-service-gradient: var(--ai-perplexity-gradient);
+        }
+        .ai-service-badge--gemini { 
+            background: var(--ai-gemini-gradient);
+            --ai-service-gradient: var(--ai-gemini-gradient);
+        }
+        .ai-service-badge--copilot { 
+            background: var(--ai-copilot-gradient);
+            --ai-service-gradient: var(--ai-copilot-gradient);
+        }
+        .ai-service-badge--other { 
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            --ai-service-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+
+        /* Custom Service Fields */
+        .custom-service-fields {
+            display: none;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--surface-overlay);
+            border-radius: var(--radius-lg);
+            border-left: 3px solid var(--color-primary-500);
+        }
+
+        .custom-service-fields--show {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-row {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+        }
+
+        .status-badge--available {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--color-success);
+            border: 1px solid var(--color-success);
+        }
+
+        .status-badge--full {
+            background: rgba(115, 115, 115, 0.1);
+            color: var(--text-quaternary);
+            border: 1px solid var(--text-quaternary);
+        }
+
+        .status-badge--active {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--color-info);
+            border: 1px solid var(--color-info);
+        }
+
+        /* Sharing Card Content */
+        .sharing-card__title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .sharing-card__logo {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            background: var(--surface-modal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            min-width: 24px;
+        }
+
+        .sharing-card__link {
+            color: var(--color-primary-500);
+            text-decoration: none;
+            font-size: var(--font-size-xs);
+            margin-left: auto;
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+            background: rgba(16, 185, 129, 0.1);
+            transition: all var(--motion-fast);
+        }
+
+        .sharing-card__link:hover {
+            background: rgba(16, 185, 129, 0.2);
+            transform: scale(1.05);
+        }
+
+        .sharing-card__description {
+            color: var(--color-success);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--spacing-md);
+            font-weight: 500;
+        }
+
+        .sharing-details {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-item__label {
+            color: var(--text-tertiary);
+            font-size: var(--font-size-sm);
+        }
+
+        .detail-item__value {
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
+
+        .detail-item__value--success {
+            color: var(--color-success);
+        }
+
+        .detail-item__value--warning {
+            color: var(--color-warning);
+        }
+
+        .detail-item__value--error {
+            color: var(--color-error);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--surface-modal);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .progress-bar__fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary-500), var(--color-primary-400));
+            border-radius: 3px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-bar__fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Sharing Actions */
+        .sharing-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--text-tertiary);
+        }
+
+        .empty-state__icon {
+            font-size: 4rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .empty-state__title {
+            font-size: var(--font-size-lg);
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .empty-state__description {
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-base);
+        }
+
+        /* Modal Component */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: var(--z-index-modal);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal--show {
+            display: flex;
+            animation: modalFadeIn var(--motion-standard);
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal__content {
+            background: var(--surface-elevated);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: modalSlideIn var(--motion-standard);
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: scale(0.95) translateY(-10px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .modal__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .modal__title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+        }
+
+        .modal__close {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-sm);
+            transition: all var(--motion-fast);
+        }
+
+        .modal__close:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Form Components */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            background: var(--surface-modal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            transition: all var(--motion-fast);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-primary-500);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+        }
+
+        .modal__actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: var(--spacing-lg);
+        }
+
+        .btn--cancel {
+            background: transparent;
+            color: var(--text-tertiary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+        }
+
+        .btn--cancel:hover {
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            z-index: var(--z-index-toast);
+            transform: translateX(100%);
+            transition: transform var(--motion-toast);
+            max-width: 300px;
+        }
+
+        .toast--show {
+            transform: translateX(0);
+        }
+
+        .toast--success {
+            border-left: 4px solid var(--color-success);
+        }
+
+        .toast--error {
+            border-left: 4px solid var(--color-error);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                height: 48px;
+                padding: 0 var(--spacing-md);
+            }
+
+            .header__actions {
+                gap: var(--spacing-sm);
+            }
+
+            .btn--header {
+                padding: 8px 16px;
+                font-size: var(--font-size-xs);
+            }
+
+            .btn--header .btn__icon {
+                font-size: var(--font-size-sm);
+            }
+
+            .profile-avatar {
+                width: 32px;
+                height: 32px;
+            }
+
+            .profile-dropdown {
+                width: 220px;
+                right: -8px;
+            }
+            
+            .container {
+                padding: var(--spacing-md);
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .sharing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-buttons {
+                overflow-x: auto;
+            }
+            
+            .tab-btn {
+                min-width: 100px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Component -->
+    <header class="header">
+        <div class="header__logo">🤖 One AI</div>
+        <div class="header__spacer"></div>
+        <div class="header__actions">
+            <button class="btn btn--primary btn--header" onclick="showCreateModal()">
+                <span class="btn__icon">+</span>
+                쉐어링 만들기
+            </button>
+            <div class="header__profile" onclick="toggleProfileMenu()">
+                <div class="profile-avatar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-dropdown__header">
+                        <div class="profile-info">
+                            <div class="profile-name">김**님</div>
+                            <div class="profile-status">Premium 구독자</div>
+                        </div>
+                    </div>
+                    <div class="profile-dropdown__divider"></div>
+                    <a href="#" class="profile-dropdown__item">
+                        <span class="profile-dropdown__icon">📊</span>
+                        대시보드
+                    </a>
+                    <a href="#" class="profile-dropdown__item">
+                        <span class="profile-dropdown__icon">💰</span>
+                        수익 현황
+                    </a>
+                    <a href="#" class="profile-dropdown__item">
+                        <span class="profile-dropdown__icon">🎯</span>
+                        절약 통계
+                    </a>
+                    <a href="#" class="profile-dropdown__item">
+                        <span class="profile-dropdown__icon">⚙️</span>
+                        설정
+                    </a>
+                    <div class="profile-dropdown__divider"></div>
+                    <a href="#" class="profile-dropdown__item">
+                        <span class="profile-dropdown__icon">❓</span>
+                        고객지원
+                    </a>
+                    <a href="#" class="profile-dropdown__item profile-dropdown__item--danger">
+                        <span class="profile-dropdown__icon">🚪</span>
+                        로그아웃
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sharing Header -->
+        <header class="sharing-header">
+            <h1 class="sharing-header__title">🤝 AI 구독 쉐어링</h1>
+            <p class="sharing-header__subtitle">
+                AI 구독비를 나누어 부담하고, 함께 사용하여 최대 80%까지 비용을 절약하세요!<br>
+                안전한 결제 시스템과 실시간 관리로 걱정 없이 이용하실 수 있습니다.
+            </p>
+            <button class="btn btn--primary" onclick="showCreateModal()">
+                <span class="btn__icon">+</span>
+                쉐어링 만들기
+            </button>
+        </header>
+
+        <!-- Stats Section -->
+        <section class="stats">
+            <div class="stat-card">
+                <div class="stat-card__number">2,847</div>
+                <div class="stat-card__label">활성 쉐어링</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__number">15,623</div>
+                <div class="stat-card__label">참여 사용자</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__number">73%</div>
+                <div class="stat-card__label">평균 절약율</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card__number">₩284K</div>
+                <div class="stat-card__label">총 절약 금액</div>
+            </div>
+        </section>
+
+        <!-- Tab System -->
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-btn tab-btn--active" data-tab="popular">🔥 인기 쉐어링</button>
+                <button class="tab-btn" data-tab="my">📋 내 쉐어링</button>
+                <button class="tab-btn" data-tab="joined">✅ 참여중인 쉐어링</button>
+                <button class="tab-btn" data-tab="history">📊 이용 내역</button>
+            </div>
+        </div>
+
+        <!-- Popular Tab -->
+        <div id="popularTab" class="tab-content tab-content--active">
+            <div class="sharing-grid">
+                <!-- ChatGPT Plus Sharing -->
+                <div class="sharing-card">
+                    <div class="sharing-card__header">
+                        <div class="ai-service-badge ai-service-badge--gpt">ChatGPT Plus</div>
+                        <div class="status-badge status-badge--available">모집중</div>
+                    </div>
+                    <div class="sharing-card__info">
+                        <h3 class="sharing-card__title">
+                            <span class="sharing-card__logo">🤖</span>
+                            ChatGPT Plus 4인 쉐어링
+                            <a href="https://chatgpt.com" target="_blank" class="sharing-card__link">🔗</a>
+                        </h3>
+                        <p class="sharing-card__description">월 $20 → 개인당 $5로 75% 절약!</p>
+                        <div class="sharing-details">
+                            <div class="detail-item">
+                                <span class="detail-item__label">참여자:</span>
+                                <span class="detail-item__value">3/4명</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">개인 부담:</span>
+                                <span class="detail-item__value">₩6,900/월</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">개설자:</span>
+                                <span class="detail-item__value">김**님 (★★★★★)</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">다음 결제:</span>
+                                <span class="detail-item__value">2024.08.12</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sharing-actions">
+                        <div class="progress-bar">
+                            <div class="progress-bar__fill" style="width: 75%"></div>
+                        </div>
+                        <button class="btn btn--primary btn--full" onclick="joinSharing('gpt-001', 'ChatGPT Plus 4인 쉐어링', 6900)">참여 신청하기</button>
+                    </div>
+                </div>
+
+                <!-- Midjourney Sharing -->
+                <div class="sharing-card">
+                    <div class="sharing-card__header">
+                        <div class="ai-service-badge ai-service-badge--midjourney">Midjourney Pro</div>
+                        <div class="status-badge status-badge--available">모집중</div>
+                    </div>
+                    <div class="sharing-card__info">
+                        <h3 class="sharing-card__title">
+                            <span class="sharing-card__logo">🎨</span>
+                            Midjourney Pro 5인 쉐어링
+                            <a href="https://www.midjourney.com" target="_blank" class="sharing-card__link">🔗</a>
+                        </h3>
+                        <p class="sharing-card__description">월 $30 → 개인당 $6로 80% 절약!</p>
+                        <div class="sharing-details">
+                            <div class="detail-item">
+                                <span class="detail-item__label">참여자:</span>
+                                <span class="detail-item__value">2/5명</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">개인 부담:</span>
+                                <span class="detail-item__value">₩8,300/월</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">개설자:</span>
+                                <span class="detail-item__value">이**님 (★★★★☆)</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">다음 결제:</span>
+                                <span class="detail-item__value">2024.08.20</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sharing-actions">
+                        <div class="progress-bar">
+                            <div class="progress-bar__fill" style="width: 40%"></div>
+                        </div>
+                        <button class="btn btn--primary btn--full" onclick="joinSharing('midjourney-002', 'Midjourney Pro 5인 쉐어링', 8300)">참여 신청하기</button>
+                    </div>
+                </div>
+
+                <!-- Claude Pro Sharing -->
+                <div class="sharing-card">
+                    <div class="sharing-card__header">
+                        <div class="ai-service-badge ai-service-badge--claude">Claude Pro</div>
+                        <div class="status-badge status-badge--full">모집완료</div>
+                    </div>
+                    <div class="sharing-card__info">
+                        <h3 class="sharing-card__title">
+                            <span class="sharing-card__logo">🧠</span>
+                            Claude Pro 3인 쉐어링
+                            <a href="https://claude.ai" target="_blank" class="sharing-card__link">🔗</a>
+                        </h3>
+                        <p class="sharing-card__description">월 $20 → 개인당 $6.67로 66% 절약!</p>
+                        <div class="sharing-details">
+                            <div class="detail-item">
+                                <span class="detail-item__label">참여자:</span>
+                                <span class="detail-item__value">3/3명</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">개인 부담:</span>
+                                <span class="detail-item__value">₩9,200/월</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">개설자:</span>
+                                <span class="detail-item__value">박**님 (★★★★★)</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">대기 순번:</span>
+                                <span class="detail-item__value detail-item__value--warning">23명</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sharing-actions">
+                        <div class="progress-bar">
+                            <div class="progress-bar__fill" style="width: 100%"></div>
+                        </div>
+                        <button class="btn btn--primary btn--full" disabled>모집완료 (대기열 등록)</button>
+                    </div>
+                </div>
+
+                <!-- GitHub Copilot Sharing -->
+                <div class="sharing-card">
+                    <div class="sharing-card__header">
+                        <div class="ai-service-badge ai-service-badge--copilot">GitHub Copilot</div>
+                        <div class="status-badge status-badge--available">모집중</div>
+                    </div>
+                    <div class="sharing-card__info">
+                        <h3 class="sharing-card__title">
+                            <span class="sharing-card__logo">💻</span>
+                            GitHub Copilot 5인 쉐어링
+                            <a href="https://github.com/features/copilot" target="_blank" class="sharing-card__link">🔗</a>
+                        </h3>
+                        <p class="sharing-card__description">월 $10 → 개인당 $2로 80% 절약!</p>
+                        <div class="sharing-details">
+                            <div class="detail-item">
+                                <span class="detail-item__label">참여자:</span>
+                                <span class="detail-item__value">3/5명</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">개인 부담:</span>
+                                <span class="detail-item__value">₩2,800/월</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">개설자:</span>
+                                <span class="detail-item__value">한**님 (★★★★★)</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">다음 결제:</span>
+                                <span class="detail-item__value">2024.08.15</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sharing-actions">
+                        <div class="progress-bar">
+                            <div class="progress-bar__fill" style="width: 60%"></div>
+                        </div>
+                        <button class="btn btn--primary btn--full" onclick="joinSharing('copilot-005', 'GitHub Copilot 5인 쉐어링', 2800)">참여 신청하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Sharing Tab -->
+        <div id="myTab" class="tab-content">
+            <div class="empty-state">
+                <div class="empty-state__icon">📋</div>
+                <h3 class="empty-state__title">개설한 쉐어링이 없습니다</h3>
+                <p class="empty-state__description">AI 구독을 쉐어링하여 비용을 절약하고 수익도 창출해보세요!</p>
+                <button class="btn btn--primary" onclick="showCreateModal()">
+                    <span class="btn__icon">+</span>
+                    쉐어링 만들기
+                </button>
+            </div>
+        </div>
+
+        <!-- Joined Sharing Tab -->
+        <div id="joinedTab" class="tab-content">
+            <div class="sharing-grid">
+                <div class="sharing-card" data-sharing-id="gpt-001">
+                    <div class="sharing-card__header">
+                        <div class="ai-service-badge ai-service-badge--gpt">ChatGPT Plus</div>
+                        <div class="status-badge status-badge--active">활성중</div>
+                    </div>
+                    <div class="sharing-card__info">
+                        <h3 class="sharing-card__title">
+                            <span class="sharing-card__logo">🤖</span>
+                            ChatGPT Plus 4인 쉐어링
+                            <a href="https://chatgpt.com" target="_blank" class="sharing-card__link">🔗</a>
+                        </h3>
+                        <p class="sharing-card__description">다음 결제일: 2024년 8월 15일</p>
+                        <div class="sharing-details">
+                            <div class="detail-item">
+                                <span class="detail-item__label">내 결제금:</span>
+                                <span class="detail-item__value">₩7,590/월</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">결제 상태:</span>
+                                <span class="detail-item__value detail-item__value--success">정상</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">참여일:</span>
+                                <span class="detail-item__value">2024.07.15</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">절약 금액:</span>
+                                <span class="detail-item__value detail-item__value--success">₩19,910</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sharing-actions">
+                        <div class="action-buttons">
+                            <button class="btn btn--secondary" onclick="manageSharing('gpt-001')">관리하기</button>
+                            <button class="btn btn--danger" onclick="leaveSharing('gpt-001')">탈퇴하기</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sharing-card" data-sharing-id="copilot-005">
+                    <div class="sharing-card__header">
+                        <div class="ai-service-badge ai-service-badge--copilot">GitHub Copilot</div>
+                        <div class="status-badge status-badge--active">활성중</div>
+                    </div>
+                    <div class="sharing-card__info">
+                        <h3 class="sharing-card__title">
+                            <span class="sharing-card__logo">💻</span>
+                            GitHub Copilot 5인 쉐어링
+                            <a href="https://github.com/features/copilot" target="_blank" class="sharing-card__link">🔗</a>
+                        </h3>
+                        <p class="sharing-card__description">다음 결제일: 2024년 8월 12일</p>
+                        <div class="sharing-details">
+                            <div class="detail-item">
+                                <span class="detail-item__label">내 결제금:</span>
+                                <span class="detail-item__value">₩3,080/월</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">결제 상태:</span>
+                                <span class="detail-item__value detail-item__value--success">정상</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">참여일:</span>
+                                <span class="detail-item__value">2024.06.12</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">절약 금액:</span>
+                                <span class="detail-item__value detail-item__value--success">₩10,220</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sharing-actions">
+                        <div class="action-buttons">
+                            <button class="btn btn--secondary" onclick="manageSharing('copilot-005')">관리하기</button>
+                            <button class="btn btn--danger" onclick="leaveSharing('copilot-005')">탈퇴하기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="historyTab" class="tab-content">
+            <div class="sharing-grid">
+                <div class="sharing-card" style="opacity: 0.7;">
+                    <div class="sharing-card__header">
+                        <div class="ai-service-badge ai-service-badge--claude">Claude Pro</div>
+                        <div class="status-badge status-badge--full">종료됨</div>
+                    </div>
+                    <div class="sharing-card__info">
+                        <h3 class="sharing-card__title">
+                            <span class="sharing-card__logo">🧠</span>
+                            Claude Pro 3인 쉐어링 (완료)
+                            <a href="https://claude.ai" target="_blank" class="sharing-card__link">🔗</a>
+                        </h3>
+                        <p class="sharing-card__description">2024.03.01 ~ 2024.06.30 (4개월)</p>
+                        <div class="sharing-details">
+                            <div class="detail-item">
+                                <span class="detail-item__label">총 이용료:</span>
+                                <span class="detail-item__value">₩36,800</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">절약 금액:</span>
+                                <span class="detail-item__value detail-item__value--success">₩73,600</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">만족도:</span>
+                                <span class="detail-item__value">★★★★★</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-item__label">종료 사유:</span>
+                                <span class="detail-item__value">개설자 해지</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sharing-actions">
+                        <button class="btn btn--primary btn--full" disabled>이용 완료</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div id="toastMessage"></div>
+    </div>
+
+    <!-- Create Modal -->
+    <div id="createModal" class="modal">
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title">쉐어링 만들기</h2>
+                <button class="modal__close" onclick="hideCreateModal()">&times;</button>
+            </div>
+            
+            <form id="createForm">
+                <div class="form-group">
+                    <label class="form-label">AI 서비스</label>
+                    <select class="form-select" name="service" required onchange="toggleCustomFields(this.value)">
+                        <option value="">서비스를 선택하세요</option>
+                        <option value="chatgpt-plus">ChatGPT Plus ($20/월)</option>
+                        <option value="claude-pro">Claude Pro ($20/월)</option>
+                        <option value="midjourney-pro">Midjourney Pro ($30/월)</option>
+                        <option value="perplexity-pro">Perplexity Pro ($20/월)</option>
+                        <option value="gemini-pro">Gemini Pro ($20/월)</option>
+                        <option value="github-copilot">GitHub Copilot ($10/월)</option>
+                        <option value="other">🔧 기타 서비스</option>
+                    </select>
+                </div>
+                
+                <!-- 기타 서비스 선택시 추가 필드 -->
+                <div id="customServiceFields" class="custom-service-fields">
+                    <div class="form-group">
+                        <label class="form-label">서비스 이름</label>
+                        <input type="text" class="form-input" name="customServiceName" placeholder="예: Notion AI, Figma Pro 등">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">월 구독료 (USD)</label>
+                            <input type="number" class="form-input" name="customPrice" placeholder="20" min="1" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">로고 이미지 URL</label>
+                            <input type="url" class="form-input" name="customLogo" placeholder="https://example.com/logo.png">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">공식 웹사이트 URL</label>
+                        <input type="url" class="form-input" name="customWebsite" placeholder="https://example.com">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">최대 참여자 수</label>
+                    <select class="form-select" name="participants" required>
+                        <option value="">참여자 수를 선택하세요</option>
+                        <option value="2">2명 (50% 절약)</option>
+                        <option value="3">3명 (66% 절약)</option>
+                        <option value="4">4명 (75% 절약)</option>
+                        <option value="5">5명 (80% 절약)</option>
+                        <option value="6">6명 (83% 절약)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">제목</label>
+                    <input type="text" class="form-input" name="title" placeholder="예: ChatGPT Plus 4인 쉐어링" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">설명</label>
+                    <textarea class="form-textarea" name="description" placeholder="쉐어링에 대한 상세 설명을 입력하세요" style="min-height: 100px;"></textarea>
+                </div>
+            </form>
+            
+            <div class="modal__actions">
+                <button type="button" class="btn btn--cancel" onclick="hideCreateModal()">취소</button>
+                <button type="submit" class="btn btn--primary" onclick="createSharing()">만들기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Join Application Modal -->
+    <div id="joinModal" class="modal">
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title">🤝 쉐어링 참여 신청</h2>
+                <button class="modal__close" onclick="hideJoinModal()">&times;</button>
+            </div>
+            
+            <!-- 선택한 쉐어링 정보 -->
+            <div style="margin-bottom: 24px; padding: 16px; background: var(--surface-modal); border-radius: var(--radius-lg);">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <span id="joinServiceIcon" style="font-size: 20px;">🤖</span>
+                    <div>
+                        <h3 id="joinSharingName" style="color: var(--text-primary); margin: 0;">ChatGPT Plus 4인 쉐어링</h3>
+                        <p style="color: var(--text-secondary); margin: 0; font-size: var(--font-size-sm);">신청 후 결제 페이지로 이동합니다</p>
+                    </div>
+                </div>
+                
+                <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--text-tertiary);">기본 요금:</span>
+                        <span id="joinBasePrice" style="color: var(--text-primary);">₩6,900/월</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--text-tertiary);">One AI 수수료 (10%):</span>
+                        <span id="joinFeeAmount" style="color: var(--color-warning);">₩690/월</span>
+                    </div>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-primary); font-weight: 600;">실제 결제 금액:</span>
+                        <span id="joinTotalAmount" style="color: var(--color-primary-500); font-weight: 700; font-size: var(--font-size-lg);">₩7,590/월</span>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="joinForm">
+                <div class="form-group">
+                    <label class="form-label">참여자 닉네임</label>
+                    <input type="text" class="form-input" name="nickname" placeholder="쉐어링에서 사용할 닉네임" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">이메일 주소</label>
+                    <input type="email" class="form-input" name="email" placeholder="알림을 받을 이메일 주소" required>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="serviceAgreement" required style="margin: 0;">
+                        <span style="font-size: var(--font-size-sm);">
+                            <a href="#" style="color: var(--color-primary-500);">쉐어링 이용약관</a>에 동의합니다
+                        </span>
+                    </label>
+                </div>
+            </form>
+            
+            <div class="modal__actions">
+                <button type="button" class="btn btn--cancel" onclick="hideJoinModal()">취소</button>
+                <button type="submit" class="btn btn--primary" onclick="proceedToPayment()">
+                    <span id="joinButtonText">결제 페이지로 이동</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal__content" style="max-width: 600px;">
+            <div class="modal__header">
+                <h2 class="modal__title">💳 쉐어링 결제</h2>
+                <button class="modal__close" onclick="hidePaymentModal()">&times;</button>
+            </div>
+            
+            <!-- 선택한 쉐어링 정보 -->
+            <div style="margin-bottom: 24px; padding: 20px; background: var(--surface-modal); border-radius: var(--radius-lg); border: 1px solid var(--color-primary-500);">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <span id="paymentServiceIcon" style="font-size: 24px;">🤖</span>
+                    <div>
+                        <h3 id="paymentSharingName" style="color: var(--text-primary); margin: 0; font-size: var(--font-size-lg);">ChatGPT Plus 4인 쉐어링</h3>
+                        <p style="color: var(--text-secondary); margin: 0; font-size: var(--font-size-sm);">매월 자동 결제됩니다</p>
+                    </div>
+                </div>
+                
+                <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--text-tertiary);">기본 요금:</span>
+                        <span id="paymentBasePrice" style="color: var(--text-primary);">₩6,900</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--text-tertiary);">One AI 수수료 (10%):</span>
+                        <span id="paymentFeeAmount" style="color: var(--color-warning);">₩690</span>
+                    </div>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-primary); font-weight: 600; font-size: var(--font-size-lg);">총 결제 금액:</span>
+                        <span id="paymentTotalAmount" style="color: var(--color-primary-500); font-weight: 700; font-size: var(--font-size-xl);">₩7,590</span>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label class="form-label">결제 방법</label>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                        <label style="display: flex; align-items: center; padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg); cursor: pointer; transition: all var(--motion-fast);" onclick="selectPaymentMethod('card')">
+                            <input type="radio" name="paymentMethod" value="card" style="margin-right: 8px;" required>
+                            <span>💳 카드결제</span>
+                        </label>
+                        <label style="display: flex; align-items: center; padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg); cursor: pointer; transition: all var(--motion-fast);" onclick="selectPaymentMethod('bank')">
+                            <input type="radio" name="paymentMethod" value="bank" style="margin-right: 8px;" required>
+                            <span>🏦 계좌이체</span>
+                        </label>
+                        <label style="display: flex; align-items: center; padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg); cursor: pointer; transition: all var(--motion-fast);" onclick="selectPaymentMethod('kakao')">
+                            <input type="radio" name="paymentMethod" value="kakao" style="margin-right: 8px;" required>
+                            <span>💛 카카오페이</span>
+                        </label>
+                        <label style="display: flex; align-items: center; padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg); cursor: pointer; transition: all var(--motion-fast);" onclick="selectPaymentMethod('toss')">
+                            <input type="radio" name="paymentMethod" value="toss" style="margin-right: 8px;" required>
+                            <span>💙 토스페이</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="agreements" required style="margin: 0;">
+                        <span style="font-size: var(--font-size-sm);">
+                            <a href="#" style="color: var(--color-primary-500);">이용약관</a> 및 
+                            <a href="#" style="color: var(--color-primary-500);">개인정보처리방침</a>에 동의합니다
+                        </span>
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="autoPayment" required style="margin: 0;">
+                        <span style="font-size: var(--font-size-sm);">매월 자동결제에 동의합니다 (언제든 해지 가능)</span>
+                    </label>
+                </div>
+            </form>
+            
+            <div class="modal__actions">
+                <button type="button" class="btn btn--cancel" onclick="hidePaymentModal()">취소</button>
+                <button type="submit" class="btn btn--primary" onclick="processPayment()" style="font-weight: 700;">
+                    <span id="paymentButtonText">₩7,590 결제하기</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'popular';
+        let selectedSharingId = null;
+        let currentTheme = 'dark';
+
+        // Theme Toggle Function
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (currentTheme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '☀️';
+                currentTheme = 'light';
+            } else {
+                body.removeAttribute('data-theme');
+                themeIcon.textContent = '🌙';
+                currentTheme = 'dark';
+            }
+            
+            localStorage.setItem('theme', currentTheme);
+        }
+
+        // Custom service fields toggle
+        function toggleCustomFields(selectedValue) {
+            const customFields = document.getElementById('customServiceFields');
+            if (selectedValue === 'other') {
+                customFields.classList.add('custom-service-fields--show');
+            } else {
+                customFields.classList.remove('custom-service-fields--show');
+            }
+        }
+
+        // Toast Notification Function
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.className = `toast toast--${type}`;
+            toast.classList.add('toast--show');
+            
+            setTimeout(() => {
+                toast.classList.remove('toast--show');
+            }, 3000);
+        }
+
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('tab-btn--active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('tab-content--active'));
+            
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('tab-btn--active');
+            document.getElementById(tabName + 'Tab').classList.add('tab-content--active');
+            
+            currentTab = tabName;
+        }
+
+        // Modal Functions
+        function showCreateModal() {
+            document.getElementById('createModal').classList.add('modal--show');
+        }
+
+        function hideCreateModal() {
+            document.getElementById('createModal').classList.remove('modal--show');
+        }
+
+        function createSharing() {
+            showToast('쉐어링이 성공적으로 생성되었습니다!', 'success');
+            hideCreateModal();
+            setTimeout(() => {
+                switchTab('my');
+                updateMyTab();
+            }, 100);
+        }
+
+        function joinSharing(sharingId, sharingName, basePrice) {
+            selectedSharingId = sharingId;
+            
+            // 서비스 아이콘 설정
+            const serviceIcon = document.getElementById('joinServiceIcon');
+            if (sharingId.includes('gpt')) serviceIcon.textContent = '🤖';
+            else if (sharingId.includes('claude')) serviceIcon.textContent = '🧠';
+            else if (sharingId.includes('midjourney')) serviceIcon.textContent = '🎨';
+            else if (sharingId.includes('copilot')) serviceIcon.textContent = '💻';
+            else serviceIcon.textContent = '🤖';
+            
+            // 쉐어링 이름 설정
+            document.getElementById('joinSharingName').textContent = sharingName;
+            
+            // 가격 계산 및 설정
+            const fee = Math.round(basePrice * 0.1);
+            const total = basePrice + fee;
+            
+            document.getElementById('joinBasePrice').textContent = `₩${basePrice.toLocaleString()}/월`;
+            document.getElementById('joinFeeAmount').textContent = `₩${fee.toLocaleString()}/월`;
+            document.getElementById('joinTotalAmount').textContent = `₩${total.toLocaleString()}/월`;
+            
+            document.getElementById('joinModal').classList.add('modal--show');
+        }
+
+        function hideJoinModal() {
+            document.getElementById('joinModal').classList.remove('modal--show');
+        }
+
+        function proceedToPayment() {
+            // 폼 유효성 검사
+            const form = document.getElementById('joinForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Join 모달에서 Payment 모달로 데이터 전달
+            const joinServiceIcon = document.getElementById('joinServiceIcon').textContent;
+            const joinSharingName = document.getElementById('joinSharingName').textContent;
+            const joinTotalAmount = document.getElementById('joinTotalAmount').textContent;
+            const joinBasePrice = document.getElementById('joinBasePrice').textContent;
+            const joinFeeAmount = document.getElementById('joinFeeAmount').textContent;
+            
+            // Payment 모달에 정보 설정
+            document.getElementById('paymentServiceIcon').textContent = joinServiceIcon;
+            document.getElementById('paymentSharingName').textContent = joinSharingName;
+            document.getElementById('paymentBasePrice').textContent = joinBasePrice.replace('/월', '');
+            document.getElementById('paymentFeeAmount').textContent = joinFeeAmount.replace('/월', '');
+            document.getElementById('paymentTotalAmount').textContent = joinTotalAmount.replace('/월', '');
+            document.getElementById('paymentButtonText').textContent = `${joinTotalAmount.replace('/월', '')} 결제하기`;
+            
+            // 모달 전환
+            hideJoinModal();
+            document.getElementById('paymentModal').classList.add('modal--show');
+        }
+
+        function hidePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('modal--show');
+        }
+
+        function selectPaymentMethod(method) {
+            // 선택된 결제 방법 스타일 업데이트
+            document.querySelectorAll('[onclick^="selectPaymentMethod"]').forEach(label => {
+                label.style.borderColor = 'rgba(255,255,255,0.1)';
+                label.style.background = 'transparent';
+            });
+            
+            event.currentTarget.style.borderColor = 'var(--color-primary-500)';
+            event.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)';
+        }
+
+        function processPayment() {
+            // 폼 유효성 검사
+            const form = document.getElementById('paymentForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // 결제 처리 시뮬레이션
+            const button = event.target;
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<span>결제 처리 중...</span>';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                hidePaymentModal();
+                showToast('결제가 완료되었습니다! 쉐어링에 참여되었습니다.', 'success');
+                
+                // 버튼 원상복구
+                button.innerHTML = originalText;
+                button.disabled = false;
+                
+                // 참여중인 쉐어링 탭으로 이동
+                setTimeout(() => {
+                    switchTab('joined');
+                }, 1000);
+            }, 2000);
+        }
+
+        function manageSharing(sharingId) {
+            showToast(`쉐어링 관리 (${sharingId})`, 'info');
+        }
+
+        function leaveSharing(sharingId) {
+            if (confirm('정말로 쉐어링에서 탈퇴하시겠습니까?')) {
+                showToast('쉐어링 탈퇴가 완료되었습니다.', 'success');
+                setTimeout(() => location.reload(), 1000);
+            }
+        }
+
+        function updateMyTab() {
+            const myTab = document.getElementById('myTab');
+            myTab.innerHTML = `
+                <div class="sharing-grid">
+                    <div class="sharing-card">
+                        <div class="sharing-card__header">
+                            <div class="ai-service-badge ai-service-badge--gpt">ChatGPT Plus</div>
+                            <div class="status-badge status-badge--available">모집중</div>
+                        </div>
+                        <div class="sharing-card__info">
+                            <h3 class="sharing-card__title">내가 개설한 ChatGPT Plus 쉐어링</h3>
+                            <p class="sharing-card__description">월 $20 → 개인당 $5로 75% 절약!</p>
+                            <div class="sharing-details">
+                                <div class="detail-item">
+                                    <span class="detail-item__label">참여자:</span>
+                                    <span class="detail-item__value">1/4명</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-item__label">수익 예상:</span>
+                                    <span class="detail-item__value detail-item__value--success">₩20,700/월</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sharing-actions">
+                            <div class="progress-bar">
+                                <div class="progress-bar__fill" style="width: 25%"></div>
+                            </div>
+                            <button class="btn btn--primary btn--full">쉐어링 관리</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Profile Menu Toggle
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('profile-dropdown--show');
+        }
+
+        // Close profile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const profile = document.querySelector('.header__profile');
+            const dropdown = document.getElementById('profileDropdown');
+            
+            if (!profile.contains(event.target)) {
+                dropdown.classList.remove('profile-dropdown--show');
+            }
+        });
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize theme from localStorage
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                currentTheme = savedTheme;
+                if (currentTheme === 'light') {
+                    document.body.setAttribute('data-theme', 'light');
+                    document.getElementById('themeIcon').textContent = '☀️';
+                }
+            }
+
+            // Tab Events
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabName = this.dataset.tab;
+                    switchTab(tabName);
+                });
+            });
+
+            // Modal Outside Click
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('modal--show');
+                    }
+                });
+            });
+
+            // Animation Observer
+            const cards = document.querySelectorAll('.sharing-card, .stat-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 50);
+                    }
+                });
+            });
+            
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.6s ease';
+                observer.observe(card);
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // ESC to close modals
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal--show').forEach(modal => {
+                        modal.classList.remove('modal--show');
+                    });
+                    document.querySelector('.profile-dropdown--show')?.classList.remove('profile-dropdown--show');
+                }
+                
+                // Ctrl/Cmd + K to open create modal
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    showCreateModal();
+                }
+                
+                // Ctrl/Cmd + Shift + T to toggle theme
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+                    e.preventDefault();
+                    toggleTheme();
+                }
+            });
+
+            // Form validation
+            document.getElementById('createForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                createSharing();
+            });
+
+            document.getElementById('joinForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                proceedToPayment();
+            });
+
+            document.getElementById('paymentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                processPayment();
+            });
+        });
+    </script>
+</body>
+</html>

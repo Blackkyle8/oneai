@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One AI - 모든 AI를 하나로</title>
+    <style>
+        :root {
+            /* Modern Color System */
+            --color-surface-base: #000000;
+            --color-surface-elevated: #111111;
+            --color-surface-modal: #222222;
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-tertiary: #a3a3a3;
+            --color-primary-500: #10b981;
+            --color-primary-600: #059669;
+            --color-primary-700: #047857;
+            --color-accent: #3b82f6;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-success: #22c55e;
+            
+            /* Typography */
+            --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-size-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem);
+            --font-size-sm: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);
+            --font-size-base: clamp(1rem, 0.9rem + 0.4vw, 1.125rem);
+            --font-size-lg: clamp(1.125rem, 1rem + 0.5vw, 1.25rem);
+            --font-size-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+            --font-size-2xl: clamp(1.5rem, 1.3rem + 0.8vw, 1.875rem);
+            
+            /* Spacing */
+            --space-sm: clamp(1rem, 0.8rem + 0.8vw, 1.5rem);
+            --space-md: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
+            --space-lg: clamp(2rem, 1.6rem + 1.6vw, 3rem);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-primary);
+            background: var(--color-surface-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 헤더 스타일 */
+        .header {
+            background: var(--color-surface-elevated);
+            border-bottom: 1px solid #333;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            color: var(--color-primary-500);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background: var(--color-surface-elevated);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background: #222;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--color-primary-500);
+            color: white;
+            border-color: var(--color-primary-500);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-600);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-md);
+        }
+
+        /* 페이지 전환 */
+        .page {
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 홈 페이지 스타일 */
+        .hero-section {
+            text-align: center;
+            padding: var(--space-lg) 0;
+            background: linear-gradient(135deg, var(--color-surface-base) 0%, var(--color-surface-elevated) 100%);
+            border-radius: 16px;
+            margin-bottom: var(--space-lg);
+        }
+
+        .hero-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: var(--font-size-lg);
+            color: var(--text-secondary);
+            margin-bottom: var(--space-md);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+
+        .stat-card {
+            background: var(--color-surface-modal);
+            padding: var(--space-sm);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--color-primary-500);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+        }
+
+        .stat-number {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--color-primary-500);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-tertiary);
+        }
+
+        /* 기능 그리드 */
+        .features-section {
+            margin-bottom: var(--space-lg);
+        }
+
+        .section-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            text-align: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .feature-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: var(--space-md);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+            line-height: 1.6;
+        }
+
+        /* 최근 활동 섹션 */
+        .recent-activity {
+            background: var(--color-surface-elevated);
+            border-radius: 16px;
+            padding: var(--space-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            margin: 0 -16px;
+            padding-left: 16px;
+            padding-right: 16px;
+            border-radius: 8px;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .activity-time {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        /* CTA 섹션 */
+        .cta-section {
+            text-align: center;
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
+            border-radius: 16px;
+            padding: var(--space-lg);
+            margin-top: var(--space-lg);
+        }
+
+        .cta-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .cta-description {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-md);
+        }
+
+        .cta-button {
+            background: white;
+            color: var(--color-primary-600);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+        }
+
+        /* 내부 페이지 공통 스타일 */
+        .page-header {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .page-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: var(--font-size-lg);
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .back-button {
+            margin-bottom: var(--space-md);
+            color: var(--color-primary-500);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: var(--font-size-sm);
+            transition: opacity 0.2s;
+        }
+
+        .back-button:hover {
+            opacity: 0.8;
+        }
+
+        /* AI 엔진 카드 */
+        .ai-engine-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .ai-engine-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .ai-engine-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .ai-engine-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .ai-engine-info {
+            flex: 1;
+        }
+
+        .ai-engine-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .ai-engine-provider {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        /* 채팅 인터페이스 */
+        .chat-container {
+            background: var(--color-surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: between;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: var(--color-surface-base);
+        }
+
+        .chat-input-area {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--color-surface-modal);
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: var(--text-primary);
+            resize: none;
+            font-family: inherit;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--color-primary-500);
+        }
+
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            background: var(--color-surface-elevated);
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 70%;
+            line-height: 1.5;
+        }
+
+        .message.user .message-content {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        /* 그리드 레이아웃 */
+        .grid {
+            display: grid;
+            gap: var(--space-md);
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        /* 카드 스타일 */
+        .card {
+            background: var(--color-surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+            }
+            
+            .header-nav {
+                display: none;
+            }
+            
+            .container {
+                padding: var(--space-sm);
+            }
+            
+            .hero-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-container {
+                height: 500px;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 상단 헤더 메뉴 -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">1</div>
+            <span>One AI</span>
+        </div>
+        
+
+        
+        <div class="header-actions">
+            <a href="#" class="btn btn-primary" onclick="downloadApp()">
+                앱 다운로드
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 홈 페이지 -->
+        <div class="page active" id="home">
+            <!-- 히어로 섹션 -->
+            <section class="hero-section">
+                <h1 class="hero-title">모든 AI를 하나로</h1>
+                <p class="hero-subtitle">
+                    ChatGPT, Gemini, Claude 등 모든 AI 엔진을 통합하여<br>
+                    더 스마트하고 효율적인 AI 경험을 제공합니다
+                </p>
+                
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">AI 엔진</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">1.2M</div>
+                        <div class="stat-label">사용자</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">가동률</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">지원</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 주요 기능 -->
+            <section class="features-section">
+                <h2 class="section-title">주요 기능</h2>
+                <div class="features-grid">
+                    <div class="feature-card" onclick="showPage('community')">
+                        <span class="feature-icon">🌍</span>
+                        <h3 class="feature-title">AI 커뮤니티</h3>
+                        <p class="feature-description">
+                            AI 결과물을 공유하고, 프롬프트 템플릿을 교환하며, 
+                            전 세계 사용자들과 AI 경험을 나누세요.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card" onclick="showPage('sharing')">
+                        <span class="feature-icon">🤝</span>
+                        <h3 class="feature-title">AI 쉐어링</h3>
+                        <p class="feature-description">
+                            AI 구독비를 나누어 부담하고, 함께 사용하여 
+                            최대 80%까지 비용을 절약하세요.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card" onclick="showPage('healthcare')">
+                        <span class="feature-icon">🏥</span>
+                        <h3 class="feature-title">헬스케어 AI</h3>
+                        <p class="feature-description">
+                            의료진이 검증한 AI 기반 건강 상담과 진단 지원으로 
+                            더 나은 건강 관리를 시작하세요.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card" onclick="showPage('business')">
+                        <span class="feature-icon">💼</span>
+                        <h3 class="feature-title">비즈니스센터</h3>
+                        <p class="feature-description">
+                            나만의 AI 엔진을 제작하고 판매하여 
+                            새로운 수익원을 창출하세요.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card" onclick="showPage('ai-hub')">
+                        <span class="feature-icon">🤖</span>
+                        <h3 class="feature-title">AI 엔진 허브</h3>
+                        <p class="feature-description">
+                            50개 이상의 AI 엔진을 한 곳에서 관리하고, 
+                            통합된 인터페이스로 효율적으로 사용하세요.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card" onclick="translateDemo()">
+                        <span class="feature-icon">🌐</span>
+                        <h3 class="feature-title">실시간 번역</h3>
+                        <p class="feature-description">
+                            100개 언어를 지원하는 실시간 번역으로 
+                            언어 장벽 없이 AI를 사용하세요.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 최근 활동 -->
+            <section class="recent-activity">
+                <h2 class="section-title">최근 활동</h2>
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-icon" style="background: linear-gradient(135deg, #10a37f, #1a7f72);">G</div>
+                        <div class="activity-content">
+                            <div class="activity-title">ChatGPT로 코딩 문제 해결</div>
+                            <div class="activity-time">2분 전</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon" style="background: linear-gradient(135deg, #000, #333);">M</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Midjourney로 로고 디자인 생성</div>
+                            <div class="activity-time">15분 전</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon" style="background: linear-gradient(135deg, #ff6b35, #f7931e);">C</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Claude로 문서 요약 작업</div>
+                            <div class="activity-time">1시간 전</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon" style="background: linear-gradient(135deg, #20c997, #17a2b8);">⟐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Perplexity로 최신 뉴스 검색</div>
+                            <div class="activity-time">3시간 전</div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- CTA 섹션 -->
+            <section class="cta-section">
+                <h2 class="cta-title">아직 앱을 다운로드하지 않으셨나요?</h2>
+                <p class="cta-description">
+                    모든 AI를 한 화면에서 사용하고, 완전한 통합 경험을 누려보세요!
+                </p>
+                <button class="cta-button" onclick="downloadApp()">
+                    📱 지금 앱 다운로드하기
+                </button>
+            </section>
+        </div>
+
+        <!-- AI 허브 페이지 -->
+        <div class="page" id="ai-hub">
+            <a href="#" class="back-button" onclick="showPage('home')">← 홈으로 돌아가기</a>
+            
+            <div class="page-header">
+                <h1 class="page-title">AI 엔진 허브</h1>
+                <p class="page-subtitle">50개 이상의 AI 엔진을 한 곳에서 관리하고 사용하세요</p>
+            </div>
+
+            <div class="grid grid-3">
+                <div class="ai-engine-card" onclick="showPage('ai-chat')">
+                    <div class="ai-engine-header">
+                        <div class="ai-engine-logo" style="background: linear-gradient(135deg, #10a37f, #1a7f72);">G</div>
+                        <div class="ai-engine-info">
+                            <div class="ai-engine-name">ChatGPT-4</div>
+                            <div class="ai-engine-provider">OpenAI</div>
+                        </div>
+                    </div>
+                    <div class="feature-description" style="margin-bottom: 16px;">
+                        GPT-4 기반의 최신 대화형 AI. 텍스트 생성, 번역, 코딩, 창작 등 모든 작업에 탁월한 성능.
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--color-warning);">⭐ 4.8</span>
+                        <button class="btn btn-sm btn-primary">사용하기</button>
+                    </div>
+                </div>
+
+                <div class="ai-engine-card" onclick="showPage('ai-chat')">
+                    <div class="ai-engine-header">
+                        <div class="ai-engine-logo" style="background: linear-gradient(135deg, #ff6b35, #f7931e);">C</div>
+                        <div class="ai-engine-info">
+                            <div class="ai-engine-name">Claude 3 Opus</div>
+                            <div class="ai-engine-provider">Anthropic</div>
+                        </div>
+                    </div>
+                    <div class="feature-description" style="margin-bottom: 16px;">
+                        안전하고 도움이 되는 AI 어시스턴트. 복잡한 추론, 분석, 창작 작업에서 뛰어난 성능.
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--color-warning);">⭐ 4.9</span>
+                        <button class="btn btn-sm btn-primary">사용하기</button>
+                    </div>
+                </div>
+
+                <div class="ai-engine-card" onclick="showPage('ai-chat')">
+                    <div class="ai-engine-header">
+                        <div class="ai-engine-logo" style="background: linear-gradient(135deg, #4285f4, #34a853);">G</div>
+                        <div class="ai-engine-info">
+                            <div class="ai-engine-name">Gemini Ultra</div>
+                            <div class="ai-engine-provider">Google</div>
+                        </div>
+                    </div>
+                    <div class="feature-description" style="margin-bottom: 16px;">
+                        멀티모달 AI로 텍스트, 이미지, 오디오를 동시에 처리하고 이해할 수 있습니다.
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--color-warning);">⭐ 4.7</span>
+                        <button class="btn btn-sm btn-primary">사용하기</button>
+                    </div>
+                </div>
+
+                <div class="ai-engine-card">
+                    <div class="ai-engine-header">
+                        <div class="ai-engine-logo" style="background: linear-gradient(135deg, #000, #333);">M</div>
+                        <div class="ai-engine-info">
+                            <div class="ai-engine-name">Midjourney</div>
+                            <div class="ai-engine-provider">Midjourney Inc</div>
+                        </div>
+                    </div>
+                    <div class="feature-description" style="margin-bottom: 16px;">
+                        최고 수준의 AI 이미지 생성 도구. 예술적이고 창의적인 이미지를 텍스트로 생성.
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--color-warning);">⭐ 4.6</span>
+                        <button class="btn btn-sm btn-primary">사용하기</button>
+                    </div>
+                </div>
+
+                <div class="ai-engine-card">
+                    <div class="ai-engine-header">
+                        <div class="ai-engine-logo" style="background: linear-gradient(135deg, #24292e, #0366d6);">🐙</div>
+                        <div class="ai-engine-info">
+                            <div class="ai-engine-name">GitHub Copilot</div>
+                            <div class="ai-engine-provider">GitHub</div>
+                        </div>
+                    </div>
+                    <div class="feature-description" style="margin-bottom: 16px;">
+                        AI 코드 어시스턴트. 실시간으로 코드를 제안하고 함수를 자동완성합니다.
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--color-warning);">⭐ 4.5</span>
+                        <button class="btn btn-sm btn-primary">사용하기</button>
+                    </div>
+                </div>
+
+                <div class="ai-engine-card">
+                    <div class="ai-engine-header">
+                        <div class="ai-engine-logo" style="background: linear-gradient(135deg, #20c997, #17a2b8);">⟐</div>
+                        <div class="ai-engine-info">
+                            <div class="ai-engine-name">Perplexity AI</div>
+                            <div class="ai-engine-provider">Perplexity</div>
+                        </div>
+                    </div>
+                    <div class="feature-description" style="margin-bottom: 16px;">
+                        실시간 정보 검색 AI. 최신 뉴스, 데이터를 실시간으로 검색하고 요약.
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--color-warning);">⭐ 4.4</span>
+                        <button class="btn btn-sm btn-primary">사용하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI 채팅 페이지 -->
+        <div class="page" id="ai-chat">
+            <a href="#" class="back-button" onclick="showPage('ai-hub')">← AI 허브로 돌아가기</a>
+            
+            <div class="page-header">
+                <h1 class="page-title">AI 채팅</h1>
+                <p class="page-subtitle">선택한 AI와 실시간으로 대화하세요</p>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="ai-engine-logo" style="background: linear-gradient(135deg, #10a37f, #1a7f72); width: 32px; height: 32px; font-size: 16px;">G</div>
+                        <div>
+                            <div style="font-weight: 600;">ChatGPT-4</div>
+                            <div style="font-size: var(--font-size-xs); color: var(--text-tertiary);">OpenAI</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm">새 채팅</button>
+                </div>
+                
+                <div class="chat-messages">
+                    <div class="message">
+                        <div class="message-avatar" style="background: linear-gradient(135deg, #10a37f, #1a7f72); color: white;">G</div>
+                        <div class="message-content">
+                            안녕하세요! 저는 ChatGPT입니다. 무엇을 도와드릴까요?
+                        </div>
+                    </div>
+                    
+                    <div class="message user">
+                        <div class="message-avatar" style="background: var(--color-primary-500); color: white;">U</div>
+                        <div class="message-content">
+                            파이썬으로 간단한 웹 크롤러를 만드는 방법을 알려주세요.
+                        </div>
+                    </div>
+                    
+                    <div class="message">
+                        <div class="message-avatar" style="background: linear-gradient(135deg, #10a37f, #1a7f72); color: white;">G</div>
+                        <div class="message-content">
+                            파이썬으로 웹 크롤러를 만드는 방법을 단계별로 설명해드리겠습니다.<br><br>
+                            
+                            <strong>1. 필요한 라이브러리 설치</strong><br>
+                            pip install requests beautifulsoup4<br><br>
+                            
+                            <strong>2. 기본적인 크롤러 코드</strong><br>
+                            requests와 BeautifulSoup을 사용하여 웹페이지를 파싱하고 원하는 데이터를 추출할 수 있습니다.<br><br>
+                            
+                            더 구체적인 요구사항이 있으시면 말씀해주세요!
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-area">
+                    <div class="chat-input-container">
+                        <textarea class="chat-input" placeholder="메시지를 입력하세요..." rows="2"></textarea>
+                        <button class="btn btn-primary">전송</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 커뮤니티 페이지 -->
+        <div class="page" id="community">
+            <a href="#" class="back-button" onclick="showPage('home')">← 홈으로 돌아가기</a>
+            
+            <div class="page-header">
+                <h1 class="page-title">AI 커뮤니티</h1>
+                <p class="page-subtitle">AI 결과물을 공유하고 프롬프트 템플릿을 교환하세요</p>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🔥 인기 게시물</h2>
+                        <button class="btn btn-sm btn-primary">+ 게시물 작성</button>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div style="padding: 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: var(--color-surface-modal);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary-500); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">K</div>
+                                <div>
+                                    <div style="font-weight: 500;">김개발자</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">2시간 전</div>
+                                </div>
+                            </div>
+                            <h3 style="margin-bottom: 12px; font-size: var(--font-size-lg);">완벽한 로고 디자인 프롬프트</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6;">
+                                Midjourney로 브랜드 로고를 만들 때 사용하는 필수 프롬프트 모음입니다. 
+                                미니멀, 모던, 빈티지 스타일별로 정리했어요.
+                            </p>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; gap: 20px; color: var(--text-tertiary); font-size: var(--font-size-sm);">
+                                    <span>👍 127</span>
+                                    <span>💬 23</span>
+                                    <span>📤 45</span>
+                                </div>
+                                <button class="btn btn-sm">보기</button>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: var(--color-surface-modal);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-accent); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">L</div>
+                                <div>
+                                    <div style="font-weight: 500;">이마케터</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">5시간 전</div>
+                                </div>
+                            </div>
+                            <h3 style="margin-bottom: 12px; font-size: var(--font-size-lg);">ChatGPT로 마케팅 카피 자동화</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6;">
+                                제품별 마케팅 카피를 자동으로 생성하는 프롬프트 시스템을 만들었습니다. 
+                                전환율이 30% 향상되었어요!
+                            </p>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; gap: 20px; color: var(--text-tertiary); font-size: var(--font-size-sm);">
+                                    <span>👍 89</span>
+                                    <span>💬 16</span>
+                                    <span>📤 32</span>
+                                </div>
+                                <button class="btn btn-sm">보기</button>
+                            </div>
+                        </div>
+
+                        <div style="padding: 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: var(--color-surface-modal);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-warning); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px;">P</div>
+                                <div>
+                                    <div style="font-weight: 500;">박디자이너</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">1일 전</div>
+                                </div>
+                            </div>
+                            <h3 style="margin-bottom: 12px; font-size: var(--font-size-lg);">AI로 만든 웹사이트 디자인 시스템</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6;">
+                                Claude와 Figma를 연동해서 완전한 디자인 시스템을 자동화했습니다. 
+                                디자인 시간이 70% 단축되었어요.
+                            </p>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; gap: 20px; color: var(--text-tertiary); font-size: var(--font-size-sm);">
+                                    <span>👍 156</span>
+                                    <span>💬 28</span>
+                                    <span>📤 67</span>
+                                </div>
+                                <button class="btn btn-sm">보기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📚 프롬프트 라이브러리</h2>
+                        <button class="btn btn-sm">+ 프롬프트 추가</button>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div style="padding: 16px; background: var(--color-surface-base); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span style="font-weight: 600;">코드 리뷰어</span>
+                                <span style="background: var(--color-primary-500); color: white; padding: 3px 10px; border-radius: 15px; font-size: 11px; font-weight: 600;">인기</span>
+                            </div>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 12px;">
+                                코드를 체계적으로 리뷰하고 개선점을 제안하는 프롬프트
+                            </p>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">
+                                👍 156 · 💬 24 · 📥 89
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 16px; background: var(--color-surface-base); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span style="font-weight: 600;">블로그 포스트 작성</span>
+                                <span style="background: var(--color-warning); color: white; padding: 3px 10px; border-radius: 15px; font-size: 11px; font-weight: 600;">새글</span>
+                            </div>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 12px;">
+                                SEO 최적화된 블로그 포스트를 자동으로 생성
+                            </p>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">
+                                👍 67 · 💬 12 · 📥 34
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 16px; background: var(--color-surface-base); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span style="font-weight: 600;">데이터 분석 보고서</span>
+                            </div>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 12px;">
+                                엑셀 데이터를 분석하고 시각적 보고서 생성
+                            </p>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">
+                                👍 45 · 💬 8 · 📥 23
+                            </div>
+                        </div>
+
+                        <div style="padding: 16px; background: var(--color-surface-base); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span style="font-weight: 600;">이메일 자동 답변</span>
+                            </div>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 12px;">
+                                고객 문의 이메일에 대한 자동 답변 시스템
+                            </p>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">
+                                👍 78 · 💬 15 · 📥 42
+                            </div>
+                        </div>
+
+                        <div style="padding: 16px; background: var(--color-surface-base); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span style="font-weight: 600;">소셜미디어 콘텐츠</span>
+                            </div>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 12px;">
+                                인스타그램, 트위터용 매력적인 콘텐츠 생성
+                            </p>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">
+                                👍 92 · 💬 19 · 📥 56
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI 쉐어링 페이지 -->
+        <div class="page" id="sharing">
+            <a href="#" class="back-button" onclick="showPage('home')">← 홈으로 돌아가기</a>
+            
+            <div class="page-header">
+                <h1 class="page-title">AI 쉐어링</h1>
+                <p class="page-subtitle">AI 구독비를 나누어 부담하고 최대 80%까지 절약하세요</p>
+            </div>
+
+            <div class="grid grid-4">
+                <div class="stat-card">
+                    <div class="stat-number">₩127,000</div>
+                    <div class="stat-label">이번 달 절약</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">참여 그룹</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">23</div>
+                    <div class="stat-label">공유 파트너</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">80%</div>
+                    <div class="stat-label">최대 절약률</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">활성 쉐어링 그룹</h2>
+                    <button class="btn btn-primary">+ 새 그룹 만들기</button>
+                </div>
+                
+                <div class="grid grid-2">
+                    <div style="padding: 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: var(--color-surface-modal);">
+                        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #10a37f, #1a7f72); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">G</div>
+                                <div>
+                                    <div style="font-weight: 600;">ChatGPT Plus</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">OpenAI</div>
+                                </div>
+                            </div>
+                            <span style="background: var(--color-success); color: white; padding: 4px 12px; border-radius: 15px; font-size: 11px; font-weight: 600;">활성</span>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 8px;">참여자: 4/5명</div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>월 비용: $20.00</span>
+                                <span style="color: var(--color-primary-500); font-weight: 600;">내 부담: $4.00</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm" style="width: 100%;">그룹 관리</button>
+                    </div>
+
+                    <div style="padding: 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: var(--color-surface-modal);">
+                        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #ff6b35, #f7931e); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">C</div>
+                                <div>
+                                    <div style="font-weight: 600;">Claude Pro</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">Anthropic</div>
+                                </div>
+                            </div>
+                            <span style="background: var(--color-warning); color: white; padding: 4px 12px; border-radius: 15px; font-size: 11px; font-weight: 600;">모집중</span>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 8px;">참여자: 3/4명</div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>월 비용: $20.00</span>
+                                <span style="color: var(--color-primary-500); font-weight: 600;">내 부담: $6.67</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm" style="width: 100%;">참여자 모집</button>
+                    </div>
+
+                    <div style="padding: 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: var(--color-surface-modal);">
+                        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #000, #333); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">M</div>
+                                <div>
+                                    <div style="font-weight: 600;">Midjourney</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">Midjourney Inc</div>
+                                </div>
+                            </div>
+                            <span style="background: var(--color-success); color: white; padding: 4px 12px; border-radius: 15px; font-size: 11px; font-weight: 600;">활성</span>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 8px;">참여자: 5/5명</div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>월 비용: $30.00</span>
+                                <span style="color: var(--color-primary-500); font-weight: 600;">내 부담: $6.00</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm" style="width: 100%;">그룹 관리</button>
+                    </div>
+
+                    <div style="padding: 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: var(--color-surface-modal);">
+                        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #24292e, #0366d6); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">🐙</div>
+                                <div>
+                                    <div style="font-weight: 600;">GitHub Copilot</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">GitHub</div>
+                                </div>
+                            </div>
+                            <span style="background: var(--color-warning); color: white; padding: 4px 12px; border-radius: 15px; font-size: 11px; font-weight: 600;">모집중</span>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 8px;">참여자: 2/4명</div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>월 비용: $10.00</span>
+                                <span style="color: var(--color-primary-500); font-weight: 600;">내 부담: $5.00</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm" style="width: 100%;">참여자 모집</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">추천 쉐어링 그룹</h2>
+                        <button class="btn btn-sm">전체 보기</button>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div style="padding: 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; background: var(--color-surface-base);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #4285f4, #34a853); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">G</div>
+                                    <span style="font-weight: 600;">Gemini Advanced</span>
+                                </div>
+                                <span style="color: var(--color-primary-500); font-size: var(--font-size-sm); font-weight: 600;">$5.00/월</span>
+                            </div>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 12px;">
+                                3/4명 모집 중 • 원래 $20.00/월
+                            </p>
+                            <button class="btn btn-sm btn-primary" style="width: 100%;">참여하기</button>
+                        </div>
+
+                        <div style="padding: 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; background: var(--color-surface-base);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #20c997, #17a2b8); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">⟐</div>
+                                    <span style="font-weight: 600;">Perplexity Pro</span>
+                                </div>
+                                <span style="color: var(--color-primary-500); font-size: var(--font-size-sm); font-weight: 600;">$5.00/월</span>
+                            </div>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 12px;">
+                                2/4명 모집 중 • 원래 $20.00/월
+                            </p>
+                            <button class="btn btn-sm btn-primary" style="width: 100%;">참여하기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 헬스케어 AI 페이지 -->
+        <div class="page" id="healthcare">
+            <a href="#" class="back-button" onclick="showPage('home')">← 홈으로 돌아가기</a>
+            
+            <div class="page-header">
+                <h1 class="page-title">헬스케어 AI</h1>
+                <p class="page-subtitle">의료진이 검증한 AI 기반 건강 상담과 진단 지원</p>
+            </div>
+
+            <div class="grid grid-3">
+                <div class="feature-card">
+                    <span class="feature-icon">🩺</span>
+                    <h3 class="feature-title">AI 건강 상담</h3>
+                    <p class="feature-description">
+                        증상을 입력하면 AI가 1차 진단을 도와드립니다. 
+                        응급상황 판단과 병원 추천도 제공합니다.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <button class="btn btn-primary" style="width: 100%;">상담 시작</button>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">💊</span>
+                    <h3 class="feature-title">약물 상호작용 검사</h3>
+                    <p class="feature-description">
+                        복용 중인 약물들의 상호작용을 체크하고, 
+                        부작용 가능성을 미리 알려드립니다.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <button class="btn btn-primary" style="width: 100%;">검사하기</button>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">📋</span>
+                    <h3 class="feature-title">건강 기록 관리</h3>
+                    <p class="feature-description">
+                        개인 건강 데이터를 안전하게 저장하고, 
+                        AI가 건강 패턴을 분석해 조언을 제공합니다.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <button class="btn btn-primary" style="width: 100%;">기록 보기</button>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🏃</span>
+                    <h3 class="feature-title">운동 처방</h3>
+                    <p class="feature-description">
+                        개인의 체력과 건강 상태에 맞춘 
+                        맞춤형 운동 프로그램을 추천합니다.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <button class="btn btn-primary" style="width: 100%;">처방받기</button>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🥗</span>
+                    <h3 class="feature-title">영양 관리</h3>
+                    <p class="feature-description">
+                        식단을 분석하고 영양소 균형을 체크해 
+                        건강한 식습관을 만들어갑니다.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <button class="btn btn-primary" style="width: 100%;">분석하기</button>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">😴</span>
+                    <h3 class="feature-title">수면 분석</h3>
+                    <p class="feature-description">
+                        수면 패턴을 분석하고 수면의 질을 개선할 수 있는 
+                        개인화된 솔루션을 제공합니다.
+                    </p>
+                    <div style="margin-top: 16px;">
+                        <button class="btn btn-primary" style="width: 100%;">분석하기</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">최근 건강 활동</h2>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div style="display: flex; align-items: center; padding: 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">
+                        <div style="width: 40px; height: 40px; background: var(--color-success); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 16px;">✓</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500;">건강 상담 완료</div>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">두통 증상 - 일반의약품 복용 권장</div>
+                        </div>
+                        <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">2시간 전</div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; padding: 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">
+                        <div style="width: 40px; height: 40px; background: var(--color-primary-500); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 16px;">📊</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500;">주간 건강 리포트</div>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">운동량 증가, 수면의 질 개선 확인</div>
+                        </div>
+                        <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">1일 전</div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; padding: 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">
+                        <div style="width: 40px; height: 40px; background: var(--color-warning); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 16px;">⚠️</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500;">약물 상호작용 경고</div>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">새로운 약물과 기존 약물 간 주의사항</div>
+                        </div>
+                        <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">3일 전</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 비즈니스센터 페이지 -->
+        <div class="page" id="business">
+            <a href="#" class="back-button" onclick="showPage('home')">← 홈으로 돌아가기</a>
+            
+            <div class="page-header">
+                <h1 class="page-title">비즈니스센터</h1>
+                <p class="page-subtitle">나만의 AI 엔진을 제작하고 판매하여 새로운 수익원을 창출하세요</p>
+            </div>
+
+            <div class="grid grid-4">
+                <div class="stat-card">
+                    <div class="stat-number">₹2.3M</div>
+                    <div class="stat-label">총 수익</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">47</div>
+                    <div class="stat-label">등록된 AI</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1,245</div>
+                    <div class="stat-label">월 활성 사용자</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">4.7</div>
+                    <div class="stat-label">평균 평점</div>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">내 AI 엔진</h2>
+                        <button class="btn btn-primary">+ 새 AI 만들기</button>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div style="padding: 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; background: var(--color-surface-modal);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <h3 style="font-weight: 600;">마케팅 카피 생성기</h3>
+                                <span style="background: var(--color-success); color: white; padding: 3px 8px; border-radius: 12px; font-size: 10px;">활성</span>
+                            </div>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 16px;">
+                                제품 정보를 입력하면 매력적인 마케팅 카피를 자동 생성
+                            </p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <span style="color: var(--text-tertiary); font-size: var(--font-size-sm);">월 수익: ₩340,000</span>
+                                <span style="color: var(--color-warning);">⭐ 4.8 (127)</span>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-sm">편집</button>
+                                <button class="btn btn-sm">통계</button>
+                                <button class="btn btn-sm">설정</button>
+                            </div>
+                        </div>
+
+                        <div style="padding: 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; background: var(--color-surface-modal);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <h3 style="font-weight: 600;">코드 리뷰 도우미</h3>
+                                <span style="background: var(--color-success); color: white; padding: 3px 8px; border-radius: 12px; font-size: 10px;">활성</span>
+                            </div>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 16px;">
+                                코드 품질 분석과 개선사항을 체계적으로 제안
+                            </p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <span style="color: var(--text-tertiary); font-size: var(--font-size-sm);">월 수익: ₩280,000</span>
+                                <span style="color: var(--color-warning);">⭐ 4.9 (89)</span>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-sm">편집</button>
+                                <button class="btn btn-sm">통계</button>
+                                <button class="btn btn-sm">설정</button>
+                            </div>
+                        </div>
+
+                        <div style="padding: 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; background: var(--color-surface-modal);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <h3 style="font-weight: 600;">이메일 자동 분류기</h3>
+                                <span style="background: var(--color-warning); color: white; padding: 3px 8px; border-radius: 12px; font-size: 10px;">점검중</span>
+                            </div>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: 16px;">
+                                이메일을 카테고리별로 자동 분류하고 우선순위 설정
+                            </p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <span style="color: var(--text-tertiary); font-size: var(--font-size-sm);">월 수익: ₩180,000</span>
+                                <span style="color: var(--color-warning);">⭐ 4.6 (56)</span>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-sm">편집</button>
+                                <button class="btn btn-sm">통계</button>
+                                <button class="btn btn-sm">설정</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">수익 분석</h2>
+                        <button class="btn btn-sm">상세 보고서</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <div style="text-align: center; margin-bottom: 16px;">
+                            <div style="font-size: var(--font-size-2xl); font-weight: 700; color: var(--color-primary-500);">₩847,000</div>
+                            <div style="color: var(--text-secondary);">이번 달 총 수익</div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>지난 달 대비</span>
+                            <span style="color: var(--color-success);">+23%</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>총 다운로드</span>
+                            <span>3,427</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>활성 사용자</span>
+                            <span>1,245</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 24px;">
+                        <h3 style="margin-bottom: 16px; font-size: var(--font-size-lg);">인기 AI 랭킹</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>1. 마케팅 카피 생성기</span>
+                                <span style="color: var(--color-primary-500);">₩340K</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>2. 코드 리뷰 도우미</span>
+                                <span style="color: var(--color-primary-500);">₩280K</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>3. 이메일 자동 분류기</span>
+                                <span style="color: var(--color-primary-500);">₩180K</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%;">새로운 AI 엔진 개발하기</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">AI 개발 가이드</h2>
+                </div>
+                
+                <div class="grid grid-3">
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 2rem; margin-bottom: 12px;">📝</div>
+                        <h3 style="margin-bottom: 8px;">1. 기획</h3>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">
+                            시장 조사와 사용자 니즈 분석을 통해 AI 아이디어를 구체화하세요.
+                        </p>
+                    </div>
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 2rem; margin-bottom: 12px;">⚙️</div>
+                        <h3 style="margin-bottom: 8px;">2. 개발</h3>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">
+                            One AI의 개발 도구를 사용해 쉽고 빠르게 AI 모델을 만드세요.
+                        </p>
+                    </div>
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 2rem; margin-bottom: 12px;">🚀</div>
+                        <h3 style="margin-bottom: 8px;">3. 출시</h3>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">
+                            마켓플레이스에 등록하고 전 세계 사용자들에게 서비스를 제공하세요.
+                        </p>
+                    </div>
+                </div>
+            </div>
+                                

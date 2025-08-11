@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One AI - 비즈니스센터</title>
+    <link rel="stylesheet" href="oneai.css">
+    <style>
+        /* 추가 페이지별 스타일 */
+        .hero-section {
+            text-align: center;
+            padding: var(--spacing-3xl) 0;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent);
+            border-radius: var(--radius-2xl);
+            margin-bottom: var(--spacing-3xl);
+            position: relative;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-2xl);
+        }
+
+        .stat-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--color-primary-400);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-primary-500), var(--color-info));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-xl);
+        }
+
+        .service-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-xl);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card:hover {
+            transform: translateY(-4px);
+            border-color: #222222;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--service-gradient, linear-gradient(90deg, var(--color-primary-500), var(--color-primary-400)));
+        }
+
+        .service-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--service-gradient, linear-gradient(90deg, var(--color-primary-500), var(--color-primary-400)));
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-3xl);
+            margin-bottom: var(--spacing-lg);
+            color: white;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .feature-list li {
+            color: var(--text-tertiary);
+            margin-bottom: var(--spacing-sm);
+            padding-left: var(--spacing-lg);
+            position: relative;
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--color-success);
+            font-weight: bold;
+        }
+
+        .builder-tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .tool-card {
+            background: var(--color-surface-modal);
+            border: 1px solid #333333;
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            cursor: grab;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .tool-card:hover {
+            border-color: var(--color-primary-500);
+            transform: translateY(-2px);
+        }
+
+        .tool-card:active {
+            cursor: grabbing;
+        }
+
+        .builder-canvas {
+            background: var(--color-surface-raised);
+            border: 2px dashed #333333;
+            border-radius: var(--radius-2xl);
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            margin: var(--spacing-xl) 0;
+        }
+
+        .marketplace-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .product-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            transition: all var(--motion-duration-normal) var(--motion-ease);
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--color-info);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+
+        .chart-container {
+            background: var(--color-surface-raised);
+            border: 1px solid #333333;
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+        }
+
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+            min-height: calc(100vh - 64px);
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-2xl);
+            padding: var(--spacing-lg) 0;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            background: var(--color-surface-elevated);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--surface-glass-border);
+            z-index: var(--z-index-sidebar);
+            transition: all var(--motion-duration-normal) var(--motion-ease);
+        }
+
+        .header__content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-md) var(--spacing-lg);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: transform var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .logo:hover {
+            transform: translateY(-1px);
+        }
+
+        .logo__icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-info));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-base);
+        }
+
+        .logo__text {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .profile-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-info));
+            border: 2px solid var(--surface-glass-border);
+            color: white;
+            font-weight: var(--font-weight-semibold);
+            cursor: pointer;
+            position: relative;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .profile-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--color-primary-400);
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            background: var(--color-error);
+            border-radius: var(--radius-full);
+            border: 2px solid var(--color-surface-base);
+        }
+
+        .dropdown {
+            position: absolute;
+            top: calc(100% + var(--spacing-sm));
+            right: 0;
+            width: 280px;
+            background: var(--color-surface-modal);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            backdrop-filter: blur(20px);
+            z-index: var(--z-index-dropdown);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all var(--motion-duration-slow) var(--motion-ease);
+        }
+
+        .dropdown--show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: var(--color-surface-overlay);
+            color: var(--text-primary);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .back-btn:hover {
+            background: var(--color-primary-500);
+            transform: translateY(-1px);
+        }
+
+        .page-title {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+        }
+
+        .content-section {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        /* Service specific gradients */
+        .service-card--builder {
+            --service-gradient: linear-gradient(90deg, var(--color-primary-500), var(--color-primary-400));
+        }
+
+        .service-card--marketplace {
+            --service-gradient: linear-gradient(90deg, var(--color-info), #60a5fa);
+        }
+
+        .service-card--analytics {
+            --service-gradient: linear-gradient(90deg, var(--color-warning), #fbbf24);
+        }
+
+        .service-card--consulting {
+            --service-gradient: linear-gradient(90deg, #f97316, #fb923c);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header__content {
+                padding: var(--spacing-md);
+            }
+            
+            .btn span {
+                display: none;
+            }
+            
+            .page-container {
+                padding: var(--spacing-md);
+            }
+            
+            .page-title {
+                font-size: var(--font-size-2xl);
+            }
+            
+            .builder-tools {
+                grid-template-columns: 1fr;
+            }
+            
+            .marketplace-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header__content">
+            <a href="#" class="logo" onclick="showHome()">
+                <div class="logo__icon">🤖</div>
+                <div class="logo__text">One AI</div>
+            </a>
+            
+            <div class="flex items-center gap-md">
+                <button class="btn btn--primary" onclick="showAIBuilder()">
+                    ✨ <span>AI 엔진 만들기</span>
+                </button>
+                
+                <div class="relative">
+                    <button class="profile-btn" onclick="toggleProfile()">
+                        김
+                        <div class="notification-dot"></div>
+                    </button>
+                    
+                    <div class="dropdown" id="profileDropdown">
+                        <div class="p-lg" style="border-bottom: 1px solid var(--surface-glass-border);">
+                            <div class="flex items-center gap-sm mb-md">
+                                <div class="ai-engine-icon ai-engine-icon--gpt">김</div>
+                                <div>
+                                    <h3 class="text-base font-semibold mb-xs">김개발자</h3>
+                                    <p class="text-sm text-secondary mb-xs">kim@example.com</p>
+                                    <span class="badge badge--primary">비즈니스 플랜</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-md p-md" style="background: rgba(16, 185, 129, 0.05); border-bottom: 1px solid var(--surface-glass-border);">
+                            <div class="text-center">
+                                <span class="block text-lg font-bold text-success">₩847K</span>
+                                <span class="text-xs text-tertiary">이번 달 수익</span>
+                            </div>
+                            <div class="text-center">
+                                <span class="block text-lg font-bold text-success">12</span>
+                                <span class="text-xs text-tertiary">활성 AI 엔진</span>
+                            </div>
+                        </div>
+                        
+                        <div class="p-sm">
+                            <a href="#" class="nav__item" onclick="showMyEngines()">
+                                <span>🤖</span> 내 AI 엔진
+                            </a>
+                            <a href="#" class="nav__item" onclick="showAnalytics()">
+                                <span>📊</span> 수익 대시보드
+                            </a>
+                            <a href="#" class="nav__item" onclick="showMarketplace()">
+                                <span>🏪</span> 마켓플레이스
+                            </a>
+                            <a href="#" class="nav__item" onclick="showSettings()">
+                                <span>⚙️</span> 설정
+                            </a>
+                            <div style="border-top: 1px solid var(--surface-glass-border); margin: var(--spacing-sm) 0; padding-top: var(--spacing-md);">
+                                <a href="#" class="nav__item text-error" onclick="logout()">
+                                    <span>🚪</span> 로그아웃
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 홈 페이지 -->
+    <div id="homePage" class="page-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <h1 class="text-4xl font-bold mb-lg gradient-text">💼 비즈니스센터</h1>
+            <p class="text-xl text-secondary mb-2xl" style="max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6;">나만의 AI 엔진을 제작하고 판매하여 새로운 수익원을 창출하세요!<br>노코드 빌더부터 기업 맞춤 솔루션까지, AI 비즈니스의 모든 것을 지원합니다.</p>
+            <div class="flex gap-md justify-center" style="flex-wrap: wrap;">
+                <button class="btn btn--primary" onclick="showAIBuilder()">🛠️ AI 엔진 제작 시작</button>
+                <button class="btn btn--secondary" onclick="showMarketplace()">🏪 마켓플레이스 둘러보기</button>
+            </div>
+        </div>
+        
+        <!-- Stats Section -->
+        <div class="content-section mb-3xl">
+            <div class="stats-grid">
+                <div class="stat-card" onclick="showMyEngines()">
+                    <div class="text-3xl font-bold text-primary mb-sm">1,247</div>
+                    <div class="text-tertiary text-sm">제작된 AI 엔진</div>
+                </div>
+                <div class="stat-card" onclick="showAnalytics()">
+                    <div class="text-3xl font-bold text-primary mb-sm">₩2.3B</div>
+                    <div class="text-tertiary text-sm">총 거래액</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl font-bold text-primary mb-sm">89%</div>
+                    <div class="text-tertiary text-sm">고객 만족도</div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-3xl font-bold text-primary mb-sm">24/7</div>
+                    <div class="text-tertiary text-sm">기술 지원</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Section -->
+        <div class="mb-3xl pb-3xl">
+            <h2 class="text-3xl font-semibold text-center mb-2xl">비즈니스 솔루션</h2>
+            <div class="services-grid" style="margin-bottom: 64px;">
+                <div class="service-card service-card--builder" onclick="showAIBuilder()">
+                    <div class="service-icon">🛠️</div>
+                    <h3 class="text-2xl font-semibold mb-sm">AI 엔진 빌더</h3>
+                    <p class="text-secondary mb-lg">노코드 방식으로 누구나 쉽게 AI 엔진을 제작할 수 있습니다. 드래그 앤 드롭으로 프롬프트 체인을 구성하고 맞춤형 AI를 만들어보세요.</p>
+                    <ul class="feature-list">
+                        <li>비주얼 프롬프트 체인 에디터</li>
+                        <li>실시간 테스트 및 디버깅</li>
+                        <li>원클릭 배포 및 API 생성</li>
+                        <li>사용량 기반 자동 스케일링</li>
+                    </ul>
+                    <div class="flex gap-sm">
+                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showAIBuilder();">무료로 시작하기</button>
+                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showToast('AI 엔진 빌더 데모를 시작합니다', 'info');">데모 보기</button>
+                    </div>
+                </div>
+
+                <div class="service-card service-card--marketplace" onclick="showMarketplace()">
+                    <div class="service-icon">🏪</div>
+                    <h3 class="text-2xl font-semibold mb-sm">AI 마켓플레이스</h3>
+                    <p class="text-secondary mb-lg">제작한 AI 엔진을 판매하고 수익을 창출하세요. 다양한 카테고리의 AI 솔루션을 구매할 수도 있습니다.</p>
+                    <ul class="feature-list">
+                        <li>글로벌 AI 솔루션 마켓</li>
+                        <li>안전한 결제 및 라이선스 관리</li>
+                        <li>실시간 수익 대시보드</li>
+                        <li>고객 리뷰 및 평점 시스템</li>
+                    </ul>
+                    <div class="flex gap-sm">
+                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showMarketplace();">판매자 등록</button>
+                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showMarketplace();">제품 둘러보기</button>
+                    </div>
+                </div>
+
+                <div class="service-card service-card--analytics" onclick="showAnalytics()">
+                    <div class="service-icon">📊</div>
+                    <h3 class="text-2xl font-semibold mb-sm">비즈니스 애널리틱스</h3>
+                    <p class="text-secondary mb-lg">AI 엔진의 성능과 수익을 실시간으로 분석하고 최적화하세요. 데이터 기반 의사결정을 지원합니다.</p>
+                    <ul class="feature-list">
+                        <li>실시간 사용량 모니터링</li>
+                        <li>수익 및 비용 분석</li>
+                        <li>사용자 행동 분석</li>
+                        <li>성능 최적화 권장사항</li>
+                    </ul>
+                    <div class="flex gap-sm">
+                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showAnalytics();">분석 시작</button>
+                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showToast('애널리틱스 리포트 예시를 확인하세요', 'info');">리포트 예시</button>
+                    </div>
+                </div>
+
+                <div class="service-card service-card--consulting" onclick="showConsulting()">
+                    <div class="service-icon">🎯</div>
+                    <h3 class="text-2xl font-semibold mb-sm">기업 AI 컨설팅</h3>
+                    <p class="text-secondary mb-lg">기업의 특수한 요구사항에 맞는 맞춤형 AI 솔루션을 개발합니다. 전문 컨설턴트가 프로젝트 전 과정을 지원합니다.</p>
+                    <ul class="feature-list">
+                        <li>전담 AI 컨설턴트 배정</li>
+                        <li>맞춤형 AI 솔루션 개발</li>
+                        <li>온프레미스 배포 지원</li>
+                        <li>24/7 기술 지원</li>
+                    </ul>
+                    <div class="flex gap-sm">
+                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showConsulting();">상담 신청</button>
+                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showToast('컨설팅 포트폴리오를 확인하세요', 'info');">포트폴리오</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marketplace Highlight -->
+        <div class="content-section mb-3xl mt-3xl">
+            <h2 class="text-2xl font-semibold text-center mb-sm" style="background: linear-gradient(135deg, var(--color-info), #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🔥 인기 AI 엔진</h2>
+            <p class="text-secondary text-center mb-xl">전 세계 개발자들이 만든 최고의 AI 솔루션을 만나보세요</p>
+            
+            <div class="grid grid-cols-auto gap-lg">
+                <div class="product-card" onclick="showProductDetail('smart-writer')">
+                    <div class="flex justify-between mb-sm">
+                        <div class="badge badge--error">HOT</div>
+                        <div class="text-success font-semibold text-sm">₩29,000/월</div>
+                    </div>
+                    <h4 class="text-base font-semibold mb-sm">스마트 글쓰기 어시스턴트</h4>
+                    <p class="text-secondary text-sm mb-sm">SEO 최적화된 블로그 포스트와 마케팅 콘텐츠를 자동으로 생성하는 AI 엔진입니다.</p>
+                    <div class="flex justify-between text-xs text-tertiary">
+                        <div class="flex items-center gap-xs">
+                            <span style="color: #fbbf24;">★</span>
+                            <span>4.8 (247)</span>
+                        </div>
+                        <span>1,234 판매</span>
+                    </div>
+                </div>
+
+                <div class="product-card" onclick="showProductDetail('code-generator')">
+                    <div class="flex justify-between mb-sm">
+                        <div class="badge badge--success">NEW</div>
+                        <div class="text-success font-semibold text-sm">₩45,000/월</div>
+                    </div>
+                    <h4 class="text-base font-semibold mb-sm">코드 생성기 Pro</h4>
+                    <p class="text-secondary text-sm mb-sm">자연어 설명을 다양한 프로그래밍 언어 코드로 변환하는 고급 AI 엔진입니다.</p>
+                    <div class="flex justify-between text-xs text-tertiary">
+                        <div class="flex items-center gap-xs">
+                            <span style="color: #fbbf24;">★</span>
+                            <span>4.9 (89)</span>
+                        </div>
+                        <span>456 판매</span>
+                    </div>
+                </div>
+
+                <div class="product-card" onclick="showProductDetail('translation-bot')">
+                    <div class="flex justify-between mb-sm">
+                        <div class="badge badge--error">HOT</div>
+                        <div class="text-success font-semibold text-sm">₩19,000/월</div>
+                    </div>
+                    <h4 class="text-base font-semibold mb-sm">실시간 번역봇</h4>
+                    <p class="text-secondary text-sm mb-sm">100개 언어를 지원하는 실시간 번역 AI로 글로벌 비즈니스를 지원합니다.</p>
+                    <div class="flex justify-between text-xs text-tertiary">
+                        <div class="flex items-center gap-xs">
+                            <span style="color: #fbbf24;">★</span>
+                            <span>4.6 (312)</span>
+                        </div>
+                        <span>2,167 판매</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Section -->
+        <div class="mb-3xl">
+            <h2 class="text-3xl font-semibold text-center mb-2xl">💪 성공 사례</h2>
+            <div class="grid grid-cols-auto gap-lg">
+                <div class="card">
+                    <div class="flex items-center gap-sm mb-md">
+                        <div class="ai-engine-icon bg-success">김</div>
+                        <div>
+                            <h4 class="text-base font-semibold mb-xs">김스타트업 대표</h4>
+                            <p class="text-tertiary text-sm">e-커머스 AI 솔루션 개발자</p>
+                        </div>
+                    </div>
+                    <blockquote class="text-secondary mb-md" style="font-style: italic;">"One AI 플랫폼 덕분에 6개월 만에 월 수익 500만원을 달성했습니다. 노코드 빌더로 쉽게 시작할 수 있어서 개발 비용도 크게 절약했어요."</blockquote>
+                    <div class="grid grid-cols-3 gap-sm">
+                        <div class="text-center p-sm bg-elevated rounded-md">
+                            <div class="text-base font-semibold text-success">₩5M</div>
+                            <div class="text-xs text-tertiary">월 수익</div>
+                        </div>
+                        <div class="text-center p-sm bg-elevated rounded-md">
+                            <div class="text-base font-semibold text-success">1,200</div>
+                            <div class="text-xs text-tertiary">고객 수</div>
+                        </div>
+                        <div class="text-center p-sm bg-elevated rounded-md">
+                            <div class="text-base font-semibold text-success">6개월</div>
+                            <div class="text-xs text-tertiary">개발 기간</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="flex items-center gap-sm mb-md">
+                        <div class="ai-engine-icon bg-success">이</div>
+                        <div>
+                            <h4 class="text-base font-semibold mb-xs">이개발자</h4>
+                            <p class="text-tertiary text-sm">AI 콘텐츠 생성기 제작자</p>
+                        </div>
+                    </div>
+                    <blockquote class="text-secondary mb-md" style="font-style: italic;">"마케터들을 위한 AI 콘텐츠 생성기를 만들어 월 1,000만원 이상의 수익을 올리고 있습니다. 플랫폼의 분석 도구로 고객 니즈를 파악해 지속적으로 개선하고 있어요."</blockquote>
+                    <div class="grid grid-cols-3 gap-sm">
+                        <div class="text-center p-sm bg-elevated rounded-md">
+                            <div class="text-base font-semibold text-success">₩10M</div>
+                            <div class="text-xs text-tertiary">월 수익</div>
+                        </div>
+                        <div class="text-center p-sm bg-elevated rounded-md">
+                            <div class="text-base font-semibold text-success">2,800</div>
+                            <div class="text-xs text-tertiary">구독자</div>
+                        </div>
+                        <div class="text-center p-sm bg-elevated rounded-md">
+                            <div class="text-base font-semibold text-success">98%</div>
+                            <div class="text-xs text-tertiary">만족도</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="flex items-center gap-sm mb-md">
+                        <div class="ai-engine-icon bg-success">박</div>
+                        <div>
+                            <h4 class="text-base font-semibold mb-xs">박기업 CTO</h4>
+                            <p class="text-tertiary text-sm">대기업 AI 솔루션 도입</p>
+                        </div>
+                    </div>
+                    <blockquote class="text-secondary mb-md" style="font-style: italic;">"기업 맞춤형 AI 컨설팅을 통해 업무 효율성이 40% 향상되었습니다. 전담 컨설턴트의 전문적인 지원 덕분에 성공적으로 AI 전환을 완료했어요."</blockquote>
+                    <div class="grid grid-cols-3 gap-sm">
+                        <div class="text-center p-sm bg-elevated rounded-md">
+                            <div class="text-base font-semibold text-success">40%</div>
+                            <div class="text-xs text-tertiary">효율성 증대</div>
+                        </div>
+                        <div class="text-center p-sm bg-elevated rounded-md">
+                            <div class="text-base font-semibold text-success">₩2B</div>
+                            <div class="text-xs text-tertiary">비용 절감</div>
+                        </div>
+                        <div class="text-center p-sm bg-elevated rounded-md">
+                            <div class="text-base font-semibold text-success">3개월</div>
+                            <div class="text-xs text-tertiary">도입 기간</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI 엔진 빌더 페이지 -->
+    <div id="aiBuilderPage" class="page-container hidden">
+        <div class="page-header">
+            <button class="back-btn" onclick="showHome()">←</button>
+            <h1 class="page-title">🛠️ AI 엔진 빌더</h1>
+            <button class="btn btn--primary" onclick="saveEngine()" style="margin-left: auto;">💾 저장하기</button>
+        </div>
+        
+        <div class="content-section">
+            <h3 class="mb-lg">새 AI 엔진 만들기</h3>
+            <div class="form-group">
+                <label class="form-label">엔진 이름</label>
+                <input type="text" class="form-input" id="engineName" placeholder="AI 엔진의 이름을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label class="form-label">설명</label>
+                <textarea class="form-textarea" id="engineDescription" placeholder="AI 엔진의 기능과 용도를 설명해주세요"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">카테고리</label>
+                <select class="form-select" id="engineCategory">
+                    <option value="">카테고리 선택</option>
+                    <option value="text">텍스트 생성</option>
+                    <option value="code">코드 생성</option>
+                    <option value="translation">번역</option>
+                    <option value="analysis">데이터 분석</option>
+                    <option value="image">이미지 처리</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3 class="mb-lg">프롬프트 체인 구성</h3>
+            <div class="builder-tools">
+                <div class="tool-card" draggable="true" onclick="addPromptBlock('input')">
+                    <h4>📝 입력 블록</h4>
+                    <p class="text-tertiary text-sm">사용자 입력을 받습니다</p>
+                </div>
+                <div class="tool-card" draggable="true" onclick="addPromptBlock('process')">
+                    <h4>⚙️ 처리 블록</h4>
+                    <p class="text-tertiary text-sm">AI 모델이 처리합니다</p>
+                </div>
+                <div class="tool-card" draggable="true" onclick="addPromptBlock('output')">
+                    <h4>📤 출력 블록</h4>
+                    <p class="text-tertiary text-sm">결과를 출력합니다</p>
+                </div>
+                <div class="tool-card" draggable="true" onclick="addPromptBlock('condition')">
+                    <h4>🔄 조건 블록</h4>
+                    <p class="text-tertiary text-sm">조건에 따라 분기합니다</p>
+                </div>
+            </div>
+            
+            <div class="builder-canvas" id="builderCanvas">
+                <div class="text-center">
+                    <h3 class="text-tertiary mb-md">🎨 여기에 블록을 드래그하세요</h3>
+                    <p class="text-quaternary">위의 도구를 드래그하여 프롬프트 체인을 구성할 수 있습니다</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3 class="mb-lg">테스트 & 미리보기</h3>
+            <div class="grid grid-cols-2 gap-lg">
+                <div>
+                    <label class="form-label">테스트 입력</label>
+                    <textarea class="form-textarea" id="testInput" placeholder="테스트할 입력을 넣어보세요"></textarea>
+                    <button class="btn btn--primary mt-md" onclick="testEngine()">🧪 테스트 실행</button>
+                </div>
+                <div>
+                    <label class="form-label">예상 출력</label>
+                    <div class="bg-raised border border-gray-700 rounded-lg p-md text-tertiary" id="testOutput" style="min-height: 150px;">
+                        테스트 결과가 여기에 표시됩니다
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 내 AI 엔진 페이지 -->
+    <div id="myEnginesPage" class="page-container hidden">
+        <div class="page-header">
+            <button class="back-btn" onclick="showHome()">←</button>
+            <h1 class="page-title">🤖 내 AI 엔진</h1>
+            <button class="btn btn--primary" onclick="showAIBuilder()">➕ 새 엔진 만들기</button>
+        </div>
+        
+        <div class="content-section">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>엔진 이름</th>
+                        <th>카테고리</th>
+                        <th>상태</th>
+                        <th>이번 달 수익</th>
+                        <th>총 판매</th>
+                        <th>평점</th>
+                        <th>액션</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <strong>스마트 글쓰기 도우미</strong><br>
+                            <small class="text-tertiary">SEO 최적화 콘텐츠 생성</small>
+                        </td>
+                        <td>텍스트 생성</td>
+                        <td><span class="badge badge--success">활성</span></td>
+                        <td>₩247,000</td>
+                        <td>156</td>
+                        <td>4.8 ⭐</td>
+                        <td>
+                            <button class="btn btn--secondary btn--xs" onclick="editEngine('smart-writer')">편집</button>
+                            <button class="btn btn--danger btn--xs" onclick="toggleEngine('smart-writer')">중지</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>코드 리뷰어</strong><br>
+                            <small class="text-tertiary">자동 코드 검토 및 개선 제안</small>
+                        </td>
+                        <td>코드 생성</td>
+                        <td><span class="badge badge--success">활성</span></td>
+                        <td>₩389,000</td>
+                        <td>234</td>
+                        <td>4.9 ⭐</td>
+                        <td>
+                            <button class="btn btn--secondary btn--xs" onclick="editEngine('code-reviewer')">편집</button>
+                            <button class="btn btn--danger btn--xs" onclick="toggleEngine('code-reviewer')">중지</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>언어 학습 봇</strong><br>
+                            <small class="text-tertiary">대화형 언어 학습 도우미</small>
+                        </td>
+                        <td>교육</td>
+                        <td><span class="badge badge--warning">검토중</span></td>
+                        <td>₩0</td>
+                        <td>0</td>
+                        <td>-</td>
+                        <td>
+                            <button class="btn btn--secondary btn--xs" onclick="editEngine('lang-bot')">편집</button>
+                            <button class="btn btn--secondary btn--xs" onclick="publishEngine('lang-bot')">출시</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="content-section">
+            <h3 class="mb-lg">최근 활동</h3>
+            <div class="flex flex-col gap-md">
+                <div class="card--flat p-md bg-raised">
+                    <div class="flex justify-between items-center">
+                        <span>새로운 구매: 스마트 글쓰기 도우미</span>
+                        <span class="text-success">+₩29,000</span>
+                    </div>
+                    <small class="text-tertiary">2시간 전</small>
+                </div>
+                <div class="card--flat p-md bg-raised">
+                    <div class="flex justify-between items-center">
+                        <span>리뷰 등록: 코드 리뷰어 (5점)</span>
+                        <span class="text-info">⭐⭐⭐⭐⭐</span>
+                    </div>
+                    <small class="text-tertiary">5시간 전</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 마켓플레이스 페이지 -->
+    <div id="marketplacePage" class="page-container hidden">
+        <div class="page-header">
+            <button class="back-btn" onclick="showHome()">←</button>
+            <h1 class="page-title">🏪 AI 마켓플레이스</h1>
+            <div class="flex gap-md" style="margin-left: auto;">
+                <input type="text" class="form-input" placeholder="AI 엔진 검색..." style="width: 200px;">
+                <select class="form-select" style="width: 150px;">
+                    <option>모든 카테고리</option>
+                    <option>텍스트 생성</option>
+                    <option>코드 생성</option>
+                    <option>번역</option>
+                    <option>이미지 처리</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="marketplace-grid">
+            <div class="product-card" onclick="showProductDetail('premium-writer')">
+                <div class="flex justify-between mb-md">
+                    <span class="badge badge--error">HOT</span>
+                    <span class="text-success font-semibold">₩45,000/월</span>
+                </div>
+                <h3 class="mb-sm">🖋️ 프리미엄 글쓰기 AI</h3>
+                <p class="text-secondary text-sm mb-md">전문 작가 수준의 콘텐츠를 생성하는 고급 AI 엔진. SEO 최적화와 톤앤매너 조절 기능 포함.</p>
+                <div class="flex justify-between text-sm text-tertiary">
+                    <span>⭐ 4.9 (342 리뷰)</span>
+                    <span>1,847 판매</span>
+                </div>
+                <button class="btn btn--primary btn--full mt-md" onclick="purchaseProduct('premium-writer')">구매하기</button>
+            </div>
+            
+            <div class="product-card" onclick="showProductDetail('code-assistant')">
+                <div class="flex justify-between mb-md">
+                    <span class="badge badge--success">NEW</span>
+                    <span class="text-success font-semibold">₩67,000/월</span>
+                </div>
+                <h3 class="mb-sm">💻 코딩 어시스턴트 Pro</h3>
+                <p class="text-secondary text-sm mb-md">20개 언어 지원, 실시간 코드 검토, 자동 테스트 생성까지. 개발자를 위한 올인원 솔루션.</p>
+                <div class="flex justify-between text-sm text-tertiary">
+                    <span>⭐ 4.8 (156 리뷰)</span>
+                    <span>692 판매</span>
+                </div>
+                <button class="btn btn--primary btn--full mt-md" onclick="purchaseProduct('code-assistant')">구매하기</button>
+            </div>
+            
+            <div class="product-card" onclick="showProductDetail('data-analyzer')">
+                <div class="flex justify-between mb-md">
+                    <span class="badge badge--info">PRO</span>
+                    <span class="text-success font-semibold">₩89,000/월</span>
+                </div>
+                <h3 class="mb-sm">📊 데이터 분석 AI</h3>
+                <p class="text-secondary text-sm mb-md">복잡한 데이터를 간단한 인사이트로. 자동 차트 생성과 예측 분석까지 제공.</p>
+                <div class="flex justify-between text-sm text-tertiary">
+                    <span>⭐ 4.7 (89 리뷰)</span>
+                    <span>423 판매</span>
+                </div>
+                <button class="btn btn--primary btn--full mt-md" onclick="purchaseProduct('data-analyzer')">구매하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 애널리틱스 페이지 -->
+    <div id="analyticsPage" class="page-container hidden">
+        <div class="page-header">
+            <button class="back-btn" onclick="showHome()">←</button>
+            <h1 class="page-title">📊 수익 대시보드</h1>
+            <select class="form-select" style="width: 150px; margin-left: auto;">
+                <option>최근 7일</option>
+                <option>최근 30일</option>
+                <option>최근 3개월</option>
+                <option>올해</option>
+            </select>
+        </div>
+        
+        <div class="grid grid-cols-auto gap-lg mb-xl">
+            <div class="content-section">
+                <h4 class="text-tertiary mb-sm">총 수익</h4>
+                <div class="text-3xl font-bold text-success">₩2,847,000</div>
+                <div class="text-success text-sm">+12.3% 전월 대비</div>
+            </div>
+            <div class="content-section">
+                <h4 class="text-tertiary mb-sm">판매량</h4>
+                <div class="text-3xl font-bold text-info">1,247</div>
+                <div class="text-success text-sm">+8.7% 전월 대비</div>
+            </div>
+            <div class="content-section">
+                <h4 class="text-tertiary mb-sm">신규 구독자</h4>
+                <div class="text-3xl font-bold text-warning">156</div>
+                <div class="text-success text-sm">+23.1% 전월 대비</div>
+            </div>
+            <div class="content-section">
+                <h4 class="text-tertiary mb-sm">평균 평점</h4>
+                <div class="text-3xl font-bold text-primary">4.8</div>
+                <div class="text-success text-sm">+0.2 전월 대비</div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3 class="mb-lg">수익 추이</h3>
+            <div class="chart-container">
+                📈 수익 차트 (실제 환경에서는 Chart.js 등 라이브러리 사용)
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3 class="mb-lg">베스트 셀러</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>AI 엔진</th>
+                        <th>이번 달 판매</th>
+                        <th>수익</th>
+                        <th>평점</th>
+                        <th>성장률</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>스마트 글쓰기 도우미</td>
+                        <td>234</td>
+                        <td>₩1,247,000</td>
+                        <td>4.8 ⭐</td>
+                        <td class="text-success">+15.2%</td>
+                    </tr>
+                    <tr>
+                        <td>코드 리뷰어</td>
+                        <td>189</td>
+                        <td>₩987,000</td>
+                        <td>4.9 ⭐</td>
+                        <td class="text-success">+8.7%</td>
+                    </tr>
+                    <tr>
+                        <td>언어 학습 봇</td>
+                        <td>156</td>
+                        <td>₩613,000</td>
+                        <td>4.7 ⭐</td>
+                        <td class="text-error">-2.1%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 설정 페이지 -->
+    <div id="settingsPage" class="page-container hidden">
+        <div class="page-header">
+            <button class="back-btn" onclick="showHome()">←</button>
+            <h1 class="page-title">⚙️ 설정</h1>
+        </div>
+        
+        <div class="content-section">
+            <h3 class="mb-lg">계정 정보</h3>
+            <div class="form-group">
+                <label class="form-label">이름</label>
+                <input type="text" class="form-input" value="김개발자">
+            </div>
+            <div class="form-group">
+                <label class="form-label">이메일</label>
+                <input type="email" class="form-input" value="kim@example.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label">전화번호</label>
+                <input type="tel" class="form-input" value="010-1234-5678">
+            </div>
+            <button class="btn btn--primary">저장하기</button>
+        </div>
+        
+        <div class="content-section">
+            <h3 class="mb-lg">결제 정보</h3>
+            <div class="bg-raised rounded-lg p-lg">
+                <div class="flex justify-between items-center mb-md">
+                    <span>현재 플랜: <strong>비즈니스 플랜</strong></span>
+                    <span class="text-success">₩49,000/월</span>
+                </div>
+                <div class="text-tertiary text-sm mb-md">
+                    다음 결제일: 2024년 9월 15일
+                </div>
+                <div class="flex gap-sm">
+                    <button class="btn btn--secondary">플랜 변경</button>
+                    <button class="btn btn--danger">구독 취소</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3 class="mb-lg">알림 설정</h3>
+            <div class="flex flex-col gap-md">
+                <label class="flex items-center gap-sm cursor-pointer">
+                    <input type="checkbox" checked class="form-checkbox">
+                    <span>새로운 구매 알림</span>
+                </label>
+                <label class="flex items-center gap-sm cursor-pointer">
+                    <input type="checkbox" checked class="form-checkbox">
+                    <span>리뷰 등록 알림</span>
+                </label>
+                <label class="flex items-center gap-sm cursor-pointer">
+                    <input type="checkbox" class="form-checkbox">
+                    <span>마케팅 이메일 수신</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- 구매 모달 -->
+    <div id="purchaseModal" class="modal">
+        <div class="modal__content">
+            <div class="modal__header">
+                <h3 class="modal__title">AI 엔진 구매</h3>
+                <button class="modal__close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal__body" id="modalContent">
+                <!-- 동적으로 채워짐 -->
+            </div>
+            <div class="modal__actions">
+                <button class="btn btn--secondary" onclick="closeModal()">취소</button>
+                <button class="btn btn--primary" onclick="confirmPurchase()">구매 확정</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let currentPage = 'home';
+        let aiEngines = [];
+        let promptBlocks = [];
+
+        // 페이지 네비게이션
+        function showPage(pageId) {
+            document.querySelectorAll('.page-container').forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            document.getElementById(pageId).classList.remove('hidden');
+            currentPage = pageId.replace('Page', '');
+            
+            document.getElementById('profileDropdown').classList.remove('dropdown--show');
+        }
+
+        function showHome() { showPage('homePage'); }
+        function showAIBuilder() { showPage('aiBuilderPage'); }
+        function showMyEngines() { showPage('myEnginesPage'); }
+        function showMarketplace() { showPage('marketplacePage'); }
+        function showAnalytics() { showPage('analyticsPage'); }
+        function showSettings() { showPage('settingsPage'); }
+        function showConsulting() { showToast('컨설팅 서비스 페이지로 이동합니다', 'info'); }
+
+        // 프로필 메뉴
+        function toggleProfile() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('dropdown--show');
+        }
+
+        // 외부 클릭시 메뉴 닫기
+        document.addEventListener('click', (e) => {
+            const profileContainer = e.target.closest('[onclick="toggleProfile()"]')?.parentElement;
+            const profileDropdown = document.getElementById('profileDropdown');
+            if (!profileContainer && !e.target.closest('#profileDropdown') && profileDropdown.classList.contains('dropdown--show')) {
+                profileDropdown.classList.remove('dropdown--show');
+            }
+        });
+
+        // AI 엔진 빌더 기능
+        function addPromptBlock(type) {
+            const canvas = document.getElementById('builderCanvas');
+            const blockId = 'block_' + Date.now();
+            
+            const icons = {
+                input: '📝',
+                process: '⚙️',
+                output: '📤',
+                condition: '🔄'
+            };
+            
+            const names = {
+                input: '입력 블록',
+                process: '처리 블록',
+                output: '출력 블록',
+                condition: '조건 블록'
+            };
+            
+            if (promptBlocks.length === 0) {
+                canvas.innerHTML = '';
+            }
+            
+            const blockEl = document.createElement('div');
+            blockEl.id = blockId;
+            blockEl.className = 'card p-md m-sm inline-block cursor-pointer';
+            blockEl.style.border = '2px solid var(--color-primary-500)';
+            blockEl.innerHTML = `
+                <div class="flex items-center gap-sm">
+                    <span class="text-lg">${icons[type]}</span>
+                    <span>${names[type]}</span>
+                    <button onclick="removeBlock('${blockId}')" class="btn btn--danger btn--xs ml-auto">×</button>
+                </div>
+            `;
+            
+            canvas.appendChild(blockEl);
+            promptBlocks.push({ id: blockId, type, element: blockEl });
+            
+            showToast(`${names[type]}이 추가되었습니다`, 'success');
+        }
+
+        function removeBlock(blockId) {
+            const element = document.getElementById(blockId);
+            if (element) {
+                element.remove();
+                promptBlocks = promptBlocks.filter(block => block.id !== blockId);
+                
+                if (promptBlocks.length === 0) {
+                    const canvas = document.getElementById('builderCanvas');
+                    canvas.innerHTML = `
+                        <div class="text-center">
+                            <h3 class="text-tertiary mb-md">🎨 여기에 블록을 드래그하세요</h3>
+                            <p class="text-quaternary">위의 도구를 드래그하여 프롬프트 체인을 구성할 수 있습니다</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function testEngine() {
+            const testInput = document.getElementById('testInput').value;
+            const testOutput = document.getElementById('testOutput');
+            
+            if (!testInput.trim()) {
+                showToast('테스트 입력을 넣어주세요', 'error');
+                return;
+            }
+            
+            if (promptBlocks.length === 0) {
+                showToast('프롬프트 블록을 먼저 추가해주세요', 'error');
+                return;
+            }
+            
+            testOutput.className = 'bg-raised border border-gray-700 rounded-lg p-md text-tertiary';
+            testOutput.textContent = '테스트 실행 중...';
+            
+            setTimeout(() => {
+                testOutput.className = 'bg-raised border border-gray-700 rounded-lg p-md text-primary';
+                testOutput.innerHTML = `
+                    <div class="text-success mb-sm">✅ 테스트 성공</div>
+                    <div class="bg-modal p-sm rounded-md font-mono">
+                        입력: "${testInput}"<br><br>
+                        처리된 결과: 이것은 AI가 생성한 테스트 응답입니다. 실제 환경에서는 구성된 프롬프트 체인에 따라 결과가 생성됩니다.
+                    </div>
+                `;
+                showToast('테스트가 완료되었습니다', 'success');
+            }, 2000);
+        }
+
+        function saveEngine() {
+            const name = document.getElementById('engineName').value;
+            const description = document.getElementById('engineDescription').value;
+            const category = document.getElementById('engineCategory').value;
+            
+            if (!name || !description || !category) {
+                showToast('모든 필드를 입력해주세요', 'error');
+                return;
+            }
+            
+            if (promptBlocks.length === 0) {
+                showToast('프롬프트 블록을 추가해주세요', 'error');
+                return;
+            }
+            
+            const newEngine = {
+                id: 'engine_' + Date.now(),
+                name,
+                description,
+                category,
+                blocks: promptBlocks.length,
+                status: 'draft',
+                created: new Date().toISOString()
+            };
+            
+            aiEngines.push(newEngine);
+            
+            showToast('AI 엔진이 저장되었습니다', 'success');
+            
+            // 폼 초기화
+            document.getElementById('engineName').value = '';
+            document.getElementById('engineDescription').value = '';
+            document.getElementById('engineCategory').value = '';
+            
+            // 캔버스 초기화
+            promptBlocks = [];
+            const canvas = document.getElementById('builderCanvas');
+            canvas.innerHTML = `
+                <div class="text-center">
+                    <h3 class="text-tertiary mb-md">🎨 여기에 블록을 드래그하세요</h3>
+                    <p class="text-quaternary">위의 도구를 드래그하여 프롬프트 체인을 구성할 수 있습니다</p>
+                </div>
+            `;
+        }
+
+        // 엔진 관리 기능
+        function editEngine(engineId) {
+            showToast(`${engineId} 편집 모드로 전환합니다`, 'info');
+            showAIBuilder();
+        }
+
+        function toggleEngine(engineId) {
+            showToast(`${engineId} 상태가 변경되었습니다`, 'info');
+        }
+
+        function publishEngine(engineId) {
+            showToast(`${engineId}가 마켓플레이스에 출시되었습니다`, 'success');
+        }
+
+        // 마켓플레이스 기능
+        function showProductDetail(productId) {
+            const products = {
+                'premium-writer': {
+                    name: '프리미엄 글쓰기 AI',
+                    price: '₩45,000/월',
+                    description: '전문 작가 수준의 콘텐츠를 생성하는 고급 AI 엔진. SEO 최적화와 톤앤매너 조절 기능 포함.',
+                    features: ['SEO 최적화', '톤앤매너 조절', '다양한 글 유형 지원', '실시간 편집 제안'],
+                    rating: 4.9,
+                    reviews: 342,
+                    sales: 1847
+                },
+                'code-assistant': {
+                    name: '코딩 어시스턴트 Pro',
+                    price: '₩67,000/월',
+                    description: '20개 언어 지원, 실시간 코드 검토, 자동 테스트 생성까지. 개발자를 위한 올인원 솔루션.',
+                    features: ['20개 언어 지원', '실시간 코드 검토', '자동 테스트 생성', '성능 최적화 제안'],
+                    rating: 4.8,
+                    reviews: 156,
+                    sales: 692
+                },
+                'data-analyzer': {
+                    name: '데이터 분석 AI',
+                    price: '₩89,000/월',
+                    description: '복잡한 데이터를 간단한 인사이트로. 자동 차트 생성과 예측 분석까지 제공.',
+                    features: ['자동 차트 생성', '예측 분석', '데이터 클리닝', '인사이트 리포트'],
+                    rating: 4.7,
+                    reviews: 89,
+                    sales: 423
+                },
+                'smart-writer': {
+                    name: '스마트 글쓰기 어시스턴트',
+                    price: '₩29,000/월',
+                    description: 'SEO 최적화된 블로그 포스트와 마케팅 콘텐츠를 자동으로 생성하는 AI 엔진입니다.',
+                    features: ['SEO 최적화', '블로그 포스트 생성', '마케팅 콘텐츠', '자동 키워드 삽입'],
+                    rating: 4.8,
+                    reviews: 247,
+                    sales: 1234
+                },
+                'code-generator': {
+                    name: '코드 생성기 Pro',
+                    price: '₩45,000/월',
+                    description: '자연어 설명을 다양한 프로그래밍 언어 코드로 변환하는 고급 AI 엔진입니다.',
+                    features: ['다중 언어 지원', '자연어 처리', '코드 최적화', '문서 자동 생성'],
+                    rating: 4.9,
+                    reviews: 89,
+                    sales: 456
+                },
+                'translation-bot': {
+                    name: '실시간 번역봇',
+                    price: '₩19,000/월',
+                    description: '100개 언어를 지원하는 실시간 번역 AI로 글로벌 비즈니스를 지원합니다.',
+                    features: ['100개 언어 지원', '실시간 번역', '문맥 인식', '업계별 전문 용어'],
+                    rating: 4.6,
+                    reviews: 312,
+                    sales: 2167
+                }
+            };
+            
+            const product = products[productId];
+            if (product) {
+                openPurchaseModal(product);
+            }
+        }
+
+        function openPurchaseModal(product) {
+            const modal = document.getElementById('purchaseModal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <div class="text-center mb-lg">
+                    <h4 class="text-xl mb-sm">${product.name}</h4>
+                    <div class="text-2xl font-bold text-success">${product.price}</div>
+                </div>
+                <p class="text-secondary mb-lg">${product.description}</p>
+                <div class="mb-lg">
+                    <h5 class="mb-sm">주요 기능:</h5>
+                    <ul class="feature-list">
+                        ${product.features.map(feature => `<li>${feature}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="flex justify-between p-md bg-raised rounded-lg">
+                    <span>평점: ⭐ ${product.rating} (${product.reviews} 리뷰)</span>
+                    <span>${product.sales} 판매</span>
+                </div>
+            `;
+            
+            modal.classList.add('modal--show');
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('purchaseModal');
+            modal.classList.remove('modal--show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        function confirmPurchase() {
+            showToast('구매가 완료되었습니다! 내 AI 엔진에서 확인하세요.', 'success');
+            closeModal();
+        }
+
+        function purchaseProduct(productId) {
+            event.stopPropagation();
+            showProductDetail(productId);
+        }
+
+        // 로그아웃
+        function logout() {
+            if (confirm('정말 로그아웃하시겠습니까?')) {
+                showToast('로그아웃되었습니다', 'info');
+            }
+        }
+
+        // Toast 시스템
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast--${type}`;
+            toast.innerHTML = `
+                <div class="toast__content">
+                    <div class="toast__message">${message}</div>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('toast--show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('toast--show');
+                setTimeout(() => toast.remove(), 200);
+            }, 3000);
+        }
+
+        // 드래그 앤 드롭 기능
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('One AI 비즈니스센터 완전 기능 버전 로딩 완료');
+            
+            const canvas = document.getElementById('builderCanvas');
+            
+            if (canvas) {
+                canvas.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    canvas.style.borderColor = 'var(--color-primary-500)';
+                    canvas.style.backgroundColor = 'rgba(16, 185, 129, 0.05)';
+                });
+                
+                canvas.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    canvas.style.borderColor = '#333333';
+                    canvas.style.backgroundColor = 'var(--color-surface-raised)';
+                });
+                
+                canvas.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    canvas.style.borderColor = '#333333';
+                    canvas.style.backgroundColor = 'var(--color-surface-raised)';
+                    
+                    showToast('블록이 추가되었습니다. 위의 도구 카드를 클릭해서 블록을 추가해보세요!', 'info');
+                });
+            }
+            
+            // 도구 카드에 드래그 이벤트 추가
+            document.querySelectorAll('.tool-card').forEach(card => {
+                card.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', '');
+                });
+            });
+        });
+
+        // 키보드 단축키
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        if (currentPage === 'aiBuilder') {
+                            saveEngine();
+                        }
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        showAIBuilder();
+                        break;
+                    case 'h':
+                        e.preventDefault();
+                        showHome();
+                        break;
+                }
+            }
+            
+            if (e.key === 'Escape') {
+                closeModal();
+                document.getElementById('profileDropdown').classList.remove('dropdown--show');
+            }
+        });
+
+        // 실시간 데이터 시뮬레이션
+        setInterval(() => {
+            const dot = document.querySelector('.notification-dot');
+            if (dot && Math.random() < 0.1) {
+                dot.style.animation = 'bounce 1s ease-in-out';
+                setTimeout(() => {
+                    dot.style.animation = '';
+                }, 1000);
+            }
+        }, 5000);
+
+        // 모달 외부 클릭시 닫기
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('purchaseModal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
