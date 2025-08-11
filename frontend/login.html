@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One AI - 로그인</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Design System - Color Tokens */
+            --color-surface-base: #000000;
+            --color-surface-raised: #0a0a0a;
+            --color-surface-elevated: #111111;
+            --color-surface-overlay: #1a1a1a;
+            --color-surface-modal: #222222;
+            --surface-glass: rgba(17, 17, 17, 0.8);
+            --surface-glass-border: rgba(255, 255, 255, 0.1);
+            
+            /* Text Colors */
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-tertiary: #a3a3a3;
+            --text-quaternary: #737373;
+            --text-disabled: #525252;
+            
+            /* Brand Colors */
+            --color-primary-400: #34d399;
+            --color-primary-500: #10b981;
+            --color-primary-600: #059669;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-info: #3b82f6;
+            
+            /* Typography */
+            --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 22px;
+            --font-size-2xl: 28px;
+            --font-size-3xl: 36px;
+            --font-size-4xl: 48px;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 20px;
+            --spacing-xl: 24px;
+            --spacing-2xl: 32px;
+            --spacing-3xl: 48px;
+            
+            /* Border Radius */
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-2xl: 16px;
+            
+            /* Motion */
+            --motion-duration-fast: 150ms;
+            --motion-duration-normal: 250ms;
+            --motion-duration-slow: 350ms;
+            --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Light Theme */
+        [data-theme="light"] {
+            --color-surface-base: #ffffff;
+            --color-surface-raised: #f9f9f9;
+            --color-surface-elevated: #f5f5f5;
+            --color-surface-overlay: #e5e5e5;
+            --color-surface-modal: #ffffff;
+            --surface-glass: rgba(255, 255, 255, 0.8);
+            --surface-glass-border: rgba(0, 0, 0, 0.1);
+            
+            --text-primary: #111111;
+            --text-secondary: #374151;
+            --text-tertiary: #6b7280;
+            --text-quaternary: #9ca3af;
+            --text-disabled: #d1d5db;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-primary);
+            background: var(--color-surface-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color var(--motion-duration-normal) var(--motion-ease);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Animated Background */
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .animated-background::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(16, 185, 129, 0.03) 35%,
+                rgba(16, 185, 129, 0.05) 40%,
+                transparent 50%,
+                rgba(59, 130, 246, 0.03) 60%,
+                rgba(59, 130, 246, 0.05) 65%,
+                transparent 70%
+            );
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .animated-background::after {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(
+                circle at 20% 80%,
+                rgba(16, 185, 129, 0.08) 0%,
+                transparent 50%
+            ),
+            radial-gradient(
+                circle at 80% 20%,
+                rgba(59, 130, 246, 0.08) 0%,
+                transparent 50%
+            );
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-10%, -10%) rotate(0deg); }
+            25% { transform: translate(-15%, -5%) rotate(1deg); }
+            50% { transform: translate(-5%, -15%) rotate(-1deg); }
+            75% { transform: translate(-12%, -8%) rotate(0.5deg); }
+        }
+
+        /* Header - 60px 높이로 설정 */
+        .header {
+            height: 60px;
+            padding: 0 var(--spacing-xl);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--surface-glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--surface-glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: transform var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .logo:hover {
+            transform: translateY(-1px);
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: var(--font-size-sm);
+        }
+
+        .logo-text {
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .theme-toggle {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-sm);
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+            color: var(--text-primary);
+            font-size: var(--font-size-base);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none; /* 숨김 */
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            border-color: var(--color-primary-500);
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* Left Side - Features */
+        .features-section {
+            flex: 1;
+            background: linear-gradient(135deg, var(--color-surface-base), var(--color-surface-raised));
+            padding: var(--spacing-3xl);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .features-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(139, 92, 246, 0.05));
+            pointer-events: none;
+        }
+
+        .features-content {
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+        }
+
+        .features-title {
+            font-size: var(--font-size-4xl);
+            font-weight: 800;
+            margin-bottom: var(--spacing-lg);
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+        }
+
+        .features-subtitle {
+            font-size: var(--font-size-xl);
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-2xl);
+            line-height: 1.4;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-lg);
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all var(--motion-normal) var(--motion-ease);
+        }
+
+        .feature-item:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(8px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .feature-content {
+            flex: 1;
+        }
+
+        .feature-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .feature-description {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .features-stats {
+            display: flex;
+            gap: var(--spacing-xl);
+            margin-top: var(--spacing-2xl);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--color-primary-500);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-tertiary);
+        }
+
+        /* Right Side - Login Form */
+        .login-section {
+            flex: 0 0 480px;
+            background: var(--color-surface-elevated);
+            padding: var(--spacing-3xl);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-left: 1px solid var(--color-surface-overlay);
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .login-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 800;
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            font-size: var(--font-size-base);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* Tab Navigation */
+        .login-tabs {
+            display: flex;
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xs);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid var(--surface-glass-border);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: transparent;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .tab-button:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-button.active {
+            background: var(--color-primary-500);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Form Styles */
+        .login-form {
+            display: none;
+        }
+
+        .login-form.active {
+            display: block;
+            animation: fadeIn var(--motion-duration-normal) var(--motion-ease);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-md);
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: var(--spacing-md);
+            background: var(--color-surface-modal);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary-500);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-sm);
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .password-toggle:hover {
+            color: var(--color-primary-500);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-sm);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--text-secondary);
+        }
+
+        .remember-me input {
+            accent-color: var(--color-primary-500);
+        }
+
+        .forgot-password {
+            color: var(--color-primary-500);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .forgot-password:hover {
+            color: var(--color-primary-400);
+        }
+
+        /* Button Styles */
+        .btn {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--color-primary-500);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+            margin-bottom: var(--spacing-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: var(--color-primary-400);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: var(--text-disabled);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-loading {
+            pointer-events: none;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            margin: auto;
+            border: 2px solid white;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Social Login */
+        .social-divider {
+            display: flex;
+            align-items: center;
+            margin: var(--spacing-lg) 0;
+            color: var(--text-tertiary);
+            font-size: var(--font-size-sm);
+        }
+
+        .social-divider::before,
+        .social-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--surface-glass-border);
+        }
+
+        .social-divider span {
+            padding: 0 var(--spacing-md);
+        }
+
+        .social-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .social-btn {
+            width: 100%;
+            padding: var(--spacing-md);
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            min-height: 48px;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--color-primary-500);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-btn--google {
+            background: #ffffff;
+            color: #1f2937;
+            border-color: #d1d5db;
+        }
+
+        .social-btn--google:hover {
+            background: #f9fafb;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .social-btn--apple {
+            background: #000000;
+            color: #ffffff;
+            border-color: #374151;
+        }
+
+        .social-btn--apple:hover {
+            background: #1f2937;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Dark theme adjustments for social buttons */
+        [data-theme="light"] .social-btn--google {
+            background: #ffffff;
+            color: #1f2937;
+            border-color: #d1d5db;
+        }
+
+        [data-theme="light"] .social-btn--apple {
+            background: #000000;
+            color: #ffffff;
+            border-color: #000000;
+        }
+
+        /* Social Button Icons */
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .apple-icon {
+            width: 16px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Switch Form */
+        .switch-form {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .switch-form a {
+            color: var(--color-primary-500);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .switch-form a:hover {
+            color: var(--color-primary-400);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            backdrop-filter: blur(16px);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform var(--motion-duration-normal) var(--motion-ease);
+            max-width: 320px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--color-success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--color-error);
+        }
+
+        .toast.warning {
+            border-left: 4px solid var(--color-warning);
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .toast-icon {
+            font-size: var(--font-size-base);
+        }
+
+        .toast-message {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Error States */
+        .form-error {
+            color: var(--color-error);
+            font-size: var(--font-size-xs);
+            margin-top: var(--spacing-xs);
+            display: none;
+        }
+
+        .form-group.error .form-input {
+            border-color: var(--color-error);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .form-group.error .form-error {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main {
+                flex-direction: column;
+            }
+
+            .features-section {
+                display: none; /* 모바일에서는 좌측 영역 완전 숨김 */
+            }
+
+            .login-section {
+                flex: 1;
+                padding: var(--spacing-2xl);
+                border-left: none;
+                border-top: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 var(--spacing-md);
+                height: auto;
+                min-height: 60px;
+            }
+
+            .login-section {
+                padding: var(--spacing-lg);
+            }
+
+            .login-title {
+                font-size: var(--font-size-2xl);
+            }
+
+            .social-login {
+                flex-direction: column;
+            }
+        }
+
+        /* Focus visible for accessibility */
+        *:focus-visible {
+            outline: 2px solid var(--color-primary-500);
+            outline-offset: 2px;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-tertiary);
+            border-top: 2px solid var(--color-primary-500);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="animated-background"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <a href="main.html" class="logo">
+            <div class="logo-icon">1</div>
+            <span class="logo-text">One AI</span>
+        </a>
+        <div class="header__actions">
+            <!-- 심플하게 유지 -->
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="features-content">
+                <h1 class="features-title">
+                    AI의 힘으로<br>
+                    더 스마트하게
+                </h1>
+                <p class="features-subtitle">
+                    다양한 AI 모델을 하나의 플랫폼에서 경험하고,<br>
+                    비용을 절약하세요
+                </p>
+
+                <ul class="features-list">
+                    <li class="feature-item">
+                        <div class="feature-icon">🤖</div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">다양한 AI 모델</h3>
+                            <p class="feature-description">ChatGPT, Claude, Gemini 등을 하나의 계정으로 이용</p>
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">💰</div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">비용 절약</h3>
+                            <p class="feature-description">쉐어링을 통해 Pro 구독료를 최대 70% 절약</p>
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-content">
+                            <h3 class="feature-title">사용량 분석</h3>
+                            <p class="feature-description">AI 사용 패턴과 통계로 효율적인 업무 관리</p>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="features-stats">
+                    <div class="stat">
+                        <div class="stat-number">2,500+</div>
+                        <div class="stat-label">활성 사용자</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">70%</div>
+                        <div class="stat-label">평균 비용 절약</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">AI 서비스 이용</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Section -->
+        <section class="login-section">
+            <div class="login-container">
+            <!-- Login Header -->
+            <div class="login-header">
+                <h1 class="login-title">환영합니다!</h1>
+                <p class="login-subtitle">One AI에서 모든 AI 서비스를 한 곳에서 이용하세요</p>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="login-tabs">
+                <button class="tab-button active" onclick="switchTab('login')">로그인</button>
+                <button class="tab-button" onclick="switchTab('signup')">회원가입</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="login-form active">
+            <form id="loginForm" class="login-form active">
+                <div class="form-group">
+                    <label class="form-label" for="loginEmail">이메일</label>
+                    <input 
+                        type="email" 
+                        id="loginEmail" 
+                        class="form-input" 
+                        placeholder="your@email.com"
+                        required
+                        autocomplete="email"
+                    >
+                    <div class="form-error">올바른 이메일 주소를 입력해주세요.</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="loginPassword">비밀번호</label>
+                    <div class="password-container">
+                        <input 
+                            type="password" 
+                            id="loginPassword" 
+                            class="form-input" 
+                            placeholder="비밀번호를 입력하세요"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+                            <span id="loginPasswordIcon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="form-error">비밀번호를 입력해주세요.</div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <span>로그인 상태 유지</span>
+                    </label>
+                    <a href="#" class="forgot-password" onclick="showForgotPassword()">비밀번호 찾기</a>
+                </div>
+
+                <button type="submit" class="btn" id="loginBtn">
+                    <span>로그인</span>
+                </button>
+
+                <div class="social-divider">
+                    <span>또는</span>
+                </div>
+
+                <div class="social-buttons">
+                    <button type="button" class="social-btn social-btn--google" onclick="socialLogin('google')">
+                        <svg class="google-icon" viewBox="0 0 24 24">
+                            <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Google로 계속하기
+                    </button>
+                    <button type="button" class="social-btn social-btn--apple" onclick="socialLogin('apple')">
+                        <svg class="apple-icon" viewBox="0 0 814 1000">
+                            <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57-155.5-127c-52.5-73.8-94.5-189.9-94.5-302.1 0-177.2 115.4-270.9 229.2-270.9 76.5 0 140.7 50.2 189.1 50.2 46.4 0 118.8-55.1 206.2-47.1 33.6 1.3 128.1 13.3 189.1 99.8zM554.6 139.2c35.1-42.4 58.8-101.2 58.8-159.9 0-8.2-.8-16.3-2.3-24.5-56.1 2.6-123.4 37.7-162.2 84.7-33.6 40.8-63.3 106.8-63.3 165.5 0 9.5 1.6 19 2.6 22.2 4.5.8 11.1 1.3 17.7 1.3 50.7 0 114.8-33.6 148.7-89.3z"/>
+                        </svg>
+                        Apple로 계속하기
+                    </button>
+                </div>
+
+                <div class="switch-form">
+                    아직 계정이 없으신가요? <a href="#" onclick="switchTab('signup')">회원가입</a>
+                </div>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="signupName">이름</label>
+                    <input 
+                        type="text" 
+                        id="signupName" 
+                        class="form-input" 
+                        placeholder="이름을 입력하세요"
+                        required
+                        autocomplete="name"
+                    >
+                    <div class="form-error">이름을 입력해주세요.</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="signupEmail">이메일</label>
+                    <input 
+                        type="email" 
+                        id="signupEmail" 
+                        class="form-input" 
+                        placeholder="your@email.com"
+                        required
+                        autocomplete="email"
+                    >
+                    <div class="form-error">올바른 이메일 주소를 입력해주세요.</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="signupPassword">비밀번호</label>
+                    <div class="password-container">
+                        <input 
+                            type="password" 
+                            id="signupPassword" 
+                            class="form-input" 
+                            placeholder="8자 이상의 비밀번호"
+                            required
+                            autocomplete="new-password"
+                        >
+                        <button type="button" class="password-toggle" onclick="togglePassword('signupPassword')">
+                            <span id="signupPasswordIcon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="form-error">8자 이상의 비밀번호를 입력해주세요.</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">비밀번호 확인</label>
+                    <div class="password-container">
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            class="form-input" 
+                            placeholder="비밀번호를 다시 입력하세요"
+                            required
+                            autocomplete="new-password"
+                        >
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                            <span id="confirmPasswordIcon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="form-error">비밀번호가 일치하지 않습니다.</div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="agreeTerms" required>
+                        <span><a href="#" style="color: var(--color-primary-500);">이용약관</a> 및 <a href="#" style="color: var(--color-primary-500);">개인정보처리방침</a>에 동의</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn" id="signupBtn">
+                    <span>회원가입</span>
+                </button>
+
+                <div class="social-divider">
+                    <span>또는</span>
+                </div>
+
+                <div class="social-buttons">
+                    <button type="button" class="social-btn social-btn--google" onclick="socialLogin('google')">
+                        <svg class="google-icon" viewBox="0 0 24 24">
+                            <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Google로 계속하기
+                    </button>
+                    <button type="button" class="social-btn social-btn--apple" onclick="socialLogin('apple')">
+                        <svg class="apple-icon" viewBox="0 0 814 1000">
+                            <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105.6-57-155.5-127c-52.5-73.8-94.5-189.9-94.5-302.1 0-177.2 115.4-270.9 229.2-270.9 76.5 0 140.7 50.2 189.1 50.2 46.4 0 118.8-55.1 206.2-47.1 33.6 1.3 128.1 13.3 189.1 99.8zM554.6 139.2c35.1-42.4 58.8-101.2 58.8-159.9 0-8.2-.8-16.3-2.3-24.5-56.1 2.6-123.4 37.7-162.2 84.7-33.6 40.8-63.3 106.8-63.3 165.5 0 9.5 1.6 19 2.6 22.2 4.5.8 11.1 1.3 17.7 1.3 50.7 0 114.8-33.6 148.7-89.3z"/>
+                        </svg>
+                        Apple로 계속하기
+                    </button>
+                </div>
+
+                <div class="switch-form">
+                    이미 계정이 있으신가요? <a href="#" onclick="switchTab('login')">로그인</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="toast-content">
+            <span class="toast-icon"></span>
+            <span class="toast-message"></span>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentTheme = 'dark';
+        let currentTab = 'login';
+
+        // Theme Toggle - 비활성화
+        function toggleTheme() {
+            // 비활성화됨
+        }
+
+        // Tab Switching
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update forms
+            document.querySelectorAll('.login-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.getElementById('signupForm').classList.add('active');
+            }
+            
+            currentTab = tab;
+            clearErrors();
+        }
+
+        // Password Toggle
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(inputId + 'Icon');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                    <path d="m21 21-4.35-4.35"/>
+                    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                    <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                </svg>`;
+            } else {
+                input.type = 'password';
+                icon.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>`;
+            }
+        }
+
+        // Toast Notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = toast.querySelector('.toast-icon');
+            const messageEl = toast.querySelector('.toast-message');
+            
+            // Set content
+            messageEl.textContent = message;
+            
+            // Set icon based on type
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            icon.textContent = icons[type] || icons.success;
+            
+            // Set class
+            toast.className = `toast ${type}`;
+            
+            // Show toast
+            toast.classList.add('show');
+            
+            // Auto hide after 4 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // Form Validation
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 8;
+        }
+
+        function showError(inputId, message) {
+            const formGroup = document.getElementById(inputId).closest('.form-group');
+            formGroup.classList.add('error');
+            const errorEl = formGroup.querySelector('.form-error');
+            if (message) {
+                errorEl.textContent = message;
+            }
+        }
+
+        function clearError(inputId) {
+            const formGroup = document.getElementById(inputId).closest('.form-group');
+            formGroup.classList.remove('error');
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.form-group').forEach(group => {
+                group.classList.remove('error');
+            });
+        }
+
+        // Button Loading State
+        function setButtonLoading(buttonId, loading) {
+            const button = document.getElementById(buttonId);
+            const span = button.querySelector('span');
+            
+            if (loading) {
+                button.classList.add('btn-loading');
+                button.disabled = true;
+                span.style.opacity = '0';
+            } else {
+                button.classList.remove('btn-loading');
+                button.disabled = false;
+                span.style.opacity = '1';
+            }
+        }
+
+        // Login Form Handler
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearErrors();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            let hasError = false;
+            
+            // Validation
+            if (!email) {
+                showError('loginEmail', '이메일을 입력해주세요.');
+                hasError = true;
+            } else if (!validateEmail(email)) {
+                showError('loginEmail', '올바른 이메일 주소를 입력해주세요.');
+                hasError = true;
+            }
+            
+            if (!password) {
+                showError('loginPassword', '비밀번호를 입력해주세요.');
+                hasError = true;
+            }
+            
+            if (hasError) return;
+            
+            // Simulate login process
+            setButtonLoading('loginBtn', true);
+            
+            try {
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Simulate login success
+                showToast('로그인 성공! 메인 페이지로 이동합니다.', 'success');
+                setTimeout(() => {
+                    // 실제로는 마이페이지나 메인 페이지로 이동
+                    alert('마이페이지로 이동합니다.');
+                }, 1500);
+            } catch (error) {
+                showToast('로그인 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
+            } finally {
+                setButtonLoading('loginBtn', false);
+            }
+        });
+
+        // Signup Form Handler
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearErrors();
+            
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+            let hasError = false;
+            
+            // Validation
+            if (!name.trim()) {
+                showError('signupName', '이름을 입력해주세요.');
+                hasError = true;
+            }
+            
+            if (!email) {
+                showError('signupEmail', '이메일을 입력해주세요.');
+                hasError = true;
+            } else if (!validateEmail(email)) {
+                showError('signupEmail', '올바른 이메일 주소를 입력해주세요.');
+                hasError = true;
+            }
+            
+            if (!password) {
+                showError('signupPassword', '비밀번호를 입력해주세요.');
+                hasError = true;
+            } else if (!validatePassword(password)) {
+                showError('signupPassword', '8자 이상의 비밀번호를 입력해주세요.');
+                hasError = true;
+            }
+            
+            if (!confirmPassword) {
+                showError('confirmPassword', '비밀번호 확인을 입력해주세요.');
+                hasError = true;
+            } else if (password !== confirmPassword) {
+                showError('confirmPassword', '비밀번호가 일치하지 않습니다.');
+                hasError = true;
+            }
+            
+            if (!agreeTerms) {
+                showToast('이용약관 및 개인정보처리방침에 동의해주세요.', 'warning');
+                hasError = true;
+            }
+            
+            if (hasError) return;
+            
+            // Simulate signup process
+            setButtonLoading('signupBtn', true);
+            
+            try {
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 2500));
+                
+                showToast('회원가입이 완료되었습니다! 로그인해주세요.', 'success');
+                setTimeout(() => {
+                    switchTab('login');
+                    document.getElementById('loginEmail').value = email;
+                }, 1500);
+            } catch (error) {
+                showToast('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
+            } finally {
+                setButtonLoading('signupBtn', false);
+            }
+        });
+
+        // Tab Switching - 단순화
+        function switchToSignup() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+        }
+
+        function switchToLogin() {
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+
+        // Social Login
+        function socialLogin(provider) {
+            const providers = {
+                google: 'Google',
+                apple: 'Apple'
+            };
+            
+            showToast(`${providers[provider]} 로그인을 준비 중입니다...`, 'info');
+            
+            // Simulate social login
+            setTimeout(() => {
+                showToast(`${providers[provider]} 로그인 성공!`, 'success');
+                setTimeout(() => {
+                    alert('마이페이지로 이동합니다.');
+                }, 1500);
+            }, 2000);
+        }
+
+        // Forgot Password
+        function showForgotPassword() {
+            const email = prompt('비밀번호를 재설정할 이메일 주소를 입력해주세요:');
+            if (email && validateEmail(email)) {
+                showToast('비밀번호 재설정 이메일을 발송했습니다.', 'success');
+            } else if (email) {
+                showToast('올바른 이메일 주소를 입력해주세요.', 'error');
+            }
+        }
+
+        // Real-time validation
+        document.getElementById('loginEmail').addEventListener('blur', function() {
+            if (this.value && !validateEmail(this.value)) {
+                showError('loginEmail');
+            } else {
+                clearError('loginEmail');
+            }
+        });
+
+        document.getElementById('signupEmail').addEventListener('blur', function() {
+            if (this.value && !validateEmail(this.value)) {
+                showError('signupEmail');
+            } else {
+                clearError('signupEmail');
+            }
+        });
+
+        document.getElementById('signupPassword').addEventListener('input', function() {
+            if (this.value && !validatePassword(this.value)) {
+                showError('signupPassword');
+            } else {
+                clearError('signupPassword');
+            }
+        });
+
+        document.getElementById('confirmPassword').addEventListener('blur', function() {
+            const password = document.getElementById('signupPassword').value;
+            if (this.value && this.value !== password) {
+                showError('confirmPassword');
+            } else {
+                clearError('confirmPassword');
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-focus first input
+            document.getElementById('loginEmail').focus();
+        });
+
+        // Close toast on click
+        document.getElementById('toast').addEventListener('click', function() {
+            this.classList.remove('show');
+        });
+
+        // Prevent form resubmission on page refresh
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
+</body>
+</html>

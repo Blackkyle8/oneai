@@ -69,6 +69,11 @@
             --motion-normal: 250ms;
             --motion-slow: 350ms;
             --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+            .modal__content {
+                margin: var(--spacing-lg);
+                max-width: none;
+                width: calc(100% - 32px);
+            }
         }
 
         * {
@@ -83,10 +88,10 @@
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
-            padding-top: 81px;
+            padding-top: 70px;
         }
 
-        /* Header Component - BEM 스타일 적용 */
+        /* Header Component - BEM 스타일 적용 및 CSS 업데이트 적용 */
         .header {
             background: var(--color-surface-elevated);
             border-bottom: 1px solid var(--color-surface-overlay);
@@ -100,18 +105,21 @@
             left: 0;
             right: 0;
             z-index: var(--z-index-sidebar);
-            height: 81px;
+            height: 60px;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .header__logo {
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
-            font-size: var(--font-size-lg);
+            font-size: 18px;
             font-weight: 600;
             color: var(--text-primary);
             cursor: pointer;
             transition: all var(--motion-fast) var(--motion-ease);
+            flex-shrink: 0;
         }
 
         .header__logo:hover {
@@ -150,7 +158,7 @@
 
         .language-selector__button {
             /* 다른 btn 클래스와 동일한 스타일 적용 */
-            padding: var(--spacing-xs) var(--spacing-md);
+            padding: 6px 16px;
             border-radius: var(--radius-md);
             border: 1px solid var(--color-surface-overlay);
             background: var(--color-surface-elevated);
@@ -229,9 +237,9 @@
             background: var(--color-primary-400);
         }
 
-        /* Button Component - 상태별 정의 적용 */
-        .btn {
-            padding: var(--spacing-xs) var(--spacing-md);
+        /* Button Component - 상태별 정의 적용 및 nav-tab 클래스 추가 */
+        .btn, .nav-tab {
+            padding: 6px 16px;
             border-radius: var(--radius-md);
             border: 1px solid var(--color-surface-overlay);
             background: var(--color-surface-elevated);
@@ -245,18 +253,18 @@
             gap: var(--spacing-xs);
         }
 
-        .btn:hover {
+        .btn:hover, .nav-tab:hover {
             background: var(--color-surface-modal);
             transform: translateY(-1px);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
-        .btn:focus {
+        .btn:focus, .nav-tab:focus {
             outline: 3px solid rgba(16, 185, 129, 0.3);
             outline-offset: 2px;
         }
 
-        .btn:active {
+        .btn:active, .nav-tab:active {
             transform: translateY(0);
             background: var(--color-surface-overlay);
         }
@@ -280,6 +288,11 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: var(--spacing-lg);
+        }
+
+        /* Notification 위치 조정 */
+        .notification {
+            top: 70px;
         }
 
         /* Profile Header Component */
@@ -908,6 +921,116 @@
             text-align: center;
         }
 
+        /* Login Screen Styles */
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            padding: var(--spacing-lg);
+        }
+
+        .login-card {
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
+            max-width: 600px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .login-card__header {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .login-card__icon {
+            font-size: 4rem;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.8;
+        }
+
+        .login-card__title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+        }
+
+        .login-card__description {
+            color: var(--text-secondary);
+            font-size: var(--font-size-base);
+        }
+
+        .login-card__features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+            text-align: left;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg);
+            background: var(--color-surface-modal);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all var(--motion-normal) var(--motion-ease);
+        }
+
+        .feature-item:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .feature-item__icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .feature-item__content {
+            flex: 1;
+        }
+
+        .feature-item__title {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .feature-item__description {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .login-card__actions {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+        }
+
+        .login-btn, .signup-btn {
+            padding: var(--spacing-md) var(--spacing-xl);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            border-radius: var(--radius-lg);
+            min-width: 120px;
+        }
+
+        .signup-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .signup-btn:hover {
+            border-color: var(--color-primary-500);
+            color: var(--color-primary-500);
+        }
         /* Notification Status Indicators */
         .notification-status {
             display: inline-flex;
@@ -940,7 +1063,8 @@
 
             .header {
                 padding: var(--spacing-sm) var(--spacing-md);
-                height: 70px;
+                height: auto;
+                min-height: 60px;
             }
 
             .header__logo {
@@ -957,7 +1081,7 @@
                 gap: var(--spacing-xs);
             }
 
-            .btn {
+            .btn, .nav-tab {
                 padding: var(--spacing-xs) var(--spacing-sm);
                 font-size: var(--font-size-xs);
             }
@@ -986,10 +1110,16 @@
                 gap: var(--spacing-xs);
             }
 
-            .modal__content {
-                margin: var(--spacing-lg);
-                max-width: none;
-                width: calc(100% - 32px);
+            .login-card__features {
+                grid-template-columns: 1fr;
+            }
+
+            .login-card__actions {
+                flex-direction: column;
+            }
+
+            .login-btn, .signup-btn {
+                width: 100%;
             }
         }
 
@@ -1018,21 +1148,7 @@
             <span>One AI</span>
         </div>
         <div class="header__actions">
-            <div class="language-selector">
-                <button class="language-selector__button" onclick="toggleLanguageDropdown()">
-                    <span id="currentLanguage">한국어</span>
-                    <span style="font-size: 12px;">▼</span>
-                </button>
-                <div class="language-selector__dropdown" id="languageDropdown">
-                    <div class="language-selector__item language-selector__item--active" onclick="selectLanguage('ko', '한국어')">한국어</div>
-                    <div class="language-selector__item" onclick="selectLanguage('en', 'English')">English</div>
-                    <div class="language-selector__item" onclick="selectLanguage('ja', '日本語')">日本語</div>
-                    <div class="language-selector__item" onclick="selectLanguage('zh', '中文')">中文</div>
-                    <div class="language-selector__item" onclick="selectLanguage('es', 'Español')">Español</div>
-                </div>
-            </div>
-            <button class="btn" onclick="alert('설정 메뉴')">설정</button>
-            <button class="btn" onclick="alert('고객지원')">고객지원</button>
+            <button class="btn btn--primary" id="authButton" onclick="toggleAuth()">로그아웃</button>
         </div>
     </div>
 
@@ -1367,37 +1483,36 @@
         };
 
         let currentLanguage = 'ko';
+        let isLoggedIn = true; // 마이페이지는 항상 로그인된 상태
 
-        // Language selector functions
-        function toggleLanguageDropdown() {
-            const dropdown = document.getElementById('languageDropdown');
-            dropdown.classList.toggle('language-selector__dropdown--show');
-            
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function closeDropdown(e) {
-                if (!e.target.closest('.language-selector')) {
-                    dropdown.classList.remove('language-selector__dropdown--show');
-                    document.removeEventListener('click', closeDropdown);
-                }
-            });
+        // Auth functions
+        function toggleAuth() {
+            if (isLoggedIn) {
+                logout();
+            }
         }
 
-        function selectLanguage(langCode, langName) {
-            // Update current language display
-            document.getElementById('currentLanguage').textContent = langName;
-            
-            // Update active state in dropdown
-            document.querySelectorAll('.language-selector__item').forEach(item => {
-                item.classList.remove('language-selector__item--active');
-            });
-            event.target.classList.add('language-selector__item--active');
-            
+        function logout() {
+            // 실제로는 메인 페이지나 로그인 페이지로 리다이렉트
+            alert('로그아웃됩니다. 메인 페이지로 이동합니다.');
+            // window.location.href = '/login';
+        }
+
+        // 페이지 로드 시 초기 상태 설정
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAuthUI();
+            if (isLoggedIn) {
+                showLoggedInContent();
+            } else {
+                showLoginScreen();
+            }
+        });
+
+        // Language selector functions (계정 정보 섹션에서만 사용)
+        function selectLanguageFromModal(langCode, langName) {
             // Update global state
             currentLanguage = langCode;
             userSettings.language = langCode;
-            
-            // Close dropdown
-            document.getElementById('languageDropdown').classList.remove('language-selector__dropdown--show');
             
             // Show success message
             showSuccess(`언어가 ${langName}로 변경되었습니다.`);

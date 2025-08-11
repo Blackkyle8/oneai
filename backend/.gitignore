@@ -1,0 +1,394 @@
+# ==============================================
+# One AI Project .gitignore
+# ==============================================
+
+# 환경 변수 및 보안 파일
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env.test
+*.env
+config/secrets.json
+config/production.json
+secrets/
+private-keys/
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Node.js 관련
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.npm
+.yarn-integrity
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# 패키지 매니저 락 파일 (선택적으로 제외)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# 런타임 데이터
+pids
+*.pid
+*.seed
+*.pid.lock
+.grunt
+
+# 커버리지 디렉토리
+lib-cov
+coverage/
+*.lcov
+.nyc_output
+.coverage/
+.cache
+
+# 로그 파일
+logs/
+*.log
+log/
+*.log.*
+combined.log
+error.log
+access.log
+
+# 데이터베이스 파일
+*.db
+*.sqlite
+*.sqlite3
+database.db
+local.db
+test.db
+dump.sql
+*.sql.gz
+
+# 백업 파일
+backup/
+backups/
+*.backup
+*.bak
+*.tmp
+*.temp
+
+# 업로드된 파일들
+uploads/
+public/uploads/
+static/uploads/
+user-uploads/
+temp-uploads/
+media/
+files/
+
+# 빌드 결과물
+build/
+dist/
+out/
+.next/
+.nuxt/
+.output/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.dynamodb/
+
+# 캐시 디렉토리
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# TypeScript
+*.tsbuildinfo
+.tscache/
+
+# 에디터 및 IDE 파일
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json.example
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.factorypath
+.settings/
+.loadpath
+.externalToolBuilders/
+.buildpath
+.target
+.metadata
+.recommenders/
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# OS 관련 파일
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# 임시 파일들
+*.tmp
+*.temp
+temp/
+tmp/
+.sass-cache/
+.connect.lock
+.typings/
+
+# 압축 파일 (대용량일 경우)
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.bz2
+*.xz
+
+# Docker 관련
+.dockerignore
+docker-compose.override.yml
+.docker/
+
+# Kubernetes 관련
+*.kubeconfig
+k8s-configs/local/
+
+# Terraform 관련
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+*.tfvars
+
+# AWS 관련
+.aws/
+aws-config/
+*.pem
+
+# 모니터링 및 분석
+.sentry/
+.amplitude/
+newrelic_agent.log
+
+# 테스트 관련
+test-results/
+screenshots/
+videos/
+.nyc_output/
+coverage/
+junit.xml
+test-report.xml
+
+# 문서 빌드
+docs/_build/
+docs/dist/
+site/
+
+# 로컬 개발 설정
+.local/
+local.json
+dev-config/
+development/
+
+# 에러 리포트
+error-report/
+crash-reports/
+*.crashlog
+
+# 성능 프로파일링
+*.cpuprofile
+*.heapsnapshot
+.clinic/
+
+# API 문서
+api-docs/generated/
+swagger-output.json
+
+# 실험적 기능
+experiments/
+feature-flags/local/
+a-b-tests/
+
+# 써드파티 서비스 설정
+.vercel/
+.netlify/
+.firebase/
+.gcloud/
+
+# 마이크로서비스 관련
+services/*/node_modules/
+services/*/.env
+services/*/logs/
+
+# 모바일 앱 관련 (향후 확장)
+*.mobileprovision
+*.ipa
+*.apk
+*.aab
+android/app/release/
+ios/build/
+
+# 머신러닝 모델
+models/
+*.model
+*.pkl
+*.h5
+*.pb
+training-data/
+datasets/
+
+# 블록체인 관련 (향후 확장)
+truffle-config.js
+.secret
+contracts/migrations/
+
+# WebAssembly
+*.wasm
+
+# 국제화 빌드 파일
+locales/build/
+
+# 스태틱 분석 결과
+.sonarqube/
+.scannerwork/
+
+# 보안 스캔 결과
+security-scan/
+vulnerability-report/
+
+# 라이센스 체크 결과
+license-check/
+
+# 벤치마크 결과
+benchmark-results/
+performance-reports/
+
+# CDN 관련
+cdn-cache/
+static-assets/optimized/
+
+# 이메일 템플릿 컴파일 결과
+email-templates/dist/
+
+# 알림 관련
+push-notifications/certificates/
+fcm-service-account.json
+
+# 결제 관련 테스트 파일
+payment-tests/
+transaction-logs/
+
+# AI 서비스 캐시
+ai-cache/
+model-cache/
+embeddings-cache/
+
+# 사용자 생성 콘텐츠 (개발 환경)
+user-content/
+generated-content/
+ai-outputs/
+
+# 실시간 기능 관련
+websocket-logs/
+real-time-cache/
+
+# 마이크로서비스 통신 로그
+service-mesh-logs/
+api-gateway-logs/
+
+# 개발 도구 설정
+.devcontainer/
+.codespace/
+
+# 협업 도구 파일
+.slack/
+.discord/
+.notion/
+
+# 프로젝트별 임시 파일
+oneai-temp/
+oneai-backup/
+oneai-exports/
+
+# 테스트 데이터
+test-data/
+mock-data/
+fixtures/
+seed-data/production/
+
+# CI/CD 관련
+.github/workflows/secrets/
+.gitlab-ci-local/
+.buildkite/
+
+# 설정 파일 백업
+*.config.backup
+*.json.backup
+*.yaml.backup
+*.yml.backup
+
+# 특정 개발자별 설정
+.vscode/settings.json
+.vscode/launch.json
+personal-config/
+local-overrides/
+
+# 임시 스크립트
+scripts/temp/
+tools/local/
+utilities/personal/
+
+# 외부 의존성 다운로드
+vendor/
+third-party/
+external-libs/
+
+# 성능 모니터링
+monitoring/local/
+metrics/local/
+
+# ==============================================
+# 중요 알림
+# ==============================================
+# 1. .env 파일들은 절대 커밋하지 마세요
+# 2. 실제 API 키나 비밀번호가 포함된 파일은 추가하지 마세요
+# 3. 사용자 업로드 파일들은 별도 스토리지에 저장하세요
+# 4. 로그 파일은 정기적으로 로테이션하세요
+# 5. 백업 파일들도 민감한 정보가 있을 수 있으니 주의하세요
