@@ -1097,7 +1097,16 @@
         </div>
     </div>
 
+    <script src="oneai-api.js"></script>
     <script>
+        // Wait for API client to be ready
+        let api = null;
+        
+        window.addEventListener('oneai:api:ready', (event) => {
+            api = event.detail.api;
+            console.log('API Client ready');
+        });
+
         // Global variables
         let currentTab = 'login';
 
@@ -1222,7 +1231,7 @@
             }
         }
 
-        // Login Form Handler
+        // Login Form Handler - Using API Client
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             clearErrors();
@@ -1248,49 +1257,50 @@
             
             if (hasError) return;
             
+            // Check if API is ready
+            if (!api) {
+                showToast('API 클라이언트 초기화 중입니다. 잠시 후 다시 시도해주세요.', 'warning');
+                return;
+            }
+            
             // Start loading
             setButtonLoading('loginBtn', true);
             
             try {
-                // API call to backend
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        password: password,
-                        rememberMe: rememberMe
-                    })
-                });
+                // Use API client to login
+                const response = await api.login(email, password, rememberMe);
                 
-                const data = await response.json();
-                
-                if (response.ok) {
-                    // Store auth token
-                    localStorage.setItem('authToken', data.token);
-                    if (rememberMe) {
-                        localStorage.setItem('rememberMe', 'true');
-                        localStorage.setItem('userEmail', email);
-                    }
+                if (response.user) {
+                    // Store user data
+                    localStorage.setItem('user', JSON.stringify(response.user));
                     
                     showToast('로그인 성공!', 'success');
+                    
                     // Redirect to dashboard
-                    window.location.href = '/dashboard';
-                } else {
-                    // Show error message from server
-                    showToast(data.message || '로그인에 실패했습니다.', 'error');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 1000);
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showToast('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error');
+                
+                if (error instanceof window.APIError) {
+                    if (error.status === 401) {
+                        showToast('이메일 또는 비밀번호가 올바르지 않습니다.', 'error');
+                    } else if (error.status === 429) {
+                        showToast('너무 많은 시도가 있었습니다. 잠시 후 다시 시도해주세요.', 'error');
+                    } else {
+                        showToast(error.message || '로그인에 실패했습니다.', 'error');
+                    }
+                } else {
+                    showToast('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error');
+                }
             } finally {
                 setButtonLoading('loginBtn', false);
             }
         });
 
-        // Signup Form Handler
+        // Signup Form Handler - Using API Client
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             clearErrors();
@@ -1339,67 +1349,77 @@
             
             if (hasError) return;
             
+            // Check if API is ready
+            if (!api) {
+                showToast('API 클라이언트 초기화 중입니다. 잠시 후 다시 시도해주세요.', 'warning');
+                return;
+            }
+            
             // Start loading
             setButtonLoading('signupBtn', true);
             
             try {
-                // API call to backend
-                const response = await fetch('/api/auth/signup', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        email: email,
-                        password: password,
-                        agreeTerms: agreeTerms
-                    })
+                // Use API client to register
+                const response = await api.register({
+                    name: name,
+                    email: email,
+                    password: password,
+                    agreeTerms: agreeTerms
                 });
                 
-                const data = await response.json();
-                
-                if (response.ok) {
+                if (response.success) {
                     showToast('회원가입이 완료되었습니다! 로그인해주세요.', 'success');
+                    
                     // Switch to login tab
                     setTimeout(() => {
                         document.querySelectorAll('.tab-button')[0].click();
                         document.getElementById('loginEmail').value = email;
                     }, 1000);
-                } else {
-                    // Show error message from server
-                    showToast(data.message || '회원가입에 실패했습니다.', 'error');
                 }
             } catch (error) {
                 console.error('Signup error:', error);
-                showToast('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error');
+                
+                if (error instanceof window.APIError) {
+                    if (error.status === 409) {
+                        showToast('이미 등록된 이메일입니다.', 'error');
+                    } else if (error.status === 400) {
+                        showToast('입력 정보를 다시 확인해주세요.', 'error');
+                    } else {
+                        showToast(error.message || '회원가입에 실패했습니다.', 'error');
+                    }
+                } else {
+                    showToast('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error');
+                }
             } finally {
                 setButtonLoading('signupBtn', false);
             }
         });
 
-        // Social Login
+        // Social Login - OAuth Flow
         function socialLogin(provider) {
             const providers = {
                 google: 'Google',
                 apple: 'Apple'
             };
             
-            // Redirect to OAuth provider
-            switch(provider) {
-                case 'google':
-                    window.location.href = '/api/auth/google';
-                    break;
-                case 'apple':
-                    window.location.href = '/api/auth/apple';
-                    break;
-                default:
-                    showToast('지원하지 않는 로그인 방식입니다.', 'error');
+            // OAuth redirect URLs
+            const oauthUrls = {
+                google: '/api/auth/oauth/google',
+                apple: '/api/auth/oauth/apple'
+            };
+            
+            if (oauthUrls[provider]) {
+                // Store return URL
+                sessionStorage.setItem('oauth_return', window.location.href);
+                // Redirect to OAuth provider
+                window.location.href = oauthUrls[provider];
+            } else {
+                showToast('지원하지 않는 로그인 방식입니다.', 'error');
             }
         }
 
-        // Forgot Password
-        function showForgotPassword(event) {
+        // Forgot Password - Using API Client
+        async function showForgotPassword(event) {
             event.preventDefault();
             const email = prompt('비밀번호를 재설정할 이메일 주소를 입력해주세요:');
             
@@ -1410,26 +1430,31 @@
                 return;
             }
             
-            // Send password reset request
-            fetch('/api/auth/forgot-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email: email })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+            // Check if API is ready
+            if (!api) {
+                showToast('API 클라이언트 초기화 중입니다. 잠시 후 다시 시도해주세요.', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await api.requestPasswordReset(email);
+                
+                if (response.success) {
                     showToast('비밀번호 재설정 이메일을 발송했습니다.', 'success');
-                } else {
-                    showToast(data.message || '이메일 발송에 실패했습니다.', 'error');
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Password reset error:', error);
-                showToast('서버 연결에 실패했습니다.', 'error');
-            });
+                
+                if (error instanceof window.APIError) {
+                    if (error.status === 404) {
+                        showToast('등록되지 않은 이메일입니다.', 'error');
+                    } else {
+                        showToast(error.message || '이메일 발송에 실패했습니다.', 'error');
+                    }
+                } else {
+                    showToast('서버 연결에 실패했습니다.', 'error');
+                }
+            }
         }
 
         // Real-time validation
@@ -1468,6 +1493,23 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            // Check for OAuth return
+            const urlParams = new URLSearchParams(window.location.search);
+            const oauthToken = urlParams.get('token');
+            const oauthError = urlParams.get('error');
+            
+            if (oauthToken) {
+                // OAuth success
+                api.client.setToken(oauthToken, true);
+                showToast('로그인 성공!', 'success');
+                setTimeout(() => {
+                    window.location.href = '/dashboard.html';
+                }, 1000);
+            } else if (oauthError) {
+                // OAuth error
+                showToast(oauthError || 'OAuth 로그인에 실패했습니다.', 'error');
+            }
+            
             // Check remember me
             const rememberMe = localStorage.getItem('rememberMe');
             if (rememberMe === 'true') {
