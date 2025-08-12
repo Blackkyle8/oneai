@@ -32,12 +32,12 @@ if (process.env.NODE_ENV !== 'production') {
 // ===== API Routes =====
 
 // Import routers
-const authRouter = require('./routes/auth');
-const userRouter = require('./routes/user');
-const aiEngineRouter = require('./routes/ai-engines');
-const sharingRouter = require('./routes/sharing');
-const communityRouter = require('./routes/community');
-const businessRouter = require('./routes/business');
+const authRouter = require('./auth');
+const userRouter = require('./user');
+// const aiEngineRouter = require('./ai-engines');
+const sharingRouter = require('./sharing');
+const communityRouter = require('./community');
+const businessRouter = require('./business');
 
 // Auth routes (인증 관련)
 app.use('/api/auth', authRouter);

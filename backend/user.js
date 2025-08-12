@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { pool } = require('../database');
+const { pool } = require('./database');
 const { authenticateToken } = require('./auth');
 
 // 현재 사용자 정보 조회
