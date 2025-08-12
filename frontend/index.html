@@ -728,7 +728,7 @@
             content: '';
             position: absolute;
             bottom: -2px;
-            left: 50%;
+            right: 20px;
             transform: translateX(-50%);
             width: 12px;
             height: 2px;
@@ -773,7 +773,7 @@
         .tooltip {
             position: absolute;
             left: calc(100% + 12px);
-            top: 50%;
+            bottom: 20px;
             transform: translateY(-50%);
             background: var(--color-surface-modal);
             color: var(--text-primary);
@@ -795,7 +795,7 @@
         .tooltip::before {
             content: '';
             position: absolute;
-            top: 50%;
+            bottom: 20px;
             left: -6px;
             transform: translateY(-50%);
             width: 0;
@@ -862,9 +862,9 @@
 
         .external-module-loading {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            bottom: 20px;
+            right: 20px;
+            transform: none;
             text-align: center;
             color: var(--text-secondary);
         }
@@ -886,9 +886,9 @@
 
         .external-module-error {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            bottom: 20px;
+            right: 20px;
+            transform: none;
             text-align: center;
             background: var(--color-surface-elevated);
             padding: 40px;
@@ -1250,7 +1250,7 @@
         .search-icon {
             position: absolute;
             left: 16px;
-            top: 50%;
+            bottom: 20px;
             transform: translateY(-50%);
             color: var(--text-quaternary);
             font-size: 16px;
@@ -1489,7 +1489,7 @@
 
         .toast-container {
             position: fixed;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
             z-index: var(--z-toast);
             display: flex;

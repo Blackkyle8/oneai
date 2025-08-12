@@ -63,7 +63,7 @@
             --radius-2xl: 16px;
             
             /* Design Tokens - Layout */
-            --header-height: 64px;
+            --header-height: 60px;
             --sidebar-width: 56px;
             
             /* Design Tokens - Z-Index */
@@ -125,7 +125,9 @@
 
         /* Header Component */
         .header {
-            height: var(--header-height);
+            height: 60px;
+            box-sizing: border-box;
+            overflow: hidden;
             background: var(--surface-elevated);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
@@ -139,7 +141,8 @@
         }
 
         .header__logo {
-            font-size: var(--font-size-lg);
+            font-size: 18px;
+            flex-shrink: 0;
             font-weight: 700;
             background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
             -webkit-background-clip: text;
@@ -233,7 +236,7 @@
         }
 
         .btn--header {
-            padding: 10px 20px;
+            padding: 6px 16px;
             font-size: var(--font-size-sm);
             font-weight: 600;
             box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
@@ -251,115 +254,6 @@
         .btn__icon {
             font-size: var(--font-size-base);
             font-weight: 400;
-        }
-
-        /* Profile Component */
-        .header__profile {
-            position: relative;
-            cursor: pointer;
-        }
-
-        .profile-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 2px solid var(--color-primary-500);
-            background: var(--surface-modal);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all var(--motion-fast);
-            color: var(--text-primary);
-        }
-
-        .profile-avatar:hover {
-            border-color: var(--color-primary-400);
-            background: var(--surface-elevated);
-            transform: scale(1.05);
-        }
-
-        .profile-dropdown {
-            position: absolute;
-            top: calc(100% + 8px);
-            right: 0;
-            width: 240px;
-            background: var(--surface-elevated);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-xl);
-            z-index: var(--z-index-dropdown);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all var(--motion-fast);
-        }
-
-        .profile-dropdown--show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .profile-dropdown__header {
-            padding: var(--spacing-md);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .profile-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .profile-name {
-            font-size: var(--font-size-sm);
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .profile-status {
-            font-size: var(--font-size-xs);
-            color: var(--color-primary-500);
-            background: rgba(16, 185, 129, 0.1);
-            padding: 2px 8px;
-            border-radius: 12px;
-            align-self: flex-start;
-        }
-
-        .profile-dropdown__divider {
-            height: 1px;
-            background: rgba(255, 255, 255, 0.1);
-            margin: var(--spacing-sm) 0;
-        }
-
-        .profile-dropdown__item {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-sm) var(--spacing-md);
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: var(--font-size-sm);
-            transition: all var(--motion-fast);
-        }
-
-        .profile-dropdown__item:hover {
-            color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .profile-dropdown__item--danger {
-            color: var(--color-error);
-        }
-
-        .profile-dropdown__item--danger:hover {
-            color: white;
-            background: var(--color-error);
-        }
-
-        .profile-dropdown__icon {
-            width: 16px;
-            text-align: center;
         }
 
         /* Sharing Header Component */
@@ -438,12 +332,13 @@
             gap: 6px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             overflow-x: auto;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
             flex: 1;
             min-width: 120px;
-            padding: 12px 20px;
+            padding: 6px 16px;
             border: none;
             background: transparent;
             color: var(--text-tertiary);
@@ -453,6 +348,12 @@
             font-size: var(--font-size-sm);
             font-weight: 500;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
         .tab-btn:hover {
@@ -477,6 +378,37 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--surface-elevated);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            transition: background var(--motion-fast);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: var(--surface-elevated);
+        }
+
+        /* Firefox scrollbar styling */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) var(--surface-elevated);
         }
 
         /* Sharing Grid */
@@ -887,7 +819,7 @@
         /* Toast Notification */
         .toast {
             position: fixed;
-            top: 20px;
+            top: 70px;
             right: 20px;
             background: var(--surface-elevated);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -914,7 +846,8 @@
         /* Responsive Design */
         @media (max-width: 768px) {
             .header {
-                height: 48px;
+                height: auto;
+                min-height: 60px;
                 padding: 0 var(--spacing-md);
             }
 
@@ -929,16 +862,6 @@
 
             .btn--header .btn__icon {
                 font-size: var(--font-size-sm);
-            }
-
-            .profile-avatar {
-                width: 32px;
-                height: 32px;
-            }
-
-            .profile-dropdown {
-                width: 220px;
-                right: -8px;
             }
             
             .container {
@@ -955,10 +878,19 @@
             
             .tab-buttons {
                 overflow-x: auto;
+                scrollbar-width: none; /* Firefox */
+                -ms-overflow-style: none; /* Internet Explorer 10+ */
+            }
+            
+            .tab-buttons::-webkit-scrollbar {
+                display: none; /* WebKit */
             }
             
             .tab-btn {
-                min-width: 100px;
+                min-width: 80px;
+                padding: 6px 8px;
+                font-size: 12px;
+                font-weight: 500;
             }
 
             .action-buttons {
@@ -973,52 +905,10 @@
         <div class="header__logo">🤖 One AI</div>
         <div class="header__spacer"></div>
         <div class="header__actions">
-            <button class="btn btn--primary btn--header" onclick="showCreateModal()">
+            <button class="btn btn--primary btn--header" onclick="createSharingAction()">
                 <span class="btn__icon">+</span>
                 쉐어링 만들기
             </button>
-            <div class="header__profile" onclick="toggleProfileMenu()">
-                <div class="profile-avatar">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                </div>
-                <div class="profile-dropdown" id="profileDropdown">
-                    <div class="profile-dropdown__header">
-                        <div class="profile-info">
-                            <div class="profile-name">김**님</div>
-                            <div class="profile-status">Premium 구독자</div>
-                        </div>
-                    </div>
-                    <div class="profile-dropdown__divider"></div>
-                    <a href="#" class="profile-dropdown__item">
-                        <span class="profile-dropdown__icon">📊</span>
-                        대시보드
-                    </a>
-                    <a href="#" class="profile-dropdown__item">
-                        <span class="profile-dropdown__icon">💰</span>
-                        수익 현황
-                    </a>
-                    <a href="#" class="profile-dropdown__item">
-                        <span class="profile-dropdown__icon">🎯</span>
-                        절약 통계
-                    </a>
-                    <a href="#" class="profile-dropdown__item">
-                        <span class="profile-dropdown__icon">⚙️</span>
-                        설정
-                    </a>
-                    <div class="profile-dropdown__divider"></div>
-                    <a href="#" class="profile-dropdown__item">
-                        <span class="profile-dropdown__icon">❓</span>
-                        고객지원
-                    </a>
-                    <a href="#" class="profile-dropdown__item profile-dropdown__item--danger">
-                        <span class="profile-dropdown__icon">🚪</span>
-                        로그아웃
-                    </a>
-                </div>
-            </div>
         </div>
     </header>
 
@@ -1030,7 +920,7 @@
                 AI 구독비를 나누어 부담하고, 함께 사용하여 최대 80%까지 비용을 절약하세요!<br>
                 안전한 결제 시스템과 실시간 관리로 걱정 없이 이용하실 수 있습니다.
             </p>
-            <button class="btn btn--primary" onclick="showCreateModal()">
+            <button class="btn btn--primary" onclick="createSharingAction()">
                 <span class="btn__icon">+</span>
                 쉐어링 만들기
             </button>
@@ -1237,7 +1127,7 @@
                 <div class="empty-state__icon">📋</div>
                 <h3 class="empty-state__title">개설한 쉐어링이 없습니다</h3>
                 <p class="empty-state__description">AI 구독을 쉐어링하여 비용을 절약하고 수익도 창출해보세요!</p>
-                <button class="btn btn--primary" onclick="showCreateModal()">
+                <button class="btn btn--primary" onclick="createSharingAction()">
                     <span class="btn__icon">+</span>
                     쉐어링 만들기
                 </button>
@@ -1374,6 +1264,70 @@
         <div id="toastMessage"></div>
     </div>
 
+    <!-- Join Application Modal -->
+    <div id="joinModal" class="modal">
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title">🤝 쉐어링 참여 신청</h2>
+                <button class="modal__close" onclick="hideJoinModal()">&times;</button>
+            </div>
+            
+            <!-- 선택한 쉐어링 정보 -->
+            <div style="margin-bottom: 24px; padding: 16px; background: var(--surface-modal); border-radius: var(--radius-lg);">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                    <span id="joinServiceIcon" style="font-size: 20px;">🤖</span>
+                    <div>
+                        <h3 id="joinSharingName" style="color: var(--text-primary); margin: 0;">ChatGPT Plus 4인 쉐어링</h3>
+                        <p style="color: var(--text-secondary); margin: 0; font-size: var(--font-size-sm);" id="joinModalDescription">로그인이 필요합니다</p>
+                    </div>
+                </div>
+                
+                <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--text-tertiary);">기본 요금:</span>
+                        <span id="joinBasePrice" style="color: var(--text-primary);">₩6,900/월</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--text-tertiary);">One AI 수수료 (10%):</span>
+                        <span id="joinFeeAmount" style="color: var(--color-warning);">₩690/월</span>
+                    </div>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-primary); font-weight: 600;">실제 결제 금액:</span>
+                        <span id="joinTotalAmount" style="color: var(--color-primary-500); font-weight: 700; font-size: var(--font-size-lg);">₩7,590/월</span>
+                    </div>
+                </div>
+            </div>
+            
+            <form id="joinForm" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label">참여자 닉네임</label>
+                    <input type="text" class="form-input" name="nickname" placeholder="쉐어링에서 사용할 닉네임" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">이메일 주소</label>
+                    <input type="email" class="form-input" name="email" placeholder="알림을 받을 이메일 주소" required>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="serviceAgreement" required style="margin: 0;">
+                        <span style="font-size: var(--font-size-sm);">
+                            <a href="#" style="color: var(--color-primary-500);">쉐어링 이용약관</a>에 동의합니다
+                        </span>
+                    </label>
+                </div>
+            </form>
+            
+            <div class="modal__actions">
+                <button type="button" class="btn btn--cancel" onclick="hideJoinModal()">취소</button>
+                <button type="submit" class="btn btn--primary" id="joinActionButton" onclick="redirectToLogin()">
+                    로그인하고 참여하기
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Create Modal -->
     <div id="createModal" class="modal">
         <div class="modal__content">
@@ -1447,70 +1401,6 @@
             <div class="modal__actions">
                 <button type="button" class="btn btn--cancel" onclick="hideCreateModal()">취소</button>
                 <button type="submit" class="btn btn--primary" onclick="createSharing()">만들기</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Join Application Modal -->
-    <div id="joinModal" class="modal">
-        <div class="modal__content">
-            <div class="modal__header">
-                <h2 class="modal__title">🤝 쉐어링 참여 신청</h2>
-                <button class="modal__close" onclick="hideJoinModal()">&times;</button>
-            </div>
-            
-            <!-- 선택한 쉐어링 정보 -->
-            <div style="margin-bottom: 24px; padding: 16px; background: var(--surface-modal); border-radius: var(--radius-lg);">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                    <span id="joinServiceIcon" style="font-size: 20px;">🤖</span>
-                    <div>
-                        <h3 id="joinSharingName" style="color: var(--text-primary); margin: 0;">ChatGPT Plus 4인 쉐어링</h3>
-                        <p style="color: var(--text-secondary); margin: 0; font-size: var(--font-size-sm);">신청 후 결제 페이지로 이동합니다</p>
-                    </div>
-                </div>
-                
-                <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: var(--text-tertiary);">기본 요금:</span>
-                        <span id="joinBasePrice" style="color: var(--text-primary);">₩6,900/월</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: var(--text-tertiary);">One AI 수수료 (10%):</span>
-                        <span id="joinFeeAmount" style="color: var(--color-warning);">₩690/월</span>
-                    </div>
-                    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; display: flex; justify-content: space-between;">
-                        <span style="color: var(--text-primary); font-weight: 600;">실제 결제 금액:</span>
-                        <span id="joinTotalAmount" style="color: var(--color-primary-500); font-weight: 700; font-size: var(--font-size-lg);">₩7,590/월</span>
-                    </div>
-                </div>
-            </div>
-            
-            <form id="joinForm">
-                <div class="form-group">
-                    <label class="form-label">참여자 닉네임</label>
-                    <input type="text" class="form-input" name="nickname" placeholder="쉐어링에서 사용할 닉네임" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">이메일 주소</label>
-                    <input type="email" class="form-input" name="email" placeholder="알림을 받을 이메일 주소" required>
-                </div>
-                
-                <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                        <input type="checkbox" name="serviceAgreement" required style="margin: 0;">
-                        <span style="font-size: var(--font-size-sm);">
-                            <a href="#" style="color: var(--color-primary-500);">쉐어링 이용약관</a>에 동의합니다
-                        </span>
-                    </label>
-                </div>
-            </form>
-            
-            <div class="modal__actions">
-                <button type="button" class="btn btn--cancel" onclick="hideJoinModal()">취소</button>
-                <button type="submit" class="btn btn--primary" onclick="proceedToPayment()">
-                    <span id="joinButtonText">결제 페이지로 이동</span>
-                </button>
             </div>
         </div>
     </div>
@@ -1600,37 +1490,36 @@
     </div>
 
     <script>
+        // 로그인 상태 체크 (실제로는 서버나 localStorage에서 확인)
+        function isLoggedIn() {
+            // 예시: localStorage에서 토큰 확인
+            return localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
+        }
+
+        // 로그인 상태에 따른 액션 처리
+        function handleAuthAction(callback) {
+            if (isLoggedIn()) {
+                // 로그인되어 있으면 콜백 함수 실행
+                callback();
+            } else {
+                // 로그인 안되어 있으면 로그인 페이지로 이동
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 쉐어링 만들기 (로그인 상태 체크)
+        function createSharingAction() {
+            handleAuthAction(showCreateModal);
+        }
+
+        // 로그인 페이지로 리다이렉트
+        function redirectToLogin() {
+            window.location.href = 'login.html';
+        }
+
         let currentTab = 'popular';
         let selectedSharingId = null;
         let currentTheme = 'dark';
-
-        // Theme Toggle Function
-        function toggleTheme() {
-            const body = document.body;
-            const themeIcon = document.getElementById('themeIcon');
-            
-            if (currentTheme === 'dark') {
-                body.setAttribute('data-theme', 'light');
-                themeIcon.textContent = '☀️';
-                currentTheme = 'light';
-            } else {
-                body.removeAttribute('data-theme');
-                themeIcon.textContent = '🌙';
-                currentTheme = 'dark';
-            }
-            
-            localStorage.setItem('theme', currentTheme);
-        }
-
-        // Custom service fields toggle
-        function toggleCustomFields(selectedValue) {
-            const customFields = document.getElementById('customServiceFields');
-            if (selectedValue === 'other') {
-                customFields.classList.add('custom-service-fields--show');
-            } else {
-                customFields.classList.remove('custom-service-fields--show');
-            }
-        }
 
         // Toast Notification Function
         function showToast(message, type = 'success') {
@@ -1674,40 +1563,75 @@
                 updateMyTab();
             }, 100);
         }
-
         function joinSharing(sharingId, sharingName, basePrice) {
-            selectedSharingId = sharingId;
-            
-            // 서비스 아이콘 설정
-            const serviceIcon = document.getElementById('joinServiceIcon');
-            if (sharingId.includes('gpt')) serviceIcon.textContent = '🤖';
-            else if (sharingId.includes('claude')) serviceIcon.textContent = '🧠';
-            else if (sharingId.includes('midjourney')) serviceIcon.textContent = '🎨';
-            else if (sharingId.includes('copilot')) serviceIcon.textContent = '💻';
-            else serviceIcon.textContent = '🤖';
-            
-            // 쉐어링 이름 설정
-            document.getElementById('joinSharingName').textContent = sharingName;
-            
-            // 가격 계산 및 설정
-            const fee = Math.round(basePrice * 0.1);
-            const total = basePrice + fee;
-            
-            document.getElementById('joinBasePrice').textContent = `₩${basePrice.toLocaleString()}/월`;
-            document.getElementById('joinFeeAmount').textContent = `₩${fee.toLocaleString()}/월`;
-            document.getElementById('joinTotalAmount').textContent = `₩${total.toLocaleString()}/월`;
-            
-            document.getElementById('joinModal').classList.add('modal--show');
+            // 로그인 상태 체크 후 참여 처리
+            handleAuthAction(() => {
+                selectedSharingId = sharingId;
+                
+                // 서비스 아이콘 설정
+                const serviceIcon = document.getElementById('joinServiceIcon');
+                if (sharingId.includes('gpt')) serviceIcon.textContent = '🤖';
+                else if (sharingId.includes('claude')) serviceIcon.textContent = '🧠';
+                else if (sharingId.includes('midjourney')) serviceIcon.textContent = '🎨';
+                else if (sharingId.includes('copilot')) serviceIcon.textContent = '💻';
+                else serviceIcon.textContent = '🤖';
+                
+                // 쉐어링 이름 설정
+                document.getElementById('joinSharingName').textContent = sharingName;
+                
+                // 가격 계산 및 설정
+                const fee = Math.round(basePrice * 0.1);
+                const total = basePrice + fee;
+                
+                document.getElementById('joinBasePrice').textContent = `₩${basePrice.toLocaleString()}/월`;
+                document.getElementById('joinFeeAmount').textContent = `₩${fee.toLocaleString()}/월`;
+                document.getElementById('joinTotalAmount').textContent = `₩${total.toLocaleString()}/월`;
+                
+                // 로그인 상태에 따라 모달 내용 변경
+                updateJoinModalForLoggedInUser();
+                
+                document.getElementById('joinModal').classList.add('modal--show');
+            });
         }
 
-        function hideJoinModal() {
-            document.getElementById('joinModal').classList.remove('modal--show');
+        // 로그인된 사용자를 위한 참여 모달 업데이트
+        function updateJoinModalForLoggedInUser() {
+            // 모달 내 설명 텍스트 변경
+            const description = document.getElementById('joinModalDescription');
+            if (description) {
+                description.textContent = '신청 후 결제 페이지로 이동합니다';
+            }
+            
+            // 폼 표시
+            const form = document.getElementById('joinForm');
+            if (form) {
+                form.style.display = 'block';
+            }
+            
+            // 버튼 텍스트 변경
+            const joinButton = document.getElementById('joinActionButton');
+            if (joinButton) {
+                joinButton.textContent = '결제 페이지로 이동';
+                joinButton.onclick = proceedToPayment;
+            }
+        }
+
+        // Custom service fields toggle
+        function toggleCustomFields(selectedValue) {
+            const customFields = document.getElementById('customServiceFields');
+            if (customFields) {
+                if (selectedValue === 'other') {
+                    customFields.classList.add('custom-service-fields--show');
+                } else {
+                    customFields.classList.remove('custom-service-fields--show');
+                }
+            }
         }
 
         function proceedToPayment() {
             // 폼 유효성 검사
             const form = document.getElementById('joinForm');
-            if (!form.checkValidity()) {
+            if (form && !form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
@@ -1777,15 +1701,8 @@
             }, 2000);
         }
 
-        function manageSharing(sharingId) {
-            showToast(`쉐어링 관리 (${sharingId})`, 'info');
-        }
-
-        function leaveSharing(sharingId) {
-            if (confirm('정말로 쉐어링에서 탈퇴하시겠습니까?')) {
-                showToast('쉐어링 탈퇴가 완료되었습니다.', 'success');
-                setTimeout(() => location.reload(), 1000);
-            }
+        function hideJoinModal() {
+            document.getElementById('joinModal').classList.remove('modal--show');
         }
 
         function updateMyTab() {
@@ -1821,35 +1738,19 @@
                 </div>
             `;
         }
-
-        // Profile Menu Toggle
-        function toggleProfileMenu() {
-            const dropdown = document.getElementById('profileDropdown');
-            dropdown.classList.toggle('profile-dropdown--show');
+        function manageSharing(sharingId) {
+            showToast(`쉐어링 관리 (${sharingId})`, 'info');
         }
 
-        // Close profile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const profile = document.querySelector('.header__profile');
-            const dropdown = document.getElementById('profileDropdown');
-            
-            if (!profile.contains(event.target)) {
-                dropdown.classList.remove('profile-dropdown--show');
+        function leaveSharing(sharingId) {
+            if (confirm('정말로 쉐어링에서 탈퇴하시겠습니까?')) {
+                showToast('쉐어링 탈퇴가 완료되었습니다.', 'success');
+                setTimeout(() => location.reload(), 1000);
             }
-        });
+        }
 
         // Event Listeners
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize theme from localStorage
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                currentTheme = savedTheme;
-                if (currentTheme === 'light') {
-                    document.body.setAttribute('data-theme', 'light');
-                    document.getElementById('themeIcon').textContent = '☀️';
-                }
-            }
-
             // Tab Events
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -1894,36 +1795,13 @@
                     document.querySelectorAll('.modal--show').forEach(modal => {
                         modal.classList.remove('modal--show');
                     });
-                    document.querySelector('.profile-dropdown--show')?.classList.remove('profile-dropdown--show');
                 }
                 
-                // Ctrl/Cmd + K to open create modal
+                // Ctrl/Cmd + K to create sharing or login
                 if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                     e.preventDefault();
-                    showCreateModal();
+                    createSharingAction();
                 }
-                
-                // Ctrl/Cmd + Shift + T to toggle theme
-                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
-                    e.preventDefault();
-                    toggleTheme();
-                }
-            });
-
-            // Form validation
-            document.getElementById('createForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                createSharing();
-            });
-
-            document.getElementById('joinForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                proceedToPayment();
-            });
-
-            document.getElementById('paymentForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                processPayment();
             });
         });
     </script>

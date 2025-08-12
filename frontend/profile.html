@@ -69,11 +69,6 @@
             --motion-normal: 250ms;
             --motion-slow: 350ms;
             --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
-            .modal__content {
-                margin: var(--spacing-lg);
-                max-width: none;
-                width: calc(100% - 32px);
-            }
         }
 
         * {
@@ -91,7 +86,7 @@
             padding-top: 70px;
         }
 
-        /* Header Component - BEM 스타일 적용 및 CSS 업데이트 적용 */
+        /* Header Component */
         .header {
             background: var(--color-surface-elevated);
             border-bottom: 1px solid var(--color-surface-overlay);
@@ -151,93 +146,7 @@
             align-items: center;
         }
 
-        .language-selector {
-            position: relative;
-            display: inline-block;
-        }
-
-        .language-selector__button {
-            /* 다른 btn 클래스와 동일한 스타일 적용 */
-            padding: 6px 16px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--color-surface-overlay);
-            background: var(--color-surface-elevated);
-            cursor: pointer;
-            font-size: var(--font-size-sm);
-            font-weight: 500;
-            transition: all var(--motion-fast) var(--motion-ease);
-            color: var(--text-primary);
-            display: inline-flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-        }
-
-        .language-selector__button:hover {
-            background: var(--color-surface-modal);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .language-selector__button:focus {
-            outline: 3px solid rgba(16, 185, 129, 0.3);
-            outline-offset: 2px;
-        }
-
-        .language-selector__button:active {
-            transform: translateY(0);
-            background: var(--color-surface-overlay);
-        }
-
-        .language-selector__dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: var(--spacing-xs);
-            background: var(--color-surface-elevated);
-            border: 1px solid var(--color-surface-overlay);
-            border-radius: var(--radius-md);
-            min-width: 120px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: var(--z-index-dropdown);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-8px);
-            transition: all var(--motion-fast) var(--motion-ease);
-        }
-
-        .language-selector__dropdown--show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .language-selector__item {
-            padding: var(--spacing-sm) var(--spacing-md);
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: background var(--motion-fast) var(--motion-ease);
-            font-size: var(--font-size-sm);
-            border-bottom: 1px solid var(--color-surface-overlay);
-        }
-
-        .language-selector__item:last-child {
-            border-bottom: none;
-        }
-
-        .language-selector__item:hover {
-            background: var(--color-surface-modal);
-        }
-
-        .language-selector__item--active {
-            background: var(--color-primary-500);
-            color: white;
-        }
-
-        .language-selector__item--active:hover {
-            background: var(--color-primary-400);
-        }
-
-        /* Button Component - 상태별 정의 적용 및 nav-tab 클래스 추가 */
+        /* Button Component */
         .btn, .nav-tab {
             padding: 6px 16px;
             border-radius: var(--radius-md);
@@ -288,11 +197,6 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: var(--spacing-lg);
-        }
-
-        /* Notification 위치 조정 */
-        .notification {
-            top: 70px;
         }
 
         /* Profile Header Component */
@@ -921,116 +825,6 @@
             text-align: center;
         }
 
-        /* Login Screen Styles */
-        .login-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 80vh;
-            padding: var(--spacing-lg);
-        }
-
-        .login-card {
-            background: var(--color-surface-elevated);
-            border-radius: var(--radius-2xl);
-            padding: var(--spacing-2xl);
-            max-width: 600px;
-            width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-        }
-
-        .login-card__header {
-            margin-bottom: var(--spacing-2xl);
-        }
-
-        .login-card__icon {
-            font-size: 4rem;
-            margin-bottom: var(--spacing-lg);
-            opacity: 0.8;
-        }
-
-        .login-card__title {
-            font-size: var(--font-size-2xl);
-            font-weight: 700;
-            margin-bottom: var(--spacing-sm);
-            color: var(--text-primary);
-        }
-
-        .login-card__description {
-            color: var(--text-secondary);
-            font-size: var(--font-size-base);
-        }
-
-        .login-card__features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-2xl);
-            text-align: left;
-        }
-
-        .feature-item {
-            display: flex;
-            gap: var(--spacing-md);
-            padding: var(--spacing-lg);
-            background: var(--color-surface-modal);
-            border-radius: var(--radius-xl);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all var(--motion-normal) var(--motion-ease);
-        }
-
-        .feature-item:hover {
-            border-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .feature-item__icon {
-            font-size: 2rem;
-            flex-shrink: 0;
-        }
-
-        .feature-item__content {
-            flex: 1;
-        }
-
-        .feature-item__title {
-            font-size: var(--font-size-base);
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .feature-item__description {
-            font-size: var(--font-size-sm);
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        .login-card__actions {
-            display: flex;
-            gap: var(--spacing-md);
-            justify-content: center;
-        }
-
-        .login-btn, .signup-btn {
-            padding: var(--spacing-md) var(--spacing-xl);
-            font-size: var(--font-size-base);
-            font-weight: 600;
-            border-radius: var(--radius-lg);
-            min-width: 120px;
-        }
-
-        .signup-btn {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--text-secondary);
-        }
-
-        .signup-btn:hover {
-            border-color: var(--color-primary-500);
-            color: var(--color-primary-500);
-        }
         /* Notification Status Indicators */
         .notification-status {
             display: inline-flex;
@@ -1053,6 +847,38 @@
             height: 8px;
             border-radius: 50%;
             background: currentColor;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: var(--z-index-modal);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-spinner--show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--color-surface-overlay);
+            border-top: 3px solid var(--color-primary-500);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Responsive Design */
@@ -1110,16 +936,10 @@
                 gap: var(--spacing-xs);
             }
 
-            .login-card__features {
-                grid-template-columns: 1fr;
-            }
-
-            .login-card__actions {
-                flex-direction: column;
-            }
-
-            .login-btn, .signup-btn {
-                width: 100%;
+            .modal__content {
+                margin: var(--spacing-lg);
+                max-width: none;
+                width: calc(100% - 32px);
             }
         }
 
@@ -1141,6 +961,11 @@
     </style>
 </head>
 <body>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
     <!-- Header Component -->
     <div class="header">
         <div class="header__logo">
@@ -1148,7 +973,7 @@
             <span>One AI</span>
         </div>
         <div class="header__actions">
-            <button class="btn btn--primary" id="authButton" onclick="toggleAuth()">로그아웃</button>
+            <button class="btn btn--primary" id="authButton" onclick="logout()">로그아웃</button>
         </div>
     </div>
 
@@ -1483,29 +1308,97 @@
         };
 
         let currentLanguage = 'ko';
-        let isLoggedIn = true; // 마이페이지는 항상 로그인된 상태
+        let isLoggedIn = checkLoginStatus(); // 실제 로그인 상태 확인
+
+        // 로그인 상태 확인 함수
+        function checkLoginStatus() {
+            // 실제 구현에서는 세션, 토큰, 쿠키 등을 확인
+            const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+            const isAuthenticated = localStorage.getItem('isLoggedIn') === 'true';
+            
+            // 토큰이나 인증 상태가 없으면 false 반환
+            return token && isAuthenticated;
+        }
+
+        // 로그인 상태에 따른 페이지 접근 제어
+        function checkAuthAndRedirect() {
+            if (!isLoggedIn) {
+                // 현재 URL을 저장해서 로그인 후 돌아올 수 있도록 함
+                localStorage.setItem('returnUrl', window.location.href);
+                
+                // 로딩 스피너 표시
+                showLoading();
+                
+                // 잠시 후 리다이렉트 (UX 개선)
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1000);
+                
+                return false;
+            }
+            return true;
+        }
+
+        // 로딩 스피너 표시/숨김
+        function showLoading() {
+            document.getElementById('loadingSpinner').classList.add('loading-spinner--show');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').classList.remove('loading-spinner--show');
+        }
 
         // Auth functions
-        function toggleAuth() {
+        function logout() {
+            // 로딩 스피너 표시
+            showLoading();
+            
+            // 로그인 상태 제거
+            localStorage.removeItem('authToken');
+            sessionStorage.removeItem('authToken');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userInfo');
+            localStorage.removeItem('returnUrl');
+            
+            // 잠시 후 로그인 페이지로 리다이렉트
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1000);
+        }
+
+        // UI 업데이트 함수들
+        function updateAuthUI() {
+            const authButton = document.getElementById('authButton');
             if (isLoggedIn) {
-                logout();
+                authButton.textContent = '로그아웃';
+                authButton.classList.add('btn--primary');
+            } else {
+                // 로그인되지 않은 경우 이미 리다이렉트되므로 실행되지 않음
+                window.location.href = 'login.html';
             }
         }
 
-        function logout() {
-            // 실제로는 메인 페이지나 로그인 페이지로 리다이렉트
-            alert('로그아웃됩니다. 메인 페이지로 이동합니다.');
-            // window.location.href = '/login';
+        function showLoggedInContent() {
+            // 마이페이지 콘텐츠는 이미 HTML에 있으므로 별도 처리 불필요
+            console.log('마이페이지 로드 완료');
+            hideLoading();
         }
 
         // 페이지 로드 시 초기 상태 설정
         document.addEventListener('DOMContentLoaded', function() {
-            updateAuthUI();
-            if (isLoggedIn) {
-                showLoggedInContent();
-            } else {
-                showLoginScreen();
+            // 로딩 스피너 표시
+            showLoading();
+            
+            // 로그인 상태 확인 후 페이지 접근 제어
+            if (!checkAuthAndRedirect()) {
+                return; // 로그인되지 않았으면 여기서 종료 (리다이렉트됨)
             }
+            
+            updateAuthUI();
+            showLoggedInContent();
+            
+            // 나머지 초기화 코드들...
+            initializeAnimations();
         });
 
         // Language selector functions (계정 정보 섹션에서만 사용)
@@ -1554,15 +1447,24 @@
                 return;
             }
             
-            hideModal('emailModal');
-            showSuccess('이메일 주소가 성공적으로 변경되었습니다.');
-            document.getElementById('emailForm').reset();
+            // 실제 구현에서는 여기서 서버에 API 호출
+            showLoading();
+            
+            setTimeout(() => {
+                hideLoading();
+                hideModal('emailModal');
+                showSuccess('이메일 주소가 성공적으로 변경되었습니다.');
+                document.getElementById('emailForm').reset();
+                
+                // UI 업데이트
+                document.querySelector('.setting-item__description').textContent = newEmail;
+            }, 1500);
         }
 
         function changePassword() {
-            const currentPassword = document.querySelector('#passwordForm input:nth-child(1)').value;
-            const newPassword = document.querySelector('#passwordForm input:nth-child(2)').value;
-            const confirmPassword = document.querySelector('#passwordForm input:nth-child(3)').value;
+            const currentPassword = document.querySelector('#passwordForm input:nth-of-type(1)').value;
+            const newPassword = document.querySelector('#passwordForm input:nth-of-type(2)').value;
+            const confirmPassword = document.querySelector('#passwordForm input:nth-of-type(3)').value;
             
             if (!currentPassword || !newPassword || !confirmPassword) {
                 showError('모든 필드를 입력해주세요.');
@@ -1579,9 +1481,20 @@
                 return;
             }
             
-            hideModal('passwordModal');
-            showSuccess('비밀번호가 성공적으로 변경되었습니다.');
-            document.getElementById('passwordForm').reset();
+            // 실제 구현에서는 여기서 서버에 API 호출
+            showLoading();
+            
+            setTimeout(() => {
+                hideLoading();
+                hideModal('passwordModal');
+                showSuccess('비밀번호가 성공적으로 변경되었습니다.');
+                document.getElementById('passwordForm').reset();
+                
+                // UI 업데이트
+                const now = new Date();
+                const formattedDate = `${now.getFullYear()}년 ${now.getMonth() + 1}월`;
+                document.querySelector('.setting-item:nth-of-type(2) .setting-item__description').textContent = `마지막 변경: ${formattedDate}`;
+            }, 1500);
         }
 
         function changeLanguage() {
@@ -1594,8 +1507,21 @@
                 'es': 'Español'
             };
             
-            hideModal('languageModal');
-            showSuccess(`언어가 ${languageNames[selectedLanguage]}로 변경되었습니다.`);
+            // 실제 구현에서는 여기서 서버에 API 호출
+            showLoading();
+            
+            setTimeout(() => {
+                hideLoading();
+                hideModal('languageModal');
+                showSuccess(`언어가 ${languageNames[selectedLanguage]}로 변경되었습니다.`);
+                
+                // UI 업데이트
+                document.querySelector('.setting-item:nth-of-type(3) .setting-item__description').textContent = languageNames[selectedLanguage];
+                
+                // 글로벌 상태 업데이트
+                currentLanguage = selectedLanguage;
+                userSettings.language = selectedLanguage;
+            }, 1500);
         }
 
         // Notification toggle function with actual functionality
@@ -1689,8 +1615,18 @@
             }
         });
 
+        // ESC 키로 모달 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const activeModal = document.querySelector('.modal--show');
+                if (activeModal) {
+                    activeModal.classList.remove('modal--show');
+                }
+            }
+        });
+
         // Animation effects
-        document.addEventListener('DOMContentLoaded', function() {
+        function initializeAnimations() {
             // Card animations
             const cards = document.querySelectorAll('.stat-card, .section, .subscription-card');
             
@@ -1735,7 +1671,7 @@
                 bar.style.transformOrigin = 'bottom';
                 bar.style.transition = 'transform 0.6s ease';
             });
-        });
+        }
 
         function animateNumber(element) {
             const finalValue = element.textContent;
@@ -1771,6 +1707,145 @@
                     element.textContent = displayValue.toLocaleString();
                 }
             }, stepTime);
+        }
+
+        // 페이지 가시성 변경 감지 (탭 전환 등)
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                // 페이지가 다시 보일 때 로그인 상태 재확인
+                const currentLoginStatus = checkLoginStatus();
+                if (!currentLoginStatus && isLoggedIn) {
+                    // 로그인 상태가 변경되었으면 리다이렉트
+                    logout();
+                }
+            }
+        });
+
+        // 세션 만료 체크 (옵션)
+        function checkSessionExpiry() {
+            const token = localStorage.getItem('authToken');
+            const loginTime = localStorage.getItem('loginTime');
+            
+            if (token && loginTime) {
+                const currentTime = Date.now();
+                const sessionDuration = 24 * 60 * 60 * 1000; // 24시간
+                
+                if (currentTime - parseInt(loginTime) > sessionDuration) {
+                    // 세션 만료
+                    showError('세션이 만료되었습니다. 다시 로그인해 주세요.');
+                    setTimeout(() => {
+                        logout();
+                    }, 2000);
+                }
+            }
+        }
+
+        // 주기적으로 세션 체크 (5분마다)
+        setInterval(checkSessionExpiry, 5 * 60 * 1000);
+
+        // 브라우저 뒤로가기/앞으로가기 감지
+        window.addEventListener('popstate', function(event) {
+            // 로그인 상태 재확인
+            if (!checkLoginStatus()) {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // 네트워크 상태 변경 감지
+        window.addEventListener('online', function() {
+            console.log('네트워크가 연결되었습니다.');
+            // 필요시 데이터 동기화
+        });
+
+        window.addEventListener('offline', function() {
+            console.log('네트워크 연결이 끊어졌습니다.');
+            showError('인터넷 연결을 확인해 주세요.');
+        });
+
+        // 사용자 정보 로드 함수 (실제 구현시 사용)
+        function loadUserData() {
+            const userInfo = localStorage.getItem('userInfo');
+            if (userInfo) {
+                try {
+                    const userData = JSON.parse(userInfo);
+                    // UI에 사용자 정보 반영
+                    if (userData.name) {
+                        document.querySelector('.profile-header__name').textContent = userData.name;
+                    }
+                    if (userData.email) {
+                        document.querySelector('.setting-item__description').textContent = userData.email;
+                    }
+                    if (userData.avatar) {
+                        document.querySelector('.profile-header__avatar').textContent = userData.avatar;
+                    }
+                } catch (e) {
+                    console.error('사용자 정보 파싱 오류:', e);
+                }
+            }
+        }
+
+        // 실제 구현시 사용할 API 호출 함수들
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            const token = localStorage.getItem('authToken');
+            
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            };
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            try {
+                const response = await fetch(endpoint, options);
+                
+                if (response.status === 401) {
+                    // 인증 오류시 로그아웃
+                    logout();
+                    return null;
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`API 오류: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('API 호출 오류:', error);
+                showError('서버와의 통신에 실패했습니다.');
+                return null;
+            }
+        }
+
+        // 실제 구현시 사용할 데이터 업데이트 함수들
+        async function updateEmailAPI(newEmail, password) {
+            return await apiCall('/api/user/email', 'PUT', { 
+                email: newEmail, 
+                password: password 
+            });
+        }
+
+        async function updatePasswordAPI(currentPassword, newPassword) {
+            return await apiCall('/api/user/password', 'PUT', { 
+                currentPassword: currentPassword, 
+                newPassword: newPassword 
+            });
+        }
+
+        async function updateLanguageAPI(language) {
+            return await apiCall('/api/user/language', 'PUT', { 
+                language: language 
+            });
+        }
+
+        async function updateNotificationAPI(enabled) {
+            return await apiCall('/api/user/notifications', 'PUT', { 
+                enabled: enabled 
+            });
         }
     </script>
 </body>

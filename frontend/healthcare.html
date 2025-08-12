@@ -1,0 +1,3026 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One AI - 헬스케어 AI</title>
+    <style>
+        /* =========================
+           One AI Design System v1.1
+           디자인 토큰 정의 (Dark Only)
+        ========================= */
+        :root {
+            /* Dark Theme (Primary) */
+            --color-surface-base: #000000;
+            --color-surface-raised: #111111;
+            --color-surface-elevated: #1a1a1a;
+            --color-surface-overlay: #222222;
+            --color-surface-modal: #2a2a2a;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-tertiary: #a3a3a3;
+            --text-quaternary: #737373;
+            --text-disabled: #525252;
+            
+            /* Primary Colors */
+            --color-primary-200: #a7f3d0;
+            --color-primary-400: #34d399;
+            --color-primary-500: #10b981;
+            --color-primary-600: #059669;
+            
+            /* Semantic Colors */
+            --color-error: #ef4444;
+            --color-warning: #f59e0b;
+            --color-info: #3b82f6;
+            --color-success: #10b981;
+            
+            /* Medical Theme */
+            --color-medical: #06b6d4;
+            --color-health: #8b5cf6;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            
+            /* Typography */
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 20px;
+            --font-size-2xl: 24px;
+            --font-size-3xl: 30px;
+            --font-size-4xl: 36px;
+            
+            /* Border Radius */
+            --radius-xs: 2px;
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-2xl: 16px;
+            
+            /* Z-Index */
+            --z-index-base: 0;
+            --z-index-sidebar: 10;
+            --z-index-dropdown: 20;
+            --z-index-modal: 40;
+            --z-index-toast: 50;
+            --z-index-tooltip: 60;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            
+            /* Animations */
+            --duration-fast: 150ms;
+            --duration-normal: 200ms;
+            --duration-slow: 250ms;
+            --easing-ease: cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Scrollbar */
+            --scrollbar-width: 8px;
+            --scrollbar-track: var(--color-surface-elevated);
+            --scrollbar-thumb: var(--color-surface-overlay);
+            --scrollbar-thumb-hover: var(--color-surface-modal);
+        }
+
+        /* =========================
+           Base Styles + Scrollbar
+        ========================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-surface-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: var(--font-size-base);
+            overflow-x: hidden;
+        }
+
+        /* 커스텀 스크롤바 (디자인 시스템 준수) */
+        ::-webkit-scrollbar {
+            width: var(--scrollbar-width);
+            height: var(--scrollbar-width);
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+            border-radius: var(--radius-sm);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: var(--radius-sm);
+            transition: background-color var(--duration-fast) var(--easing-ease);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--scrollbar-thumb-hover);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: var(--scrollbar-track);
+        }
+
+        /* Firefox 스크롤바 */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+        }
+
+        /* =========================
+           헤더 컴포넌트 (BEM)
+        ========================= */
+        .header {
+            background-color: var(--color-surface-raised);
+            border-bottom: 1px solid var(--color-surface-overlay);
+            padding: var(--spacing-md) var(--spacing-xl);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: var(--z-index-sidebar);
+            transition: background-color var(--duration-normal) var(--easing-ease);
+            height: 50px;
+        }
+
+        .header__logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: color var(--duration-fast) var(--easing-ease);
+        }
+
+        .header__logo:hover {
+            color: var(--color-primary-500);
+        }
+
+        .header__logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--color-surface-overlay), var(--color-surface-modal));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            font-weight: bold;
+            font-size: var(--font-size-base);
+            border: 1px solid var(--color-surface-overlay);
+            transition: all var(--duration-fast) var(--easing-ease);
+        }
+
+        .header__nav {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-left: auto;
+            margin-right: var(--spacing-lg);
+        }
+
+        .nav-item {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            padding: var(--spacing-sm) var(--spacing-sm);
+            border-radius: var(--radius-md);
+            transition: all var(--duration-fast) var(--easing-ease);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            cursor: pointer;
+            height: 32px;
+        }
+
+        .nav-item:hover {
+            color: var(--text-primary);
+            background: var(--color-surface-elevated);
+        }
+
+        .nav-item--emergency {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--color-error);
+            border: 1px solid var(--color-error);
+            height: 32px;
+            padding: var(--spacing-sm) var(--spacing-md);
+        }
+
+        .nav-item--emergency:hover {
+            background: var(--color-error);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .header__actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        /* =========================
+           버튼 컴포넌트 (BEM + 상태별)
+        ========================= */
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-surface-modal);
+            background: var(--color-surface-raised);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            transition: all var(--duration-fast) var(--easing-ease);
+            color: var(--text-primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-xs);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            background: var(--color-surface-elevated);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn:focus {
+            outline: 3px solid transparent;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn--primary {
+            background: var(--color-primary-500);
+            color: white;
+            border-color: var(--color-primary-500);
+        }
+
+        .btn--primary:hover {
+            background: var(--color-primary-400);
+            border-color: var(--color-primary-400);
+        }
+
+        .btn--primary:active {
+            background: var(--color-primary-600);
+            border-color: var(--color-primary-600);
+        }
+
+        .btn--secondary {
+            background: var(--color-medical);
+            color: white;
+            border-color: var(--color-medical);
+        }
+
+        .btn--large {
+            padding: var(--spacing-md) var(--spacing-xl);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+        }
+
+        .btn--full {
+            width: 100%;
+        }
+
+        .btn--loading {
+            pointer-events: none;
+        }
+
+        .btn--loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* =========================
+           프로필 컴포넌트 (BEM)
+        ========================= */
+        .profile {
+            position: relative;
+        }
+
+        .profile__btn {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-surface-overlay);
+            border-radius: 24px;
+            padding: var(--spacing-xs) var(--spacing-sm) var(--spacing-xs) var(--spacing-xs);
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--easing-ease);
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            position: relative;
+        }
+
+        .profile__btn:hover {
+            background: var(--color-surface-modal);
+            border-color: var(--color-medical);
+            transform: translateY(-1px);
+        }
+
+        .profile__avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-medical), var(--color-health));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-base);
+        }
+
+        .profile__name {
+            font-weight: 500;
+        }
+
+        .profile__badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--color-error);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--color-surface-base);
+        }
+
+        .profile__dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: var(--spacing-sm);
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-surface-overlay);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-md);
+            min-width: 280px;
+            box-shadow: var(--shadow-xl);
+            z-index: var(--z-index-dropdown);
+            display: none;
+            animation: slideDown var(--duration-normal) var(--easing-ease);
+        }
+
+        .profile__dropdown--show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile__header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .profile__avatar--large {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-medical), var(--color-health));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xl);
+        }
+
+        .profile__name--large {
+            font-weight: 600;
+            font-size: var(--font-size-base);
+        }
+
+        .profile__email {
+            color: var(--text-tertiary);
+            font-size: var(--font-size-xs);
+        }
+
+        .profile__divider {
+            height: 1px;
+            background: var(--color-surface-overlay);
+            margin: var(--spacing-sm) 0;
+        }
+
+        .profile__menu-item {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--easing-ease);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        .profile__menu-item:hover {
+            background: var(--color-surface-modal);
+            color: var(--text-primary);
+            transform: translateX(2px);
+        }
+
+        .profile__menu-item--logout {
+            color: var(--color-error);
+        }
+
+        .profile__menu-item--logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* =========================
+           모달 팝업 (BEM)
+        ========================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: var(--z-index-modal);
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--duration-normal) var(--easing-ease);
+            padding: var(--spacing-md);
+        }
+
+        .modal-overlay--show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-surface-overlay);
+            border-radius: var(--radius-2xl);
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            transform: scale(0.9) translateY(20px);
+            transition: all var(--duration-normal) var(--easing-ease);
+        }
+
+        .modal-overlay--show .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal__header {
+            padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-lg);
+            border-bottom: 1px solid var(--color-surface-overlay);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal__title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .modal__close {
+            background: var(--color-surface-modal);
+            border: 1px solid var(--color-surface-overlay);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all var(--duration-fast) var(--easing-ease);
+            font-size: var(--font-size-lg);
+        }
+
+        .modal__close:hover {
+            background: var(--color-error);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .modal__body {
+            padding: var(--spacing-xl);
+        }
+
+        .modal__content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .modal__content h4 {
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+        }
+
+        .modal__content ul {
+            padding-left: var(--spacing-lg);
+            margin: var(--spacing-sm) 0;
+        }
+
+        .modal__content ol {
+            padding-left: var(--spacing-lg);
+            margin: var(--spacing-sm) 0;
+        }
+
+        .modal__content li {
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .modal__actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .modal__actions--center {
+            justify-content: center;
+        }
+
+        .modal__actions--full {
+            flex-direction: column;
+        }
+
+        .modal__divider {
+            height: 1px;
+            background: var(--color-surface-overlay);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .modal__icon {
+            font-size: var(--font-size-4xl);
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .modal__info-box {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid var(--color-medical);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .modal__warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--color-warning);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .modal__error-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--color-error);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        /* =========================
+           컨테이너 (BEM)
+        ========================= */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+
+        .container--small {
+            max-width: 800px;
+        }
+
+        /* =========================
+           페이지 헤더 (BEM)
+        ========================= */
+        .page-header {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .page-header__title {
+            font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-4xl));
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-medical), var(--color-health));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header__subtitle {
+            color: var(--text-secondary);
+            font-size: var(--font-size-lg);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* =========================
+           카드 컴포넌트 (BEM)
+        ========================= */
+        .card {
+            background: var(--color-surface-raised);
+            border: 1px solid var(--color-surface-overlay);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            transition: all var(--duration-fast) var(--easing-ease);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card__header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card__icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-2xl);
+            background: var(--icon-bg);
+            color: white;
+        }
+
+        .card__title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .card__subtitle {
+            color: var(--text-tertiary);
+            font-size: var(--font-size-sm);
+        }
+
+        /* =========================
+           옵션 그리드 (BEM)
+        ========================= */
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .option-card {
+            background: var(--color-surface-elevated);
+            border: 2px solid var(--color-surface-overlay);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--easing-ease);
+            text-align: center;
+        }
+
+        .option-card:hover {
+            border-color: var(--color-medical);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .option-card--selected {
+            border-color: var(--color-medical);
+            background: rgba(6, 182, 212, 0.1);
+        }
+
+        .option-card__icon {
+            font-size: var(--font-size-3xl);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .option-card__title {
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .option-card__price {
+            color: var(--color-primary-500);
+            font-weight: 600;
+            font-size: var(--font-size-lg);
+        }
+
+        /* =========================
+           건강 메트릭 (BEM)
+        ========================= */
+        .health-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .health-metric {
+            background: var(--color-surface-elevated);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-xl);
+            text-align: center;
+            position: relative;
+            transition: all var(--duration-normal) var(--easing-ease);
+        }
+
+        .health-metric:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+        }
+
+        .health-metric__value {
+            font-size: var(--font-size-3xl);
+            color: var(--color-medical);
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .health-metric__label {
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .health-metric__status {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--color-primary-500);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-xl);
+            font-size: var(--font-size-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-xs);
+        }
+
+        .health-metric__status--warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--color-warning);
+        }
+
+        /* =========================
+           증상 태그 (BEM)
+        ========================= */
+        .symptoms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .symptom-tag {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid var(--color-medical);
+            color: var(--color-medical);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 20px;
+            font-size: var(--font-size-sm);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--easing-ease);
+        }
+
+        .symptom-tag:hover,
+        .symptom-tag--selected {
+            background: var(--color-medical);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* =========================
+           토스트 알림 (BEM)
+        ========================= */
+        .toast {
+            position: fixed;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            background: var(--color-primary-500);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            z-index: var(--z-index-toast);
+            font-weight: 600;
+            max-width: 300px;
+            box-shadow: var(--shadow-xl);
+            animation: slideInRight var(--duration-normal) var(--easing-ease);
+        }
+
+        .toast--success { background: var(--color-success); }
+        .toast--warning { background: var(--color-warning); }
+        .toast--error { background: var(--color-error); }
+        .toast--info { background: var(--color-info); }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* =========================
+           콘텐츠 영역
+        ========================= */
+        .content {
+            display: none;
+        }
+
+        .content--active {
+            display: block;
+        }
+
+        /* =========================
+           뒤로가기 버튼
+        ========================= */
+        .back-btn {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-surface-overlay);
+            color: var(--text-primary);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            transition: all var(--duration-fast) var(--easing-ease);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .back-btn:hover {
+            background: var(--color-surface-modal);
+            transform: translateX(-2px);
+        }
+
+        /* =========================
+           리스트 간격 관리
+        ========================= */
+        .list-spacing > * {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .list-spacing > *:last-child {
+            margin-bottom: 0;
+        }
+
+        /* =========================
+           유틸리티 클래스
+        ========================= */
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+
+        .mb-xs { margin-bottom: var(--spacing-xs); }
+        .mb-sm { margin-bottom: var(--spacing-sm); }
+        .mb-md { margin-bottom: var(--spacing-md); }
+        .mb-lg { margin-bottom: var(--spacing-lg); }
+        .mb-xl { margin-bottom: var(--spacing-xl); }
+
+        .hidden { display: none; }
+        .block { display: block; }
+        .flex { display: flex; }
+        .grid { display: grid; }
+
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+
+        .gap-xs { gap: var(--spacing-xs); }
+        .gap-sm { gap: var(--spacing-sm); }
+        .gap-md { gap: var(--spacing-md); }
+        .gap-lg { gap: var(--spacing-lg); }
+
+        .p-sm { padding: var(--spacing-sm); }
+        .p-md { padding: var(--spacing-md); }
+        .p-lg { padding: var(--spacing-lg); }
+
+        .rounded-sm { border-radius: var(--radius-sm); }
+        .rounded-md { border-radius: var(--radius-md); }
+        .rounded-lg { border-radius: var(--radius-lg); }
+        .rounded-xl { border-radius: var(--radius-xl); }
+
+        /* =========================
+           반응형 (Mobile First)
+        ========================= */
+        @media (max-width: 768px) {
+            .header {
+                padding: var(--spacing-sm) var(--spacing-md);
+                flex-direction: column;
+                gap: var(--spacing-sm);
+            }
+            
+            .header__nav {
+                margin: 0;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .container {
+                padding: var(--spacing-md);
+            }
+
+            .option-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .symptoms-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .health-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 고정 헤더 -->
+    <header class="header">
+        <div class="header__logo" onclick="showContent('main')">
+            <div class="header__logo-icon">1</div>
+            <span>One AI</span>
+        </div>
+        
+        <nav class="header__nav">
+            <div class="nav-item nav-item--emergency" onclick="showEmergency()">
+                🚨 응급상황
+            </div>
+        </nav>
+        
+        <div class="header__actions" id="headerActions">
+            <!-- 로그인 전 상태 -->
+            <div id="beforeLogin" class="flex gap-sm">
+                <button class="btn btn--primary" onclick="showLogin()">로그인</button>
+            </div>
+            
+            <!-- 로그인 후 상태 -->
+            <div id="afterLogin" class="hidden">
+                <div class="profile">
+                    <button class="profile__btn" onclick="toggleProfileMenu()">
+                        <div class="profile__avatar">👤</div>
+                        <span class="profile__name">김건강</span>
+                        <div class="profile__badge hidden" id="notificationBadge">3</div>
+                    </button>
+                    
+                    <div class="profile__dropdown" id="profileDropdown">
+                        <div class="profile__header">
+                            <div class="profile__avatar--large">👤</div>
+                            <div>
+                                <div class="profile__name--large">김건강님</div>
+                                <div class="profile__email">user@example.com</div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile__divider"></div>
+                        
+                        <div class="profile__menu-item" onclick="showContent('healthManagement')">
+                            📊 내 건강 관리
+                        </div>
+                        <div class="profile__menu-item" onclick="showContent('consultationHistory')">
+                            💻 상담 내역
+                        </div>
+                        <div class="profile__menu-item" onclick="showContent('prescriptionHistory')">
+                            💊 처방전 내역
+                        </div>
+                        <div class="profile__menu-item" onclick="showContent('paymentHistory')">
+                            💳 결제 내역
+                        </div>
+                        
+                        <div class="profile__divider"></div>
+                        
+                        <div class="profile__menu-item" onclick="showContent('settings')">
+                            ⚙️ 설정
+                        </div>
+                        <div class="profile__menu-item" onclick="showContent('help')">
+                            ❓ 고객지원
+                        </div>
+                        
+                        <div class="profile__divider"></div>
+                        
+                        <div class="profile__menu-item profile__menu-item--logout" onclick="logout()">
+                            🚪 로그아웃
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 콘텐츠 -->
+    <div id="mainContent" class="content content--active">
+        <main class="container">
+            <div class="page-header">
+                <h1 class="page-header__title">🏥 One AI 헬스케어</h1>
+                <p class="page-header__subtitle">AI 기반 스마트 헬스케어 플랫폼</p>
+            </div>
+
+            <!-- 내 건강 대시보드 -->
+            <section class="card mb-xl">
+                <div class="flex items-center justify-between mb-lg">
+                    <h3>📊 내 건강 대시보드</h3>
+                    <div class="flex gap-sm items-center">
+                        <button class="btn btn--secondary" onclick="showContent('deviceSync')">
+                            📱 디바이스 연동
+                        </button>
+                        <div id="syncStatus" class="hidden text-center">
+                            🔄 동기화 중...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="health-metrics mb-lg">
+                    <div class="health-metric">
+                        <div class="health-metric__value">72</div>
+                        <div class="health-metric__label">심박수 (bpm)</div>
+                        <div class="health-metric__status">
+                            <span>⌚</span> 정상
+                        </div>
+                    </div>
+                    <div class="health-metric">
+                        <div class="health-metric__value">120/80</div>
+                        <div class="health-metric__label">혈압 (mmHg)</div>
+                        <div class="health-metric__status">
+                            <span>🩺</span> 정상
+                        </div>
+                    </div>
+                    <div class="health-metric">
+                        <div class="health-metric__value">7.2h</div>
+                        <div class="health-metric__label">수면시간</div>
+                        <div class="health-metric__status health-metric__status--warning">
+                            <span>⌚</span> 부족
+                        </div>
+                    </div>
+                    <div class="health-metric">
+                        <div class="health-metric__value">8,547</div>
+                        <div class="health-metric__label">걸음수</div>
+                        <div class="health-metric__status">
+                            <span>📱</span> 양호
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-sm mb-md">
+                    <button class="btn btn--secondary" onclick="showContent('healthTrends')">📈 건강 트렌드</button>
+                    <button class="btn btn--secondary" onclick="exportHealthData()">📤 데이터 내보내기</button>
+                    <button class="btn btn--secondary" onclick="shareWithDoctor()">👨‍⚕️ 의사와 공유</button>
+                </div>
+                
+                <p class="text-center" style="color: var(--text-secondary); font-size: var(--font-size-sm);">
+                    마지막 동기화: <span id="lastSync">2024년 8월 6일 14:32</span>
+                </p>
+            </section>
+
+            <!-- AI 증상 체크 섹션 -->
+            <section class="card mb-xl">
+                <div class="card__header">
+                    <div class="card__icon" style="--icon-bg: linear-gradient(135deg, var(--color-medical), var(--color-health));">🔍</div>
+                    <div>
+                        <h3 class="card__title">AI 증상 체크</h3>
+                        <p class="card__subtitle">무료로 현재 증상을 분석해드립니다</p>
+                    </div>
+                </div>
+                <p class="mb-lg" style="color: var(--text-secondary);">
+                    현재 느끼는 증상을 선택하면 AI가 분석하여 조언을 드립니다.
+                </p>
+                <div class="symptoms-grid mb-lg">
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">두통</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">발열</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">기침</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">복통</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">피로감</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">어지러움</div>
+                </div>
+                <button class="btn btn--primary btn--large btn--full" onclick="showContent('symptomCheck')">
+                    무료 AI 증상 체크 시작하기
+                </button>
+            </section>
+
+            <!-- 비대면진료 섹션 -->
+            <section class="card mb-xl" style="background: linear-gradient(135deg, var(--color-surface-raised), var(--color-surface-elevated));">
+                <h2 class="text-center mb-md" style="font-size: var(--font-size-2xl); font-weight: 600;">💻 비대면진료 서비스</h2>
+                <p class="text-center mb-xl" style="color: var(--text-secondary);">
+                    전문의와 화상으로 상담하고 처방전까지 받아보세요
+                </p>
+                
+                <div class="option-grid">
+                    <div class="option-card" onclick="showContent('telemedicine')">
+                        <div class="option-card__icon">⚡</div>
+                        <div class="option-card__title">즉시 상담</div>
+                        <div style="color: var(--text-secondary); font-size: var(--font-size-sm); margin: var(--spacing-sm) 0;">평균 대기시간 3분</div>
+                        <div class="option-card__price">₩15,000</div>
+                    </div>
+                    <div class="option-card" onclick="showContent('telemedicine')">
+                        <div class="option-card__icon">📅</div>
+                        <div class="option-card__title">예약 상담</div>
+                        <div style="color: var(--text-secondary); font-size: var(--font-size-sm); margin: var(--spacing-sm) 0;">원하는 시간에 예약</div>
+                        <div class="option-card__price">₩20,000</div>
+                    </div>
+                    <div class="option-card" onclick="showContent('prescriptionManagement')">
+                        <div class="option-card__icon">💊</div>
+                        <div class="option-card__title">처방전 관리</div>
+                        <div style="color: var(--text-secondary); font-size: var(--font-size-sm); margin: var(--spacing-sm) 0;">약 주문부터 배송까지</div>
+                        <div class="option-card__price">₩3,000</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 온라인 약국 -->
+            <section class="card mb-xl">
+                <h3 class="mb-lg">🏪 온라인 약국</h3>
+                <p class="mb-lg" style="color: var(--text-secondary);">
+                    처방전 없이도 구매 가능한 일반의약품과 건강기능식품을 주문하세요
+                </p>
+                <div class="option-grid mb-lg">
+                    <div class="option-card" onclick="showContent('onlinePharmacy')">
+                        <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">💊</div>
+                        <h5 class="mb-sm">영양제/건강기능식품</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-xs); margin-bottom: var(--spacing-sm);">비타민, 오메가3, 프로바이오틱스</p>
+                        <div style="color: var(--color-primary-500); font-weight: 600;">₩5,000원부터</div>
+                    </div>
+                    <div class="option-card" onclick="showContent('onlinePharmacy')">
+                        <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">🩹</div>
+                        <h5 class="mb-sm">일반의약품</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-xs); margin-bottom: var(--spacing-sm);">감기약, 소화제, 진통제</p>
+                        <div style="color: var(--color-primary-500); font-weight: 600;">₩3,000원부터</div>
+                    </div>
+                    <div class="option-card" onclick="showContent('onlinePharmacy')">
+                        <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">🌡️</div>
+                        <h5 class="mb-sm">의료기기</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-xs); margin-bottom: var(--spacing-sm);">혈압계, 혈당계, 체온계</p>
+                        <div style="color: var(--color-primary-500); font-weight: 600;">₩50,000원부터</div>
+                    </div>
+                    <div class="option-card" onclick="showContent('onlinePharmacy')">
+                        <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">🌿</div>
+                        <h5 class="mb-sm">한방/천연</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-xs); margin-bottom: var(--spacing-sm);">홍삼, 한방차, 천연 추출물</p>
+                        <div style="color: var(--color-primary-500); font-weight: 600;">₩15,000원부터</div>
+                    </div>
+                </div>
+                <button class="btn btn--secondary btn--full" onclick="showContent('onlinePharmacy')">
+                    온라인 약국 바로가기
+                </button>
+            </section>
+
+            <!-- AI 건강 서비스 -->
+            <section class="card">
+                <h3 class="mb-lg">🤖 AI 건강 서비스</h3>
+                <div class="option-grid">
+                    <div class="option-card" onclick="showContent('symptomCheck')">
+                        <div class="flex items-center gap-sm mb-sm">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--color-medical), var(--color-health)); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: var(--font-size-lg);">🔍</div>
+                            <h5>AI 증상 체크</h5>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">증상을 입력하면 AI가 가능한 질병을 분석하고 대응 방안을 제안합니다.</p>
+                    </div>
+                    
+                    <div class="option-card" onclick="showContent('healthCheckupAnalysis')">
+                        <div class="flex items-center gap-sm mb-sm">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--color-health), #a855f7); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: var(--font-size-lg);">📋</div>
+                            <h5>건강검진 분석</h5>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">건강검진 결과를 업로드하면 AI가 분석하여 위험 요소를 찾아드립니다.</p>
+                    </div>
+                    
+                    <div class="option-card" onclick="showContent('drugInteraction')">
+                        <div class="flex items-center gap-sm mb-sm">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--color-warning), #f59e0b); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: var(--font-size-lg);">⚠️</div>
+                            <h5>약물 상호작용</h5>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">복용 중인 약물들의 상호작용을 체크하고 주의사항을 안내합니다.</p>
+                    </div>
+                    
+                    <div class="option-card" onclick="showEmergency()">
+                        <div class="flex items-center gap-sm mb-sm">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--color-error), #dc2626); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: var(--font-size-lg);">🚑</div>
+                            <h5>응급처치 가이드</h5>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">응급상황별 대처법을 단계별로 안내하고 음성 가이드를 제공합니다.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- AI 증상 체크 콘텐츠 -->
+    <div id="symptomCheckContent" class="content">
+        <main class="container container--small">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">🔍 AI 증상 체크</h1>
+                <p class="page-header__subtitle">현재 증상을 분석하여 맞춤형 건강 조언을 드립니다</p>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">현재 증상을 선택해주세요</h3>
+                <div class="symptoms-grid mb-lg">
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">두통</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">발열</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">기침</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">목 아픔</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">복통</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">설사</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">변비</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">피로감</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">어지러움</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">숨가쁨</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">가슴 답답함</div>
+                    <div class="symptom-tag" onclick="toggleSymptom(this)">근육통</div>
+                </div>
+                
+                <div class="mb-lg">
+                    <label style="display: block; margin-bottom: var(--spacing-sm); font-weight: 600;">추가 증상 설명</label>
+                    <textarea id="additionalSymptoms" 
+                              placeholder="다른 증상이나 자세한 설명을 입력해주세요..."
+                              style="width: 100%; min-height: 100px; padding: var(--spacing-md); border: 1px solid var(--color-surface-overlay); border-radius: var(--radius-lg); background: var(--color-surface-elevated); color: var(--text-primary); resize: vertical;"></textarea>
+                </div>
+
+                <button class="btn btn--primary btn--large btn--full" onclick="startSymptomAnalysis()">
+                    AI 증상 분석 시작하기
+                </button>
+            </div>
+
+            <!-- 분석 결과 섹션 -->
+            <div id="analysisResult" class="card hidden" style="margin-top: var(--spacing-lg);">
+                <h3 class="mb-lg">🎯 AI 분석 결과</h3>
+                <div id="analysisContent"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 비대면진료 콘텐츠 -->
+    <div id="telemedicineContent" class="content">
+        <main class="container">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">💻 비대면진료</h1>
+                <p class="page-header__subtitle">전문의와 화상으로 상담하고 처방전까지 받아보세요</p>
+            </div>
+
+            <div class="option-grid mb-xl">
+                <div class="option-card" onclick="bookConsultation('immediate')">
+                    <div class="option-card__icon">⚡</div>
+                    <div class="option-card__title">즉시 상담</div>
+                    <div style="color: var(--text-secondary); margin: var(--spacing-sm) 0;">
+                        • 평균 대기시간: 3분<br>
+                        • 상담시간: 15분<br>
+                        • 처방전 발급 가능
+                    </div>
+                    <div class="option-card__price">₩15,000</div>
+                </div>
+                
+                <div class="option-card" onclick="bookConsultation('scheduled')">
+                    <div class="option-card__icon">📅</div>
+                    <div class="option-card__title">예약 상담</div>
+                    <div style="color: var(--text-secondary); margin: var(--spacing-sm) 0;">
+                        • 원하는 시간에 예약<br>
+                        • 상담시간: 20분<br>
+                        • 정밀 상담 가능
+                    </div>
+                    <div class="option-card__price">₩20,000</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">👨‍⚕️ 진료 가능한 전문의</h3>
+                <div class="option-grid">
+                    <div class="option-card" onclick="selectDoctor('kim')">
+                        <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">👨‍⚕️</div>
+                        <h5>김내과 원장</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">내과 전문의 · 15년 경력</p>
+                        <div style="color: var(--color-primary-500); margin-top: var(--spacing-sm);">⭐ 4.9 (127 리뷰)</div>
+                        <button class="btn btn--primary" style="margin-top: var(--spacing-sm);">선택하기</button>
+                    </div>
+                    <div class="option-card" onclick="selectDoctor('lee')">
+                        <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">👩‍⚕️</div>
+                        <h5>이가정의학과 원장</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">가정의학과 전문의 · 12년 경력</p>
+                        <div style="color: var(--color-primary-500); margin-top: var(--spacing-sm);">⭐ 4.8 (89 리뷰)</div>
+                        <button class="btn btn--primary" style="margin-top: var(--spacing-sm);">선택하기</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 온라인 약국 콘텐츠 -->
+    <div id="onlinePharmacyContent" class="content">
+        <main class="container">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">🏪 온라인 약국</h1>
+                <p class="page-header__subtitle">안전하고 편리한 의약품 주문 서비스</p>
+            </div>
+
+            <div class="option-grid mb-xl">
+                <div class="option-card">
+                    <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">💊</div>
+                    <h5>영양제/건강기능식품</h5>
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">비타민, 오메가3, 프로바이오틱스</p>
+                    <div style="color: var(--color-primary-500); font-weight: 600; margin-top: var(--spacing-sm);">₩5,000원부터</div>
+                </div>
+                <div class="option-card">
+                    <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">🩹</div>
+                    <h5>일반의약품</h5>
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">감기약, 소화제, 진통제</p>
+                    <div style="color: var(--color-primary-500); font-weight: 600; margin-top: var(--spacing-sm);">₩3,000원부터</div>
+                </div>
+                <div class="option-card">
+                    <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">🌡️</div>
+                    <h5>의료기기</h5>
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">혈압계, 혈당계, 체온계</p>
+                    <div style="color: var(--color-primary-500); font-weight: 600; margin-top: var(--spacing-sm);">₩50,000원부터</div>
+                </div>
+                <div class="option-card">
+                    <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">🌿</div>
+                    <h5>한방/천연</h5>
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">홍삼, 한방차, 천연 추출물</p>
+                    <div style="color: var(--color-primary-500); font-weight: 600; margin-top: var(--spacing-sm);">₩15,000원부터</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">🔥 인기 상품</h3>
+                <div class="option-grid">
+                    <div class="option-card" onclick="addToCart('vitamin-d')">
+                        <div style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-sm);">🟡</div>
+                        <h5>비타민 D 1000IU</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-xs);">면역력 강화 · 90정</p>
+                        <div style="color: var(--color-primary-500); font-weight: 600; margin-top: var(--spacing-sm);">₩12,000</div>
+                        <button class="btn btn--primary" style="margin-top: var(--spacing-sm); width: 100%;">장바구니 담기</button>
+                    </div>
+                    <div class="option-card" onclick="addToCart('omega3')">
+                        <div style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-sm);">🔴</div>
+                        <h5>오메가3</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-xs);">심혈관 건강 · 60캡슐</p>
+                        <div style="color: var(--color-primary-500); font-weight: 600; margin-top: var(--spacing-sm);">₩25,000</div>
+                        <button class="btn btn--primary" style="margin-top: var(--spacing-sm); width: 100%;">장바구니 담기</button>
+                    </div>
+                    <div class="option-card" onclick="addToCart('probiotics')">
+                        <div style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-sm);">💚</div>
+                        <h5>프로바이오틱스</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-xs);">장 건강 · 30포</p>
+                        <div style="color: var(--color-primary-500); font-weight: 600; margin-top: var(--spacing-sm);">₩35,000</div>
+                        <button class="btn btn--primary" style="margin-top: var(--spacing-sm); width: 100%;">장바구니 담기</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 건강 관리 콘텐츠 -->
+    <div id="healthManagementContent" class="content">
+        <main class="container">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">📊 내 건강 관리</h1>
+                <p class="page-header__subtitle">개인 맞춤형 건강 데이터 관리</p>
+            </div>
+
+            <div class="health-metrics mb-xl">
+                <div class="health-metric">
+                    <div class="health-metric__value">72</div>
+                    <div class="health-metric__label">평균 심박수</div>
+                    <div class="health-metric__status">정상</div>
+                </div>
+                <div class="health-metric">
+                    <div class="health-metric__value">120/80</div>
+                    <div class="health-metric__label">평균 혈압</div>
+                    <div class="health-metric__status">정상</div>
+                </div>
+                <div class="health-metric">
+                    <div class="health-metric__value">7.2h</div>
+                    <div class="health-metric__label">평균 수면시간</div>
+                    <div class="health-metric__status health-metric__status--warning">부족</div>
+                </div>
+                <div class="health-metric">
+                    <div class="health-metric__value">8,547</div>
+                    <div class="health-metric__label">평균 걸음수</div>
+                    <div class="health-metric__status">양호</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">📈 건강 트렌드</h3>
+                <p class="mb-lg" style="color: var(--text-secondary);">지난 30일간의 건강 데이터 변화를 확인하세요</p>
+                <div class="option-grid">
+                    <div class="option-card">
+                        <h5>심박수 변화</h5>
+                        <div style="color: var(--color-primary-500); font-size: var(--font-size-lg); margin: var(--spacing-sm) 0;">📈 안정적</div>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">평균 72bpm 유지</p>
+                    </div>
+                    <div class="option-card">
+                        <h5>수면 패턴</h5>
+                        <div style="color: var(--color-warning); font-size: var(--font-size-lg); margin: var(--spacing-sm) 0;">📉 개선 필요</div>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">수면시간 부족</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">🎯 건강 목표</h3>
+                <div style="margin-bottom: var(--spacing-md);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+                        <span>일일 걸음수 목표</span>
+                        <span style="color: var(--color-primary-500);">8,547 / 10,000</span>
+                    </div>
+                    <div style="background: var(--color-surface-elevated); height: 8px; border-radius: 4px;">
+                        <div style="background: var(--color-primary-500); width: 85%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: var(--spacing-md);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+                        <span>수면시간 목표</span>
+                        <span style="color: var(--color-warning);">7.2h / 8h</span>
+                    </div>
+                    <div style="background: var(--color-surface-elevated); height: 8px; border-radius: 4px;">
+                        <div style="background: var(--color-warning); width: 90%; height: 100%; border-radius: 4px;"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 상담 내역 콘텐츠 -->
+    <div id="consultationHistoryContent" class="content">
+        <main class="container">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">💻 상담 내역</h1>
+                <p class="page-header__subtitle">지난 비대면진료 기록을 확인하세요</p>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">최근 상담 내역</h3>
+                <div class="list-spacing">
+                    <div style="border: 1px solid var(--color-surface-overlay); border-radius: var(--radius-lg); padding: var(--spacing-md);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+                            <h5>감기 증상 상담</h5>
+                            <span style="color: var(--text-tertiary); font-size: var(--font-size-sm);">2024.08.05</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-sm);">담당의: 김내과 원장</p>
+                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">두통, 발열, 기침 증상으로 상담 진행</p>
+                        <button class="btn btn--secondary" style="margin-top: var(--spacing-sm);" onclick="viewConsultationDetail('1')">상세보기</button>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--color-surface-overlay); border-radius: var(--radius-lg); padding: var(--spacing-md);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+                            <h5>복통 상담</h5>
+                            <span style="color: var(--text-tertiary); font-size: var(--font-size-sm);">2024.08.01</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-sm);">담당의: 이가정의학과 원장</p>
+                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">급성 복통 증상 상담</p>
+                        <button class="btn btn--secondary" style="margin-top: var(--spacing-sm);" onclick="viewConsultationDetail('2')">상세보기</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 처방전 내역 콘텐츠 -->
+    <div id="prescriptionHistoryContent" class="content">
+        <main class="container">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">💊 처방전 내역</h1>
+                <p class="page-header__subtitle">발급받은 처방전과 복용 중인 약물을 관리하세요</p>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">최근 처방전</h3>
+                <div class="list-spacing">
+                    <div style="border: 1px solid var(--color-surface-overlay); border-radius: var(--radius-lg); padding: var(--spacing-md);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+                            <h5>감기약 처방전</h5>
+                            <span style="color: var(--text-tertiary); font-size: var(--font-size-sm);">2024.08.05</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-sm);">처방의: 김내과 원장</p>
+                        <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">
+                            • 해열진통제 (3일분)<br>
+                            • 기침가래약 (5일분)<br>
+                            • 종합감기약 (3일분)
+                        </div>
+                        <div style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-sm);">
+                            <button class="btn btn--secondary" onclick="viewPrescription('1')">처방전 보기</button>
+                            <button class="btn btn--primary" onclick="orderMedicine('1')">약국 주문</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">복용 중인 약물</h3>
+                <div class="option-grid">
+                    <div class="option-card">
+                        <div style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-sm);">💊</div>
+                        <h5>종합비타민</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">매일 1회</p>
+                        <div style="color: var(--color-primary-500); margin-top: var(--spacing-sm);">복용 중</div>
+                    </div>
+                    <div class="option-card">
+                        <div style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-sm);">🟡</div>
+                        <h5>오메가3</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">매일 2회</p>
+                        <div style="color: var(--color-primary-500); margin-top: var(--spacing-sm);">복용 중</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 결제 내역 콘텐츠 -->
+    <div id="paymentHistoryContent" class="content">
+        <main class="container">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">💳 결제 내역</h1>
+                <p class="page-header__subtitle">One AI 서비스 이용 내역을 확인하세요</p>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">최근 결제 내역</h3>
+                <div class="list-spacing">
+                    <div style="border: 1px solid var(--color-surface-overlay); border-radius: var(--radius-lg); padding: var(--spacing-md);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+                            <h5>비대면진료 (즉시상담)</h5>
+                            <span style="color: var(--color-primary-500); font-weight: 600;">₩15,000</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">2024.08.05 14:30</p>
+                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">카드결제 완료</p>
+                        <button class="btn btn--secondary" style="margin-top: var(--spacing-sm);" onclick="viewReceipt('1')">영수증 보기</button>
+                    </div>
+                    
+                    <div style="border: 1px solid var(--color-surface-overlay); border-radius: var(--radius-lg); padding: var(--spacing-md);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+                            <h5>온라인 약국 (감기약)</h5>
+                            <span style="color: var(--color-primary-500); font-weight: 600;">₩12,500</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">2024.08.05 15:10</p>
+                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">카드결제 완료</p>
+                        <button class="btn btn--secondary" style="margin-top: var(--spacing-sm);" onclick="viewReceipt('2')">영수증 보기</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">이달의 이용 현황</h3>
+                <div class="health-metrics">
+                    <div class="health-metric">
+                        <div class="health-metric__value">3</div>
+                        <div class="health-metric__label">상담 횟수</div>
+                        <div class="health-metric__status">이번 달</div>
+                    </div>
+                    <div class="health-metric">
+                        <div class="health-metric__value">₩52,500</div>
+                        <div class="health-metric__label">총 이용금액</div>
+                        <div class="health-metric__status">이번 달</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 설정 콘텐츠 -->
+    <div id="settingsContent" class="content">
+        <main class="container container--small">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">⚙️ 설정</h1>
+                <p class="page-header__subtitle">계정 및 서비스 설정을 관리하세요</p>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">계정 설정</h3>
+                <div class="list-spacing">
+                    <div style="padding: var(--spacing-md) 0; border-bottom: 1px solid var(--color-surface-overlay);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h5>개인정보 수정</h5>
+                                <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">이름, 생년월일, 연락처</p>
+                            </div>
+                            <button class="btn btn--secondary" onclick="editProfile()">수정</button>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: var(--spacing-md) 0; border-bottom: 1px solid var(--color-surface-overlay);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h5>비밀번호 변경</h5>
+                                <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">보안을 위해 정기적으로 변경하세요</p>
+                            </div>
+                            <button class="btn btn--secondary" onclick="changePassword()">변경</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">알림 설정</h3>
+                <div class="list-spacing">
+                    <div style="padding: var(--spacing-md) 0; border-bottom: 1px solid var(--color-surface-overlay);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h5>상담 알림</h5>
+                                <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">예약된 상담 시간 알림</p>
+                            </div>
+                            <label style="position: relative; display: inline-block; width: 50px; height: 24px;">
+                                <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
+                                <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-primary-500); border-radius: 24px; transition: .4s;"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: var(--spacing-md) 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h5>건강 리포트</h5>
+                                <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">주간/월간 건강 보고서</p>
+                            </div>
+                            <label style="position: relative; display: inline-block; width: 50px; height: 24px;">
+                                <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
+                                <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-primary-500); border-radius: 24px; transition: .4s;"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">데이터 관리</h3>
+                <div class="list-spacing">
+                    <button class="btn btn--secondary btn--full" onclick="exportAllData()">내 데이터 내보내기</button>
+                    <button class="btn btn--secondary btn--full" onclick="deleteAccount()" style="color: var(--color-error); border-color: var(--color-error);">계정 삭제</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 고객지원 콘텐츠 -->
+    <div id="helpContent" class="content">
+        <main class="container">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">❓ 고객지원</h1>
+                <p class="page-header__subtitle">궁금한 점이 있으시면 언제든 문의해주세요</p>
+            </div>
+
+            <div class="option-grid mb-xl">
+                <div class="option-card" onclick="startChat()">
+                    <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">💬</div>
+                    <h5>실시간 채팅</h5>
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">평일 09:00 - 18:00</p>
+                    <button class="btn btn--primary" style="margin-top: var(--spacing-sm);">채팅 시작</button>
+                </div>
+                
+                <div class="option-card" onclick="makeCall()">
+                    <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">📞</div>
+                    <h5>전화 상담</h5>
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">1588-1234</p>
+                    <button class="btn btn--secondary" style="margin-top: var(--spacing-sm);">전화걸기</button>
+                </div>
+                
+                <div class="option-card" onclick="sendEmail()">
+                    <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">📧</div>
+                    <h5>이메일 문의</h5>
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">support@oneai.com</p>
+                    <button class="btn btn--secondary" style="margin-top: var(--spacing-sm);">문의하기</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">자주 묻는 질문</h3>
+                <div class="list-spacing">
+                    <details style="border: 1px solid var(--color-surface-overlay); border-radius: var(--radius-lg); padding: var(--spacing-md);">
+                        <summary style="cursor: pointer; font-weight: 600; margin-bottom: var(--spacing-sm);">비대면진료는 어떻게 진행되나요?</summary>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">화상통화를 통해 전문의와 1:1 상담을 진행합니다. 상담 후 필요시 처방전도 발급받을 수 있습니다.</p>
+                    </details>
+                    
+                    <details style="border: 1px solid var(--color-surface-overlay); border-radius: var(--radius-lg); padding: var(--spacing-md);">
+                        <summary style="cursor: pointer; font-weight: 600; margin-bottom: var(--spacing-sm);">AI 증상 체크 결과는 얼마나 정확한가요?</summary>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">AI 분석은 참고용으로만 사용하시고, 정확한 진단은 반드시 의료진과 상담받으시기 바랍니다.</p>
+                    </details>
+
+                    <details style="border: 1px solid var(--color-surface-overlay); border-radius: var(--radius-lg); padding: var(--spacing-md);">
+                        <summary style="cursor: pointer; font-weight: 600; margin-bottom: var(--spacing-sm);">처방전은 어떻게 받나요?</summary>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">비대면진료 후 전자처방전이 발급되며, 연계 약국에서 바로 조제받을 수 있습니다.</p>
+                    </details>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 추가 콘텐츠들 -->
+    <div id="deviceSyncContent" class="content">
+        <main class="container container--small">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">📱 디바이스 연동</h1>
+                <p class="page-header__subtitle">웨어러블 기기와 연동하여 실시간 건강 데이터를 관리하세요</p>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">연동 가능한 디바이스</h3>
+                <div class="option-grid">
+                    <div class="option-card" onclick="connectDevice('apple-watch')">
+                        <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">⌚</div>
+                        <h5>Apple Watch</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">심박수, 걸음수, 수면</p>
+                        <button class="btn btn--primary" style="margin-top: var(--spacing-sm);">연동하기</button>
+                    </div>
+                    <div class="option-card" onclick="connectDevice('samsung-health')">
+                        <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">📱</div>
+                        <h5>Samsung Health</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">종합 건강 데이터</p>
+                        <button class="btn btn--primary" style="margin-top: var(--spacing-sm);">연동하기</button>
+                    </div>
+                    <div class="option-card" onclick="connectDevice('fitbit')">
+                        <div style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-sm);">⌚</div>
+                        <h5>Fitbit</h5>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">활동량, 수면 패턴</p>
+                        <button class="btn btn--primary" style="margin-top: var(--spacing-sm);">연동하기</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">연동된 디바이스</h3>
+                <div style="border: 1px solid var(--color-surface-overlay); border-radius: var(--radius-lg); padding: var(--spacing-md);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                            <div style="font-size: var(--font-size-xl);">📱</div>
+                            <div>
+                                <h5>iPhone 건강</h5>
+                                <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">마지막 동기화: 방금 전</p>
+                            </div>
+                        </div>
+                        <button class="btn btn--secondary" onclick="disconnectDevice('iphone')">연동 해제</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="healthTrendsContent" class="content">
+        <main class="container">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">📈 건강 트렌드</h1>
+                <p class="page-header__subtitle">시간별 건강 데이터 변화를 분석합니다</p>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">주간 트렌드</h3>
+                <div class="health-metrics mb-lg">
+                    <div class="health-metric">
+                        <div class="health-metric__value">+2%</div>
+                        <div class="health-metric__label">심박수 변화</div>
+                        <div class="health-metric__status">지난주 대비</div>
+                    </div>
+                    <div class="health-metric">
+                        <div class="health-metric__value">-30분</div>
+                        <div class="health-metric__label">수면시간 변화</div>
+                        <div class="health-metric__status health-metric__status--warning">지난주 대비</div>
+                    </div>
+                    <div class="health-metric">
+                        <div class="health-metric__value">+1,200</div>
+                        <div class="health-metric__label">걸음수 변화</div>
+                        <div class="health-metric__status">지난주 대비</div>
+                    </div>
+                </div>
+
+                <div style="background: var(--color-surface-elevated); padding: var(--spacing-lg); border-radius: var(--radius-lg); text-align: center;">
+                    <div style="font-size: var(--font-size-4xl); margin-bottom: var(--spacing-md);">📊</div>
+                    <p style="color: var(--text-secondary);">상세한 차트와 분석 결과는 데이터가 충분히 수집된 후 제공됩니다.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="healthCheckupAnalysisContent" class="content">
+        <main class="container container--small">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">📋 건강검진 분석</h1>
+                <p class="page-header__subtitle">건강검진 결과를 업로드하면 AI가 분석해드립니다</p>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">검진 결과 업로드</h3>
+                <div style="border: 2px dashed var(--color-surface-overlay); border-radius: var(--radius-lg); padding: var(--spacing-2xl); text-align: center; margin-bottom: var(--spacing-lg);">
+                    <div style="font-size: var(--font-size-4xl); margin-bottom: var(--spacing-md);">📄</div>
+                    <p style="margin-bottom: var(--spacing-md);">건강검진 결과서를 업로드해주세요</p>
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-lg);">PDF, JPG, PNG 파일을 지원합니다</p>
+                    <button class="btn btn--primary" onclick="uploadHealthCheckup()">파일 선택</button>
+                </div>
+
+                <div style="background: rgba(6, 182, 212, 0.1); padding: var(--spacing-md); border-radius: var(--radius-lg); border: 1px solid var(--color-medical);">
+                    <p style="color: var(--color-medical); font-weight: 600; margin-bottom: var(--spacing-sm);">🔒 개인정보 보호</p>
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">업로드된 검진 결과는 암호화되어 안전하게 처리되며, 분석 후 자동 삭제됩니다.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="drugInteractionContent" class="content">
+        <main class="container container--small">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">⚠️ 약물 상호작용</h1>
+                <p class="page-header__subtitle">복용 중인 약물들의 상호작용을 체크합니다</p>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">복용 중인 약물 입력</h3>
+                <div style="margin-bottom: var(--spacing-lg);">
+                    <input type="text" id="medicineInput" placeholder="약물명을 입력하세요..." style="width: 100%; padding: var(--spacing-md); border: 1px solid var(--color-surface-overlay); border-radius: var(--radius-lg); background: var(--color-surface-elevated); color: var(--text-primary);">
+                </div>
+                <button class="btn btn--primary btn--full" onclick="addMedicine()">약물 추가</button>
+            </div>
+
+            <div id="medicineList" class="card">
+                <h3 class="mb-lg">입력된 약물</h3>
+                <div id="medicines" style="display: flex; flex-wrap: wrap; gap: var(--spacing-sm);">
+                    <div class="symptom-tag symptom-tag--selected">아스피린</div>
+                    <div class="symptom-tag symptom-tag--selected">타이레놀</div>
+                </div>
+                <button class="btn btn--secondary btn--full" style="margin-top: var(--spacing-lg);" onclick="checkInteraction()">상호작용 검사</button>
+            </div>
+
+            <div id="interactionResult" class="card hidden">
+                <h3 class="mb-lg">검사 결과</h3>
+                <div style="background: rgba(245, 158, 11, 0.1); padding: var(--spacing-md); border-radius: var(--radius-lg); border: 1px solid var(--color-warning);">
+                    <p style="color: var(--color-warning); font-weight: 600; margin-bottom: var(--spacing-sm);">⚠️ 주의 필요</p>
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">아스피린과 타이레놀의 동시 복용 시 간 손상 위험이 증가할 수 있습니다. 의사와 상담 후 복용하세요.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="prescriptionManagementContent" class="content">
+        <main class="container">
+            <button class="back-btn" onclick="showContent('main')">
+                ← 뒤로가기
+            </button>
+
+            <div class="page-header">
+                <h1 class="page-header__title">💊 처방전 관리</h1>
+                <p class="page-header__subtitle">처방전 주문부터 배송까지 원스톱 서비스</p>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">처방전 등록</h3>
+                <div style="border: 2px dashed var(--color-surface-overlay); border-radius: var(--radius-lg); padding: var(--spacing-2xl); text-align: center; margin-bottom: var(--spacing-lg);">
+                    <div style="font-size: var(--font-size-4xl); margin-bottom: var(--spacing-md);">📋</div>
+                    <p style="margin-bottom: var(--spacing-md);">처방전을 업로드하거나 처방전 번호를 입력하세요</p>
+                    <div style="display: flex; gap: var(--spacing-sm); justify-content: center; flex-wrap: wrap;">
+                        <button class="btn btn--primary" onclick="uploadPrescription()">처방전 업로드</button>
+                        <button class="btn btn--secondary" onclick="enterPrescriptionNumber()">처방전 번호 입력</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-lg">배송 정보</h3>
+                <div style="border: 1px solid var(--color-surface-overlay); border-radius: var(--radius-lg); padding: var(--spacing-md);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+                        <span>배송 주소</span>
+                        <button class="btn btn--secondary" onclick="changeAddress()">변경</button>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">서울시 강남구 테헤란로 123, 101호</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 모달 팝업 컨테이너 -->
+    <div id="modalOverlay" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal__header">
+                <div class="modal__title" id="modalTitle">제목</div>
+                <button class="modal__close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal__body">
+                <div class="modal__content" id="modalContent">내용</div>
+                <div class="modal__actions" id="modalActions">
+                    <!-- 버튼들이 동적으로 추가됩니다 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 모달 관리 함수들
+        function showModal(title, content, actions = []) {
+            const overlay = document.getElementById('modalOverlay');
+            const titleEl = document.getElementById('modalTitle');
+            const contentEl = document.getElementById('modalContent');
+            const actionsEl = document.getElementById('modalActions');
+            
+            titleEl.innerHTML = title;
+            contentEl.innerHTML = content;
+            
+            // 액션 버튼들 생성
+            actionsEl.innerHTML = '';
+            if (actions.length === 0) {
+                // 기본 확인 버튼
+                const confirmBtn = document.createElement('button');
+                confirmBtn.className = 'btn btn--primary';
+                confirmBtn.textContent = '확인';
+                confirmBtn.onclick = closeModal;
+                actionsEl.appendChild(confirmBtn);
+            } else {
+                actions.forEach(action => {
+                    const btn = document.createElement('button');
+                    btn.className = `btn ${action.type || 'btn--secondary'}`;
+                    btn.textContent = action.text;
+                    btn.onclick = () => {
+                        if (action.handler) action.handler();
+                        if (action.closeModal !== false) closeModal();
+                    };
+                    actionsEl.appendChild(btn);
+                });
+            }
+            
+            overlay.classList.add('modal-overlay--show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== event.currentTarget && !event.target.classList.contains('modal__close')) {
+                return;
+            }
+            
+            const overlay = document.getElementById('modalOverlay');
+            overlay.classList.remove('modal-overlay--show');
+            document.body.style.overflow = '';
+        }
+
+        function showConfirmModal(title, content, onConfirm, onCancel) {
+            const actions = [
+                {
+                    text: '취소',
+                    type: 'btn--secondary',
+                    handler: onCancel
+                },
+                {
+                    text: '확인',
+                    type: 'btn--primary',
+                    handler: onConfirm
+                }
+            ];
+            showModal(title, content, actions);
+        }
+
+        // 전역 상태 관리
+        const AppState = {
+            isLoggedIn: false,
+            selectedSymptoms: []
+        };
+
+        // 페이지 로드시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            updateLastSyncTime();
+        });
+
+        function initializeApp() {
+            AppState.isLoggedIn = localStorage.getItem('oneai_logged_in') === 'true';
+            updateLoginState();
+        }
+
+        function setupEventListeners() {
+            document.addEventListener('click', function(e) {
+                const profileContainer = document.querySelector('.profile');
+                const profileDropdown = document.getElementById('profileDropdown');
+                
+                if (profileContainer && !profileContainer.contains(e.target)) {
+                    profileDropdown?.classList.remove('profile__dropdown--show');
+                }
+            });
+            
+            // ESC 키로 모달 닫기
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        }
+
+        // 콘텐츠 전환 함수
+        function showContent(contentId) {
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(content => content.classList.remove('content--active'));
+            
+            const targetContent = document.getElementById(contentId === 'main' ? 'mainContent' : contentId + 'Content');
+            if (targetContent) {
+                targetContent.classList.add('content--active');
+            }
+            
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown?.classList.remove('profile__dropdown--show');
+        }
+
+        // 로그인 상태 관리
+        function updateLoginState() {
+            const beforeLogin = document.getElementById('beforeLogin');
+            const afterLogin = document.getElementById('afterLogin');
+            
+            if (AppState.isLoggedIn) {
+                beforeLogin.classList.add('hidden');
+                afterLogin.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    const badge = document.getElementById('notificationBadge');
+                    if (badge) badge.classList.remove('hidden');
+                }, 2000);
+            } else {
+                beforeLogin.classList.remove('hidden');
+                afterLogin.classList.add('hidden');
+            }
+        }
+
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('profile__dropdown--show');
+        }
+
+        function logout() {
+            const title = '🚪 로그아웃';
+            const content = '<p>정말로 로그아웃 하시겠습니까?</p>';
+            
+            showConfirmModal(title, content, 
+                () => {
+                    AppState.isLoggedIn = false;
+                    localStorage.setItem('oneai_logged_in', 'false');
+                    updateLoginState();
+                    showToast('로그아웃되었습니다', 'info');
+                    
+                    const dropdown = document.getElementById('profileDropdown');
+                    dropdown?.classList.remove('profile__dropdown--show');
+                    showContent('main');
+                }
+            );
+        }
+
+        function showRegister() {
+            showToast('회원가입 페이지로 이동합니다', 'info');
+            setTimeout(() => {
+                const title = '📝 회원가입';
+                const content = `
+                    <div class="modal__icon">📝</div>
+                    <h4>빠른 회원가입 옵션</h4>
+                    <div style="margin: var(--spacing-md) 0;">
+                        <div style="padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--color-surface-overlay);">
+                            📱 휴대폰 번호로 가입
+                        </div>
+                        <div style="padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--color-surface-overlay);">
+                            📧 이메일로 가입
+                        </div>
+                        <div style="padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--color-surface-overlay);">
+                            🔗 카카오톡 간편가입
+                        </div>
+                        <div style="padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--color-surface-overlay);">
+                            🔗 네이버 간편가입
+                        </div>
+                        <div style="padding: var(--spacing-sm) 0;">
+                            🔗 구글 간편가입
+                        </div>
+                    </div>
+                `;
+                const actions = [
+                    {
+                        text: '나중에 하기',
+                        type: 'btn--secondary'
+                    },
+                    {
+                        text: '회원가입하기',
+                        type: 'btn--primary',
+                        handler: () => showToast('회원가입 페이지로 이동합니다', 'info')
+                    }
+                ];
+                showModal(title, content, actions);
+            }, 500);
+        }
+
+        function showLogin() {
+            const title = '🔐 로그인 데모';
+            const content = '<p>로그인을 시뮬레이션하시겠습니까?</p>';
+            
+            showConfirmModal(title, content,
+                () => {
+                    showToast('로그인 중...', 'info');
+                    
+                    setTimeout(() => {
+                        AppState.isLoggedIn = true;
+                        localStorage.setItem('oneai_logged_in', 'true');
+                        updateLoginState();
+                        showToast('김건강님, 안녕하세요! 로그인되었습니다.', 'success');
+                    }, 1500);
+                }
+            );
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast--${type}`;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight 200ms cubic-bezier(0.4, 0, 0.2, 1) reverse';
+                setTimeout(() => toast.remove(), 200);
+            }, 3000);
+        }
+
+        function toggleSymptom(element) {
+            const symptom = element.textContent;
+            
+            if (element.classList.contains('symptom-tag--selected')) {
+                element.classList.remove('symptom-tag--selected');
+                AppState.selectedSymptoms = AppState.selectedSymptoms.filter(s => s !== symptom);
+            } else {
+                element.classList.add('symptom-tag--selected');
+                if (!AppState.selectedSymptoms.includes(symptom)) {
+                    AppState.selectedSymptoms.push(symptom);
+                }
+            }
+        }
+
+        function updateLastSyncTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('ko-KR');
+            const element = document.getElementById('lastSync');
+            if (element) element.textContent = timeString;
+        }
+
+        function startSymptomAnalysis() {
+            if (AppState.selectedSymptoms.length === 0) {
+                showToast('증상을 선택해주세요', 'warning');
+                return;
+            }
+            
+            showToast('AI 증상 분석을 시작합니다...', 'info');
+            
+            setTimeout(() => {
+                const resultDiv = document.getElementById('analysisResult');
+                const contentDiv = document.getElementById('analysisContent');
+                
+                contentDiv.innerHTML = `
+                    <div style="margin-bottom: var(--spacing-lg);">
+                        <h4 style="color: var(--color-medical); margin-bottom: var(--spacing-sm);">선택된 증상</h4>
+                        <p>${AppState.selectedSymptoms.join(', ')}</p>
+                    </div>
+                    
+                    <div style="margin-bottom: var(--spacing-lg);">
+                        <h4 style="color: var(--color-medical); margin-bottom: var(--spacing-sm);">AI 분석 결과</h4>
+                        <div style="background: var(--color-surface-elevated); padding: var(--spacing-md); border-radius: var(--radius-lg); margin-bottom: var(--spacing-md);">
+                            <div style="color: var(--color-primary-500); font-weight: 600; margin-bottom: var(--spacing-sm);">감기 또는 상기도 감염 (75% 확률)</div>
+                            <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">현재 증상들이 일반적인 감기나 상기도 감염 패턴과 일치합니다.</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: var(--spacing-lg);">
+                        <h4 style="color: var(--color-medical); margin-bottom: var(--spacing-sm);">권장 사항</h4>
+                        <ul style="color: var(--text-secondary); font-size: var(--font-size-sm); padding-left: var(--spacing-lg);">
+                            <li>충분한 휴식과 수분 섭취</li>
+                            <li>따뜻한 물로 가글하기</li>
+                            <li>증상이 3일 이상 지속시 의료진 상담</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: rgba(245, 158, 11, 0.1); padding: var(--spacing-md); border-radius: var(--radius-lg); border: 1px solid var(--color-warning);">
+                        <p style="color: var(--color-warning); font-weight: 600; margin-bottom: var(--spacing-sm);">⚠️ 중요 안내</p>
+                        <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">이는 AI 분석 결과로 참고용이며, 정확한 진단은 의료진과 상담하세요.</p>
+                    </div>
+                    
+                    <div style="margin-top: var(--spacing-lg);">
+                        <button class="btn btn--primary btn--large" onclick="showContent('telemedicine')">전문의 상담받기</button>
+                    </div>
+                `;
+                
+                resultDiv.classList.remove('hidden');
+                showToast('AI 분석 완료! 결과를 확인하세요', 'success');
+            }, 2000);
+        }
+
+        function bookConsultation(type) {
+            const typeText = type === 'immediate' ? '즉시 상담' : '예약 상담';
+            const price = type === 'immediate' ? '15,000' : '20,000';
+            const waitTime = type === 'immediate' ? '평균 3분' : '예약시간';
+            
+            showToast(`${typeText} 예약을 진행합니다`, 'info');
+            
+            setTimeout(() => {
+                const title = `💻 ${typeText} 예약`;
+                const content = `
+                    <div class="modal__info-box">
+                        <h4>상담 정보</h4>
+                        <ul>
+                            <li>상담료: ₩${price}</li>
+                            <li>대기시간: ${waitTime}</li>
+                            <li>전문의: 김내과 원장</li>
+                            <li>상담시간: 15분</li>
+                        </ul>
+                    </div>
+                    <p>간단한 문진표 작성 후 결제를 진행하시겠습니까?</p>
+                `;
+                const actions = [
+                    {
+                        text: '취소',
+                        type: 'btn--secondary'
+                    },
+                    {
+                        text: '예약하기',
+                        type: 'btn--primary',
+                        handler: () => {
+                            showToast('문진표 작성 페이지로 이동합니다', 'success');
+                            setTimeout(() => proceedPayment(type, price), 1500);
+                        }
+                    }
+                ];
+                showModal(title, content, actions);
+            }, 1000);
+        }
+
+        function proceedPayment(type, price) {
+            showToast('결제를 진행합니다...', 'info');
+            
+            setTimeout(() => {
+                showToast('결제 완료! 상담을 시작합니다', 'success');
+                
+                if (type === 'immediate') {
+                    setTimeout(() => startConsultationModal(), 1000);
+                } else {
+                    setTimeout(() => showScheduleModal(), 1000);
+                }
+            }, 2000);
+        }
+
+        function startConsultationModal() {
+            const title = '🎥 즉시 상담 연결';
+            const content = `
+                <div class="modal__icon">🎥</div>
+                <h4>김내과 원장님과 연결되었습니다!</h4>
+                <div class="modal__info-box">
+                    <p>의사: "안녕하세요, 어떤 증상으로 오셨나요?"</p>
+                </div>
+                <p>※ 실제 서비스에서는 화상통화가 시작됩니다.</p>
+            `;
+            showModal(title, content);
+        }
+
+        function showScheduleModal() {
+            const title = '📅 예약 완료';
+            const content = `
+                <div class="modal__icon">📅</div>
+                <h4>예약 정보</h4>
+                <div class="modal__info-box">
+                    <ul>
+                        <li>날짜: 내일 14:00</li>
+                        <li>담당의: 김내과 원장</li>
+                        <li>예약번호: TC-240806</li>
+                    </ul>
+                </div>
+                <p>예약 시간 10분 전에 알림을 보내드립니다.</p>
+            `;
+            showModal(title, content);
+        }
+
+        function showEmergency() {
+            const title = '🚨 응급상황 대응 센터';
+            const content = `
+                <div class="modal__error-box">
+                    <p style="color: var(--color-error); font-weight: 600; margin-bottom: var(--spacing-sm);">⚠️ 생명이 위험한 상황이라면 즉시 119에 신고하세요!</p>
+                </div>
+                
+                <h4>🆘 즉시 대응이 필요한 경우:</h4>
+                <ul>
+                    <li>📞 119 신고 (생명위험)</li>
+                    <li>🏥 가까운 응급실 찾기</li>
+                    <li>🚑 응급처치 음성 가이드</li>
+                </ul>
+                
+                <h4>📋 일반 응급처치:</h4>
+                <ul>
+                    <li>심폐소생술 가이드</li>
+                    <li>기도폐쇄 대처법</li>
+                    <li>화상 응급처치</li>
+                    <li>출혈 지혈법</li>
+                </ul>
+                
+                <div class="modal__warning-box">
+                    <p style="color: var(--color-warning); font-weight: 600;">⚠️ 망설이지 말고 119에 신고하세요!</p>
+                </div>
+            `;
+            const actions = [
+                {
+                    text: '닫기',
+                    type: 'btn--secondary'
+                },
+                {
+                    text: '119 신고',
+                    type: 'btn--primary',
+                    handler: () => {
+                        showToast('119에 신고합니다', 'error');
+                        window.location.href = 'tel:119';
+                    }
+                },
+                {
+                    text: '응급처치 가이드',
+                    type: 'btn--secondary',
+                    handler: () => showToast('응급처치 가이드로 이동합니다', 'info'),
+                    closeModal: false
+                }
+            ];
+            showModal(title, content, actions);
+        }
+
+        function exportHealthData() {
+            showToast('건강 데이터를 내보냅니다', 'success');
+            
+            setTimeout(() => {
+                const data = {
+                    exportDate: new Date().toISOString(),
+                    user: '김건강',
+                    healthMetrics: {
+                        heartRate: 72,
+                        bloodPressure: '120/80',
+                        sleep: '7.2h',
+                        steps: 8547
+                    }
+                };
+                
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `oneai_health_data_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                URL.revokeObjectURL(url);
+            }, 1000);
+        }
+
+        function shareWithDoctor() {
+            showToast('의사와 데이터 공유 기능을 준비중입니다', 'info');
+        }
+
+        // 추가 기능들
+        function addToCart(productId) {
+            showToast('장바구니에 추가되었습니다', 'success');
+        }
+
+        function viewConsultationDetail(id) {
+            const title = `💻 상담 내역 #${id}`;
+            const content = `
+                <h4>상세 정보</h4>
+                <div class="modal__info-box">
+                    <ul>
+                        <li>상담 날짜: 2024.08.0${id}</li>
+                        <li>증상: 감기 증상</li>
+                        <li>처방: 해열진통제 외 2개</li>
+                        <li>담당의: 김내과 원장</li>
+                    </ul>
+                </div>
+                <p>※ 실제 서비스에서는 상세 페이지로 이동합니다.</p>
+            `;
+            showModal(title, content);
+        }
+
+        function viewPrescription(id) {
+            const title = `💊 처방전 #${id}`;
+            const content = `
+                <h4>처방 내용</h4>
+                <div class="modal__info-box">
+                    <ul>
+                        <li>해열진통제 (3일분)</li>
+                        <li>기침가래약 (5일분)</li>
+                        <li>종합감기약 (3일분)</li>
+                    </ul>
+                    <div class="modal__divider"></div>
+                    <p><strong>처방의:</strong> 김내과 원장</p>
+                    <p><strong>발급일:</strong> 2024.08.05</p>
+                </div>
+            `;
+            showModal(title, content);
+        }
+
+        function orderMedicine(id) {
+            const title = '💊 약국 주문';
+            const content = `
+                <p>연계 약국에서 약을 주문하시겠습니까?</p>
+                <div class="modal__info-box">
+                    <ul>
+                        <li>예상 소요시간: 30분</li>
+                        <li>배송비: 무료</li>
+                    </ul>
+                </div>
+            `;
+            const actions = [
+                {
+                    text: '취소',
+                    type: 'btn--secondary'
+                },
+                {
+                    text: '주문하기',
+                    type: 'btn--primary',
+                    handler: () => showToast('약국 주문이 완료되었습니다', 'success')
+                }
+            ];
+            showModal(title, content, actions);
+        }
+
+        function viewReceipt(id) {
+            const title = `🧾 영수증 #${id}`;
+            const content = `
+                <h4>결제 정보</h4>
+                <div class="modal__info-box">
+                    <ul>
+                        <li>서비스: 비대면진료</li>
+                        <li>금액: ₩15,000</li>
+                        <li>결제일: 2024.08.05</li>
+                        <li>결제수단: 신용카드</li>
+                    </ul>
+                </div>
+                <p>※ 영수증이 이메일로 발송됩니다.</p>
+            `;
+            showModal(title, content);
+        }
+
+        function editProfile() {
+            const title = '✏️ 개인정보 수정';
+            const content = `
+                <h4>수정 가능한 항목</h4>
+                <div class="modal__info-box">
+                    <ul>
+                        <li>이름</li>
+                        <li>생년월일</li>
+                        <li>연락처</li>
+                        <li>주소</li>
+                    </ul>
+                </div>
+                <p>※ 실제 서비스에서는 수정 폼으로 이동합니다.</p>
+            `;
+            const actions = [
+                {
+                    text: '취소',
+                    type: 'btn--secondary'
+                },
+                {
+                    text: '수정하기',
+                    type: 'btn--primary',
+                    handler: () => showToast('개인정보 수정 페이지로 이동합니다', 'info')
+                }
+            ];
+            showModal(title, content, actions);
+        }
+
+        function changePassword() {
+            const title = '🔒 비밀번호 변경';
+            const content = `
+                <h4>보안을 위해 다음 조건을 지켜주세요</h4>
+                <div class="modal__info-box">
+                    <ul>
+                        <li>8자 이상 입력</li>
+                        <li>영문, 숫자, 특수문자 조합</li>
+                        <li>기존 비밀번호와 다르게 설정</li>
+                    </ul>
+                </div>
+                <p>※ 실제 서비스에서는 변경 폼으로 이동합니다.</p>
+            `;
+            const actions = [
+                {
+                    text: '취소',
+                    type: 'btn--secondary'
+                },
+                {
+                    text: '변경하기',
+                    type: 'btn--primary',
+                    handler: () => showToast('비밀번호 변경 페이지로 이동합니다', 'info')
+                }
+            ];
+            showModal(title, content, actions);
+        }
+
+        function exportAllData() {
+            showToast('모든 데이터를 내보내는 중...', 'info');
+            setTimeout(() => {
+                showToast('데이터 내보내기 완료! 이메일을 확인하세요', 'success');
+            }, 2000);
+        }
+
+        function deleteAccount() {
+            const title = '⚠️ 계정 삭제';
+            const content = `
+                <div class="modal__error-box">
+                    <p style="color: var(--color-error); font-weight: 600;">⚠️ 모든 데이터가 영구적으로 삭제됩니다.</p>
+                </div>
+                <p>정말로 계정을 삭제하시겠습니까?</p>
+                <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">이 작업은 되돌릴 수 없습니다.</p>
+            `;
+            
+            const actions = [
+                {
+                    text: '취소',
+                    type: 'btn--secondary'
+                },
+                {
+                    text: '삭제 진행',
+                    type: 'btn--primary',
+                    handler: () => {
+                        closeModal();
+                        setTimeout(() => {
+                            showConfirmModal(
+                                '⚠️ 최종 확인',
+                                '<div class="modal__error-box"><p style="color: var(--color-error); font-weight: 600;">계정 삭제를 진행하시겠습니까?</p></div>',
+                                () => showToast('계정 삭제 요청이 접수되었습니다', 'error'),
+                                () => showToast('계정 삭제가 취소되었습니다', 'info')
+                            );
+                        }, 300);
+                    }
+                }
+            ];
+            showModal(title, content, actions);
+        }
+
+        function startChat() {
+            showToast('실시간 채팅을 시작합니다', 'info');
+            setTimeout(() => {
+                const title = '💬 실시간 채팅';
+                const content = `
+                    <div class="modal__icon">💬</div>
+                    <div class="modal__info-box">
+                        <p><strong>상담원:</strong> 안녕하세요! One AI 고객지원입니다.</p>
+                        <p>무엇을 도와드릴까요?</p>
+                    </div>
+                    <p>※ 실제 서비스에서는 채팅창이 열립니다.</p>
+                `;
+                const actions = [
+                    {
+                        text: '나중에',
+                        type: 'btn--secondary'
+                    },
+                    {
+                        text: '채팅 시작',
+                        type: 'btn--primary',
+                        handler: () => showToast('채팅창으로 이동합니다', 'info')
+                    }
+                ];
+                showModal(title, content, actions);
+            }, 1000);
+        }
+
+        function makeCall() {
+            const title = '📞 전화 상담';
+            const content = `
+                <div class="modal__icon">📞</div>
+                <h4>고객지원 전화번호</h4>
+                <div class="modal__info-box">
+                    <p style="font-size: var(--font-size-xl); font-weight: 600; text-align: center;">1588-1234</p>
+                    <p style="text-align: center; margin-top: var(--spacing-sm);">평일 09:00 - 18:00</p>
+                </div>
+                <p>고객지원 전화로 연결하시겠습니까?</p>
+            `;
+            const actions = [
+                {
+                    text: '취소',
+                    type: 'btn--secondary'
+                },
+                {
+                    text: '전화걸기',
+                    type: 'btn--primary',
+                    handler: () => {
+                        showToast('전화 연결 중...', 'info');
+                        window.location.href = 'tel:1588-1234';
+                    }
+                }
+            ];
+            showModal(title, content, actions);
+        }
+
+        function sendEmail() {
+            const title = '📧 이메일 문의';
+            const content = `
+                <h4>문의 시 다음 정보를 포함해주세요</h4>
+                <div class="modal__info-box">
+                    <ul>
+                        <li>문의 유형</li>
+                        <li>상세 내용</li>
+                        <li>연락처</li>
+                    </ul>
+                    <div class="modal__divider"></div>
+                    <p><strong>이메일:</strong> support@oneai.com</p>
+                </div>
+                <p>※ 24시간 내 답변드립니다.</p>
+            `;
+            const actions = [
+                {
+                    text: '닫기',
+                    type: 'btn--secondary'
+                },
+                {
+                    text: '이메일 보내기',
+                    type: 'btn--primary',
+                    handler: () => window.location.href = 'mailto:support@oneai.com'
+                }
+            ];
+            showModal(title, content, actions);
+        }
+
+        function uploadHealthCheckup() {
+            const title = '📋 건강검진 분석';
+            const content = `
+                <h4>업로드 후 예상 과정</h4>
+                <div class="modal__info-box">
+                    <ol style="padding-left: var(--spacing-lg);">
+                        <li>파일 검증 (1분)</li>
+                        <li>AI 분석 (3-5분)</li>
+                        <li>결과 리포트 생성</li>
+                    </ol>
+                </div>
+                <p>※ 분석 완료 시 알림으로 안내드립니다.</p>
+            `;
+            const actions = [
+                {
+                    text: '취소',
+                    type: 'btn--secondary'
+                },
+                {
+                    text: '파일 업로드',
+                    type: 'btn--primary',
+                    handler: () => showToast('파일 업로드 기능을 준비중입니다', 'info')
+                }
+            ];
+            showModal(title, content, actions);
+        }
+
+        function addMedicine() {
+            const input = document.getElementById('medicineInput');
+            const medicine = input.value.trim();
+            
+            if (medicine) {
+                const medicinesDiv = document.getElementById('medicines');
+                const medicineTag = document.createElement('div');
+                medicineTag.className = 'symptom-tag symptom-tag--selected';
+                medicineTag.textContent = medicine;
+                medicinesDiv.appendChild(medicineTag);
+                input.value = '';
+                showToast('약물이 추가되었습니다', 'success');
+            } else {
+                showToast('약물명을 입력해주세요', 'warning');
+            }
+        }
+
+        function checkInteraction() {
+            showToast('약물 상호작용을 검사 중...', 'info');
+            setTimeout(() => {
+                document.getElementById('interactionResult').classList.remove('hidden');
+                showToast('검사 완료! 결과를 확인하세요', 'success');
+            }, 2000);
+        }
+
+        function uploadPrescription() {
+            showToast('처방전 업로드 기능을 준비중입니다', 'info');
+        }
+
+        function enterPrescriptionNumber() {
+            const title = '📋 처방전 번호 입력';
+            const content = `
+                <p>처방전 번호를 입력해주세요:</p>
+                <div class="modal__info-box">
+                    <input type="text" id="prescriptionNumberInput" placeholder="예: RX-2024-08-06-001" 
+                           style="width: 100%; padding: var(--spacing-sm); border: 1px solid var(--color-surface-overlay); 
+                                  border-radius: var(--radius-md); background: var(--color-surface-elevated); 
+                                  color: var(--text-primary);">
+                </div>
+            `;
+            const actions = [
+                {
+                    text: '취소',
+                    type: 'btn--secondary'
+                },
+                {
+                    text: '조회하기',
+                    type: 'btn--primary',
+                    handler: () => {
+                        const number = document.getElementById('prescriptionNumberInput').value.trim();
+                        if (number) {
+                            showToast('처방전을 조회 중입니다...', 'info');
+                            setTimeout(() => {
+                                showToast('처방전 조회 완료!', 'success');
+                            }, 1500);
+                        } else {
+                            showToast('처방전 번호를 입력해주세요', 'warning');
+                        }
+                    },
+                    closeModal: false
+                }
+            ];
+            showModal(title, content, actions);
+        }
+
+        function changeAddress() {
+            const title = '🏠 배송 주소 변경';
+            const content = `
+                <h4>현재 주소</h4>
+                <div class="modal__info-box">
+                    <p>서울시 강남구 테헤란로 123, 101호</p>
+                </div>
+                <p>※ 실제 서비스에서는 주소 변경 폼으로 이동합니다.</p>
+            `;
+            const actions = [
+                {
+                    text: '취소',
+                    type: 'btn--secondary'
+                },
+                {
+                    text: '주소 변경',
+                    type: 'btn--primary',
+                    handler: () => showToast('주소 변경 페이지로 이동합니다', 'info')
+                }
+            ];
+            showModal(title, content, actions);
+        }
+
+        function selectDoctor(doctorId) {
+            const doctors = {
+                'kim': '김내과 원장',
+                'lee': '이가정의학과 원장'
+            };
+            
+            const selectedDoctor = doctors[doctorId];
+            showToast(`${selectedDoctor}님을 선택하셨습니다`, 'success');
+            
+            setTimeout(() => {
+                const title = `👨‍⚕️ ${selectedDoctor}님과 상담`;
+                const content = `
+                    <p>어떤 상담을 원하시나요?</p>
+                    <div class="modal__info-box">
+                        <p><strong>즉시 상담:</strong> ₩15,000 (평균 대기시간 3분)</p>
+                        <p><strong>예약 상담:</strong> ₩20,000 (원하는 시간에 예약)</p>
+                    </div>
+                `;
+                const actions = [
+                    {
+                        text: '예약 상담',
+                        type: 'btn--secondary',
+                        handler: () => bookConsultationWithDoctor('scheduled', selectedDoctor)
+                    },
+                    {
+                        text: '즉시 상담',
+                        type: 'btn--primary',
+                        handler: () => bookConsultationWithDoctor('immediate', selectedDoctor)
+                    }
+                ];
+                showModal(title, content, actions);
+            }, 1000);
+        }
+
+        function bookConsultationWithDoctor(type, doctor) {
+            const typeText = type === 'immediate' ? '즉시 상담' : '예약 상담';
+            const price = type === 'immediate' ? '15,000' : '20,000';
+            const waitTime = type === 'immediate' ? '평균 3분' : '예약시간';
+            
+            showToast(`${doctor}님과 ${typeText} 예약을 진행합니다`, 'info');
+            
+            setTimeout(() => {
+                const title = `💻 ${typeText} 예약 확인`;
+                const content = `
+                    <div class="modal__info-box">
+                        <ul>
+                            <li>담당의: ${doctor}</li>
+                            <li>상담료: ₩${price}</li>
+                            <li>대기시간: ${waitTime}</li>
+                            <li>상담시간: ${type === 'immediate' ? '15분' : '20분'}</li>
+                        </ul>
+                    </div>
+                    <p>결제를 진행하시겠습니까?</p>
+                `;
+                const actions = [
+                    {
+                        text: '취소',
+                        type: 'btn--secondary'
+                    },
+                    {
+                        text: '결제하기',
+                        type: 'btn--primary',
+                        handler: () => {
+                            // 결제 과정 시뮬레이션
+                            showToast('결제를 진행합니다...', 'info');
+                            
+                            setTimeout(() => {
+                                showToast('결제 완료! 상담 대기실로 이동합니다', 'success');
+                                
+                                setTimeout(() => {
+                                    if (type === 'immediate') {
+                                        startImmediateConsultation(doctor);
+                                    } else {
+                                        scheduleConsultation(doctor);
+                                    }
+                                }, 1500);
+                            }, 2000);
+                        }
+                    }
+                ];
+                showModal(title, content, actions);
+            }, 1000);
+        }
+
+        function startImmediateConsultation(doctor) {
+            const title = '🎥 즉시 상담 시작';
+            const content = `
+                <div class="modal__icon">🎥</div>
+                <h4>담당의: ${doctor}</h4>
+                <div class="modal__info-box">
+                    <ul>
+                        <li>대기번호: 3번</li>
+                        <li>예상 대기시간: 2분</li>
+                        <li>상담 시간: 15분</li>
+                    </ul>
+                </div>
+                <p>잠시 후 화상통화가 연결됩니다.<br>마이크와 카메라를 준비해주세요.</p>
+            `;
+            showModal(title, content);
+            
+            setTimeout(() => {
+                closeModal();
+                setTimeout(() => {
+                    const title2 = `📞 ${doctor}님과 연결되었습니다!`;
+                    const content2 = `
+                        <div class="modal__icon">📞</div>
+                        <h4>상담 진행 중...</h4>
+                        <div class="modal__info-box">
+                            <p>${doctor}: "안녕하세요, 어떤 증상으로 오셨나요?"</p>
+                        </div>
+                        <p>※ 실제 서비스에서는 화상통화가 시작됩니다.</p>
+                    `;
+                    showModal(title2, content2);
+                }, 500);
+            }, 3000);
+        }
+
+        function scheduleConsultation(doctor) {
+            const timeSlots = [
+                '오늘 15:00',
+                '오늘 16:30', 
+                '내일 09:00',
+                '내일 14:00',
+                '모레 11:00'
+            ];
+            
+            const selectedTime = timeSlots[Math.floor(Math.random() * timeSlots.length)];
+            
+            const title = '📅 예약 상담 완료';
+            const content = `
+                <div class="modal__icon">📅</div>
+                <h4>예약 확인</h4>
+                <div class="modal__info-box">
+                    <ul>
+                        <li>담당의: ${doctor}</li>
+                        <li>예약 시간: ${selectedTime}</li>
+                        <li>상담 시간: 20분</li>
+                        <li>예약번호: TC-${Date.now().toString().slice(-6)}</li>
+                        <li>상담료: ₩20,000 (결제완료)</li>
+                    </ul>
+                </div>
+                <p>예약 시간 10분 전에 알림을 보내드립니다.</p>
+            `;
+            showModal(title, content);
+        }
+
+        function connectDevice(deviceType) {
+            const devices = {
+                'apple-watch': 'Apple Watch',
+                'samsung-health': 'Samsung Health',
+                'fitbit': 'Fitbit'
+            };
+            
+            showToast(`${devices[deviceType]} 연동을 시작합니다`, 'info');
+            setTimeout(() => {
+                showToast(`${devices[deviceType]} 연동이 완료되었습니다`, 'success');
+            }, 2000);
+        }
+
+        function disconnectDevice(deviceType) {
+            const title = '⚠️ 디바이스 연동 해제';
+            const content = '<p>디바이스 연동을 해제하시겠습니까?</p>';
+            
+            showConfirmModal(title, content, 
+                () => showToast('연동이 해제되었습니다', 'info')
+            );
+        }
+    </script>
+</body>
+</html>

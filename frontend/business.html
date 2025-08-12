@@ -4,8 +4,693 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>One AI - 비즈니스센터</title>
-    <link rel="stylesheet" href="oneai.css">
     <style>
+        /* One AI Design System - Essential CSS Variables & Components */
+        :root {
+            /* Color System - Dark Theme */
+            --color-surface-base: #000000;
+            --color-surface-raised: #0a0a0a;
+            --color-surface-elevated: #111111;
+            --color-surface-overlay: #1a1a1a;
+            --color-surface-modal: #222222;
+            --surface-glass: rgba(17, 17, 17, 0.8);
+            --surface-glass-border: rgba(255, 255, 255, 0.1);
+            
+            /* Text Colors */
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-tertiary: #a3a3a3;
+            --text-quaternary: #737373;
+            --text-disabled: #525252;
+            
+            /* Brand Colors */
+            --color-primary-200: #a7f3d0;
+            --color-primary-400: #34d399;
+            --color-primary-500: #10b981;
+            --color-primary-600: #059669;
+            --color-primary-700: #047857;
+            
+            /* Status Colors */
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-info: #3b82f6;
+            
+            /* Typography Tokens */
+            --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --font-weight-extrabold: 800;
+            
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 22px;
+            --font-size-2xl: 28px;
+            --font-size-3xl: 36px;
+            --font-size-4xl: 48px;
+            
+            /* Spacing Tokens */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            --spacing-3xl: 64px;
+            
+            /* Border Radius Tokens */
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-2xl: 16px;
+            --radius-full: 9999px;
+            
+            /* Z-Index Tokens */
+            --z-index-base: 0;
+            --z-index-sidebar: 10;
+            --z-index-dropdown: 20;
+            --z-index-modal: 40;
+            --z-index-toast: 50;
+            
+            /* Shadow Tokens */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            
+            /* Motion Tokens */
+            --motion-duration-fast: 150ms;
+            --motion-duration-normal: 250ms;
+            --motion-duration-slow: 350ms;
+            --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Reset & Base Styles */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-primary);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-normal);
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--color-surface-base);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Focus Management */
+        *:focus {
+            outline: none;
+        }
+
+        *:focus-visible {
+            outline: 2px solid var(--color-primary-500);
+            outline-offset: 2px;
+            border-radius: var(--radius-sm);
+        }
+
+        /* Custom Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-sm);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-quaternary);
+            border-radius: var(--radius-sm);
+            transition: background-color var(--motion-duration-normal) var(--motion-ease);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-primary-500);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: var(--color-surface-elevated);
+        }
+
+        /* Firefox Scrollbar */
+        html {
+            scrollbar-width: thin;
+            scrollbar-color: var(--text-quaternary) var(--color-surface-elevated);
+        }
+
+        /* 특정 요소들의 스크롤바 커스터마이징 */
+        .modal__content::-webkit-scrollbar,
+        .dropdown::-webkit-scrollbar,
+        .form-textarea::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .modal__content::-webkit-scrollbar-thumb,
+        .dropdown::-webkit-scrollbar-thumb,
+        .form-textarea::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-sm);
+        }
+
+        .modal__content::-webkit-scrollbar-thumb:hover,
+        .dropdown::-webkit-scrollbar-thumb:hover,
+        .form-textarea::-webkit-scrollbar-thumb:hover {
+            background: var(--color-primary-400);
+        }
+
+        /* 테이블 스크롤 영역 */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius-xl);
+        }
+
+        .table-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: var(--color-surface-modal);
+            border-radius: var(--radius-sm);
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: var(--surface-glass-border);
+            border-radius: var(--radius-sm);
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: var(--color-primary-500);
+        }
+
+        /* Typography Classes */
+        .text-xs { font-size: var(--font-size-xs); }
+        .text-sm { font-size: var(--font-size-sm); }
+        .text-base { font-size: var(--font-size-base); }
+        .text-lg { font-size: var(--font-size-lg); }
+        .text-xl { font-size: var(--font-size-xl); }
+        .text-2xl { font-size: var(--font-size-2xl); }
+        .text-3xl { font-size: var(--font-size-3xl); }
+        .text-4xl { font-size: var(--font-size-4xl); }
+
+        .font-normal { font-weight: var(--font-weight-normal); }
+        .font-medium { font-weight: var(--font-weight-medium); }
+        .font-semibold { font-weight: var(--font-weight-semibold); }
+        .font-bold { font-weight: var(--font-weight-bold); }
+
+        .text-primary { color: var(--text-primary); }
+        .text-secondary { color: var(--text-secondary); }
+        .text-tertiary { color: var(--text-tertiary); }
+        .text-quaternary { color: var(--text-quaternary); }
+
+        .text-success { color: var(--color-success); }
+        .text-warning { color: var(--color-warning); }
+        .text-error { color: var(--color-error); }
+        .text-info { color: var(--color-info); }
+
+        .text-center { text-align: center; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Layout Classes */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .flex-1 { flex: 1; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-xs { gap: var(--spacing-xs); }
+        .gap-sm { gap: var(--spacing-sm); }
+        .gap-md { gap: var(--spacing-md); }
+        .gap-lg { gap: var(--spacing-lg); }
+
+        .grid { display: grid; }
+        .grid-cols-auto { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+
+        /* Button Components */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-family: inherit;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            line-height: 1;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+            white-space: nowrap;
+        }
+
+        .btn--xs { padding: 6px 12px; font-size: var(--font-size-xs); }
+        .btn--lg { padding: 14px 28px; font-size: var(--font-size-base); }
+        .btn--full { width: 100%; }
+
+        .btn--primary {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        .btn--primary:hover:not(:disabled) {
+            background: var(--color-primary-400);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn--secondary {
+            background: transparent;
+            color: var(--color-primary-500);
+            border: 1px solid var(--color-primary-500);
+        }
+
+        .btn--secondary:hover:not(:disabled) {
+            background: var(--color-primary-500);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn--ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--surface-glass-border);
+        }
+
+        .btn--ghost:hover:not(:disabled) {
+            background: var(--color-surface-elevated);
+            color: var(--text-primary);
+            border-color: var(--color-primary-500);
+        }
+
+        .btn--danger {
+            background: var(--color-error);
+            color: white;
+        }
+
+        .btn--danger:hover:not(:disabled) {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        /* Form Components */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-lg);
+            background: var(--color-surface-modal);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: var(--font-size-sm);
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--color-primary-500);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+            outline: none;
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-checkbox {
+            accent-color: var(--color-primary-500);
+            margin-right: var(--spacing-sm);
+        }
+
+        .form-help {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        /* Card Components */
+        .card {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            transition: all var(--motion-duration-normal) var(--motion-ease);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card--flat {
+            border: none;
+            box-shadow: none;
+        }
+
+        /* Modal Components */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: var(--z-index-modal);
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-lg);
+        }
+
+        .modal--show {
+            display: flex;
+        }
+
+        .modal__content {
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-2xl);
+        }
+
+        .modal__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .modal__title {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .modal__close {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-sm);
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .modal__close:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal__body {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .modal__actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: flex-end;
+            margin-top: var(--spacing-lg);
+        }
+
+        /* Navigation Components */
+        .nav__item {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .nav__item:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Table Components */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            border: 1px solid var(--surface-glass-border);
+        }
+
+        .table th,
+        .table td {
+            padding: var(--spacing-md);
+            text-align: left;
+            border-bottom: 1px solid var(--surface-glass-border);
+        }
+
+        .table th {
+            background: var(--color-surface-modal);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+        }
+
+        .table td {
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Badge Components */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .badge--primary {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--color-primary-500);
+            border: 1px solid var(--color-primary-500);
+        }
+
+        .badge--success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--color-success);
+            border: 1px solid var(--color-success);
+        }
+
+        .badge--warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--color-warning);
+            border: 1px solid var(--color-warning);
+        }
+
+        .badge--error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--color-error);
+            border: 1px solid var(--color-error);
+        }
+
+        .badge--info {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--color-info);
+            border: 1px solid var(--color-info);
+        }
+
+        /* Toast Components */
+        .toast {
+            position: fixed;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            backdrop-filter: blur(16px);
+            z-index: var(--z-index-toast);
+            transform: translateX(100%);
+            transition: transform var(--motion-duration-normal) var(--motion-ease);
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .toast--show {
+            transform: translateX(0);
+        }
+
+        .toast--success {
+            border-left: 4px solid var(--color-success);
+        }
+
+        .toast--error {
+            border-left: 4px solid var(--color-error);
+        }
+
+        .toast--warning {
+            border-left: 4px solid var(--color-warning);
+        }
+
+        .toast--info {
+            border-left: 4px solid var(--color-info);
+        }
+
+        .toast__content {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .toast__message {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+        }
+
+        /* AI Service Icons */
+        .ai-engine-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            cursor: pointer;
+            transition: all var(--motion-duration-normal) var(--motion-ease);
+        }
+
+        .ai-engine-icon:hover {
+            transform: scale(1.1) translateY(-2px);
+        }
+
+        .ai-engine-icon--gpt {
+            background: linear-gradient(135deg, #10a37f, #1a7f72);
+        }
+
+        .bg-success { background: var(--color-success); }
+        .bg-elevated { background: var(--color-surface-elevated); }
+        .bg-raised { background: var(--color-surface-raised); }
+        .bg-modal { background: var(--color-surface-modal); }
+
+        /* Spacing Utilities */
+        .mb-xs { margin-bottom: var(--spacing-xs); }
+        .mb-sm { margin-bottom: var(--spacing-sm); }
+        .mb-md { margin-bottom: var(--spacing-md); }
+        .mb-lg { margin-bottom: var(--spacing-lg); }
+        .mb-xl { margin-bottom: var(--spacing-xl); }
+        .mb-2xl { margin-bottom: var(--spacing-2xl); }
+        .mb-3xl { margin-bottom: var(--spacing-3xl); }
+
+        .mt-xs { margin-top: var(--spacing-xs); }
+        .mt-sm { margin-top: var(--spacing-sm); }
+        .mt-md { margin-top: var(--spacing-md); }
+        .mt-lg { margin-top: var(--spacing-lg); }
+        .mt-xl { margin-top: var(--spacing-xl); }
+        .mt-2xl { margin-top: var(--spacing-2xl); }
+        .mt-3xl { margin-top: var(--spacing-3xl); }
+
+        .p-sm { padding: var(--spacing-sm); }
+        .p-md { padding: var(--spacing-md); }
+        .p-lg { padding: var(--spacing-lg); }
+
+        .ml-auto { margin-left: auto; }
+
+        /* Display Utilities */
+        .hidden { display: none !important; }
+        .block { display: block; }
+        .inline-block { display: inline-block; }
+
+        /* Border Radius */
+        .rounded-md { border-radius: var(--radius-md); }
+        .rounded-lg { border-radius: var(--radius-lg); }
+
+        /* Cursor */
+        .cursor-pointer { cursor: pointer; }
+
+        /* Animations */
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% {
+                transform: translate3d(0,0,0) scale(1);
+            }
+            40%, 43% {
+                transform: translate3d(0, -10px, 0) scale(1.1);
+            }
+            70% {
+                transform: translate3d(0, -5px, 0) scale(1.05);
+            }
+            90% {
+                transform: translate3d(0, -2px, 0) scale(1.02);
+            }
+        }
+
         /* 추가 페이지별 스타일 */
         .hero-section {
             text-align: center;
@@ -15,18 +700,18 @@
             margin-bottom: var(--spacing-3xl);
             position: relative;
         }
-
+        
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--spacing-2xl);
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--spacing-md);
         }
 
         .stat-card {
             background: var(--color-surface-elevated);
             border: 1px solid var(--surface-glass-border);
-            border-radius: var(--radius-xl);
-            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -208,6 +893,7 @@
             padding: var(--spacing-lg) 0;
         }
 
+        /* 개선된 헤더 스타일 */
         .header {
             position: sticky;
             top: 0;
@@ -216,6 +902,9 @@
             border-bottom: 1px solid var(--surface-glass-border);
             z-index: var(--z-index-sidebar);
             transition: all var(--motion-duration-normal) var(--motion-ease);
+            height: 60px;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .header__content {
@@ -224,7 +913,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: var(--spacing-md) var(--spacing-lg);
+            padding: 0 var(--spacing-lg);
+            height: 100%;
         }
 
         .logo {
@@ -234,6 +924,9 @@
             text-decoration: none;
             color: var(--text-primary);
             transition: transform var(--motion-duration-fast) var(--motion-ease);
+            font-size: 18px;
+            flex-shrink: 0;
+            height: 100%;
         }
 
         .logo:hover {
@@ -256,6 +949,21 @@
             font-weight: var(--font-weight-semibold);
         }
 
+        .header .flex {
+            height: 100%;
+        }
+
+        .header .flex.items-center {
+            align-items: center;
+        }
+
+        .nav-tab {
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            height: 40px;
+        }
+
         .profile-btn {
             width: 40px;
             height: 40px;
@@ -267,6 +975,10 @@
             cursor: pointer;
             position: relative;
             transition: all var(--motion-duration-fast) var(--motion-ease);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-sm);
         }
 
         .profile-btn:hover {
@@ -283,6 +995,36 @@
             background: var(--color-error);
             border-radius: var(--radius-full);
             border: 2px solid var(--color-surface-base);
+        }
+
+        .notification {
+            top: 70px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-family: inherit;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            line-height: 1;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+            white-space: nowrap;
+            height: 40px;
+            min-height: 40px;
+        }
+
+        .header .gap-md {
+            gap: var(--spacing-md);
+            align-items: center;
+            height: 100%;
         }
 
         .dropdown {
@@ -355,14 +1097,157 @@
             --service-gradient: linear-gradient(90deg, #f97316, #fb923c);
         }
 
-        /* Responsive */
+        /* 판매자 등록 페이지 스타일 개선 - 글로벌 스탠다드 */
+        .seller-terms-section {
+            margin-top: var(--spacing-xl);
+        }
+
+        .terms-agreement-item {
+            background: var(--color-surface-raised);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .terms-agreement-item:hover {
+            border-color: var(--color-primary-500);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .terms-agreement-item.selected {
+            border-color: var(--color-primary-500);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .terms-checkbox-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+            cursor: pointer;
+        }
+
+        .terms-checkbox {
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .terms-content {
+            flex: 1;
+        }
+
+        .terms-title {
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-base);
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+            line-height: 1.4;
+        }
+
+        .terms-description {
+            font-size: var(--font-size-sm);
+            color: var(--text-tertiary);
+            line-height: 1.4;
+        }
+
+        .select-all-wrapper {
+            background: var(--color-surface-modal);
+            border: 2px solid var(--color-primary-500);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .select-all-checkbox {
+            transform: scale(1.2);
+        }
+
+        .select-all-title {
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-lg);
+            color: var(--text-primary);
+        }
+
+        .tracking-demo-section {
+            background: var(--color-surface-raised);
+            border: 1px solid var(--surface-glass-border);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .tracking-demo-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+
+        .tracking-demo-content {
+            background: var(--color-surface-modal);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: var(--font-size-sm);
+            line-height: 1.6;
+        }
+
+        .revenue-structure {
+            background: var(--color-surface-raised);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .revenue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--surface-glass-border);
+        }
+
+        .revenue-item:last-child {
+            border-bottom: none;
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-lg);
+            margin-top: var(--spacing-sm);
+            padding-top: var(--spacing-md);
+            border-top: 2px solid var(--surface-glass-border);
+        }
+
+        .revenue-main {
+            font-size: var(--font-size-xl);
+            color: var(--color-success);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .section-divider {
+            height: 1px;
+            background: var(--surface-glass-border);
+            margin: var(--spacing-2xl) 0;
+        }
+
+        /* 모바일 반응형 개선 */
         @media (max-width: 768px) {
+            .header {
+                height: auto;
+                min-height: 60px;
+            }
+            
             .header__content {
                 padding: var(--spacing-md);
+                min-height: 60px;
             }
             
             .btn span {
                 display: none;
+            }
+            
+            .btn {
+                padding: 10px;
+                min-width: 40px;
             }
             
             .page-container {
@@ -383,6 +1268,14 @@
 
             .services-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .terms-title {
+                font-size: var(--font-size-sm);
+            }
+
+            .terms-description {
+                font-size: var(--font-size-xs);
             }
         }
     </style>
@@ -414,7 +1307,7 @@
                                 <div class="ai-engine-icon ai-engine-icon--gpt">김</div>
                                 <div>
                                     <h3 class="text-base font-semibold mb-xs">김개발자</h3>
-                                    <p class="text-sm text-secondary mb-xs">kim@example.com</p>
+                                    <p class="text-sm text-secondary mb-xs profile-info">kim@example.com</p>
                                     <span class="badge badge--primary">비즈니스 플랜</span>
                                 </div>
                             </div>
@@ -422,11 +1315,11 @@
                         
                         <div class="grid grid-cols-2 gap-md p-md" style="background: rgba(16, 185, 129, 0.05); border-bottom: 1px solid var(--surface-glass-border);">
                             <div class="text-center">
-                                <span class="block text-lg font-bold text-success">₩847K</span>
+                                <span class="block text-lg font-bold text-success">₩0</span>
                                 <span class="text-xs text-tertiary">이번 달 수익</span>
                             </div>
                             <div class="text-center">
-                                <span class="block text-lg font-bold text-success">12</span>
+                                <span class="block text-lg font-bold text-success">3</span>
                                 <span class="text-xs text-tertiary">활성 AI 엔진</span>
                             </div>
                         </div>
@@ -469,24 +1362,22 @@
         </div>
         
         <!-- Stats Section -->
-        <div class="content-section mb-3xl">
-            <div class="stats-grid">
-                <div class="stat-card" onclick="showMyEngines()">
-                    <div class="text-3xl font-bold text-primary mb-sm">1,247</div>
-                    <div class="text-tertiary text-sm">제작된 AI 엔진</div>
-                </div>
-                <div class="stat-card" onclick="showAnalytics()">
-                    <div class="text-3xl font-bold text-primary mb-sm">₩2.3B</div>
-                    <div class="text-tertiary text-sm">총 거래액</div>
-                </div>
-                <div class="stat-card">
-                    <div class="text-3xl font-bold text-primary mb-sm">89%</div>
-                    <div class="text-tertiary text-sm">고객 만족도</div>
-                </div>
-                <div class="stat-card">
-                    <div class="text-3xl font-bold text-primary mb-sm">24/7</div>
-                    <div class="text-tertiary text-sm">기술 지원</div>
-                </div>
+        <div class="stats-grid mb-lg">
+            <div class="stat-card" onclick="showMyEngines()">
+                <div class="text-2xl font-bold text-primary mb-xs">3</div>
+                <div class="text-tertiary text-sm">제작된 AI 엔진</div>
+            </div>
+            <div class="stat-card" onclick="showAnalytics()">
+                <div class="text-2xl font-bold text-primary mb-xs">₩0</div>
+                <div class="text-tertiary text-sm">총 거래액</div>
+            </div>
+            <div class="stat-card">
+                <div class="text-2xl font-bold text-primary mb-xs">-</div>
+                <div class="text-tertiary text-sm">고객 만족도</div>
+            </div>
+            <div class="stat-card">
+                <div class="text-2xl font-bold text-primary mb-xs">24/7</div>
+                <div class="text-tertiary text-sm">기술 지원</div>
             </div>
         </div>
 
@@ -521,7 +1412,7 @@
                         <li>고객 리뷰 및 평점 시스템</li>
                     </ul>
                     <div class="flex gap-sm">
-                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showMarketplace();">판매자 등록</button>
+                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showSellerRegistration();">판매자 등록</button>
                         <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showMarketplace();">제품 둘러보기</button>
                     </div>
                 </div>
@@ -555,6 +1446,22 @@
                     <div class="flex gap-sm">
                         <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showConsulting();">상담 신청</button>
                         <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showToast('컨설팅 포트폴리오를 확인하세요', 'info');">포트폴리오</button>
+                    </div>
+                </div>
+
+                <div class="service-card" style="--service-gradient: linear-gradient(90deg, #8b5cf6, #a855f7);" onclick="showCloudSubscription()">
+                    <div class="service-icon">☁️</div>
+                    <h3 class="text-2xl font-semibold mb-sm">클라우드 최저가 구독</h3>
+                    <p class="text-secondary mb-lg">업계 최저가로 클라우드 AI 서비스를 이용하세요. 사용한 만큼만 결제하는 합리적인 요금제를 제공합니다.</p>
+                    <ul class="feature-list">
+                        <li>업계 최저가 요금제</li>
+                        <li>사용량 기반 과금</li>
+                        <li>무료 크레딧 제공</li>
+                        <li>24/7 클라우드 지원</li>
+                    </ul>
+                    <div class="flex gap-sm">
+                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showCloudSubscription();">요금제 보기</button>
+                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showToast('무료 크레딧을 지급해드립니다', 'success');">무료 체험</button>
                     </div>
                 </div>
             </div>
@@ -785,7 +1692,8 @@
         </div>
         
         <div class="content-section">
-            <table class="table">
+            <div class="table-container">
+                <table class="table">
                 <thead>
                     <tr>
                         <th>엔진 이름</th>
@@ -844,7 +1752,8 @@
                         </td>
                     </tr>
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
         
         <div class="content-section">
@@ -975,7 +1884,8 @@
         
         <div class="content-section">
             <h3 class="mb-lg">베스트 셀러</h3>
-            <table class="table">
+            <div class="table-container">
+                <table class="table">
                 <thead>
                     <tr>
                         <th>AI 엔진</th>
@@ -1008,7 +1918,487 @@
                         <td class="text-error">-2.1%</td>
                     </tr>
                 </tbody>
-            </table>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 판매자 등록 페이지 (개선된 버전) -->
+    <div id="sellerRegistrationPage" class="page-container hidden">
+        <div class="page-header">
+            <button class="back-btn" onclick="showHome()">←</button>
+            <h1 class="page-title">🏪 판매자 등록</h1>
+        </div>
+        
+        <div class="content-section">
+            <div class="mb-2xl text-center">
+                <h2 class="text-3xl font-semibold mb-lg">판매자가 되어 수익을 창출하세요</h2>
+                <p class="text-secondary text-lg">AI 엔진을 제작하고 판매하여 새로운 수익원을 만들어보세요</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-xl mb-2xl">
+                <div class="card">
+                    <h4 class="text-xl font-semibold mb-lg">💰 수익 혜택</h4>
+                    <ul class="feature-list">
+                        <li>판매 수익의 <strong>50%</strong> 지급</li>
+                        <li>월 최소 보장 수익 프로그램</li>
+                        <li>성과 달성 시 추가 보너스</li>
+                        <li>무료 마케팅 및 홍보 지원</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4 class="text-xl font-semibold mb-lg">🛠️ 개발 지원</h4>
+                    <ul class="feature-list">
+                        <li>직관적인 노코드 빌더 제공</li>
+                        <li>무료 호스팅 및 CDN 서비스</li>
+                        <li>전문가 기술 멘토링</li>
+                        <li>24시간 개발자 지원센터</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3 class="text-2xl font-semibold mb-lg">AI 엔진 도메인 설정</h3>
+            <p class="text-secondary mb-lg">제작하신 AI 엔진의 도메인에 One AI 트래킹을 적용하여 유입과 수익을 추적할 수 있습니다</p>
+            
+            <div class="form-group">
+                <label class="form-label">AI 엔진 도메인</label>
+                <input type="url" class="form-input" id="aiEngineDomain" placeholder="https://my-ai-engine.com">
+                <div class="form-help">귀하가 제작한 AI 엔진이 호스팅된 도메인을 입력하세요</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">One AI 전용 도메인 생성</label>
+                <div class="flex gap-sm">
+                    <input type="text" class="form-input" id="oneaiSubdomain" placeholder="kim-ai-writer" style="flex: 1;">
+                    <span class="flex items-center text-tertiary font-mono text-lg">.oneais.com</span>
+                </div>
+                <div class="form-help">One AI 전용 서브도메인을 설정하세요. 이 링크로 유입된 모든 사용자가 추적됩니다</div>
+            </div>
+            
+            <div class="tracking-demo-section">
+                <h5 class="tracking-demo-title">🔗 생성될 트래킹 링크 예시</h5>
+                <div class="tracking-demo-content">
+                    <div class="text-success mb-sm">One AI 전용 링크:</div>
+                    <div class="text-primary mb-lg">https://kim-ai-writer.oneais.com</div>
+                    <div class="text-tertiary mb-sm">↓ 자동 리다이렉트</div>
+                    <div class="text-secondary">https://my-ai-engine.com?ref=oneai&seller=kim-ai-writer&tracking=oa_12345</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">트래킹 설정</label>
+                <div class="grid grid-cols-2 gap-md mt-md">
+                    <label class="flex items-start gap-sm cursor-pointer p-md bg-raised rounded-lg">
+                        <input type="checkbox" checked class="form-checkbox mt-xs" id="trackPageViews">
+                        <div>
+                            <div class="font-medium mb-xs">페이지 조회수 추적</div>
+                            <div class="text-sm text-tertiary">방문자 수와 페이지뷰 데이터 수집</div>
+                        </div>
+                    </label>
+                    <label class="flex items-start gap-sm cursor-pointer p-md bg-raised rounded-lg">
+                        <input type="checkbox" checked class="form-checkbox mt-xs" id="trackConversions">
+                        <div>
+                            <div class="font-medium mb-xs">구매/가입 전환 추적</div>
+                            <div class="text-sm text-tertiary">실제 고객 전환율 측정</div>
+                        </div>
+                    </label>
+                    <label class="flex items-start gap-sm cursor-pointer p-md bg-raised rounded-lg">
+                        <input type="checkbox" checked class="form-checkbox mt-xs" id="trackUsage">
+                        <div>
+                            <div class="font-medium mb-xs">AI 엔진 사용량 추적</div>
+                            <div class="text-sm text-tertiary">API 호출 및 사용 패턴 분석</div>
+                        </div>
+                    </label>
+                    <label class="flex items-start gap-sm cursor-pointer p-md bg-raised rounded-lg">
+                        <input type="checkbox" class="form-checkbox mt-xs" id="trackRevenue">
+                        <div>
+                            <div class="font-medium mb-xs">수익 자동 정산</div>
+                            <div class="text-sm text-tertiary">실시간 수익 계산 및 정산</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="card mb-lg" style="border: 2px solid var(--color-primary-500);">
+                <h5 class="text-lg font-semibold mb-md">📊 트래킹 작동 방식</h5>
+                <ol class="text-base text-secondary" style="padding-left: 20px; line-height: 1.5;">
+                    <li class="mb-sm">고객이 One AI 마켓플레이스에서 귀하의 AI 엔진을 발견</li>
+                    <li class="mb-sm"><strong>kim-ai-writer.oneais.com</strong> 링크를 클릭</li>
+                    <li class="mb-sm">One AI 서버가 트래킹 정보를 기록</li>
+                    <li class="mb-sm">고객을 귀하의 실제 AI 엔진으로 자동 리다이렉트</li>
+                    <li>모든 사용량과 수익이 실시간으로 추적됨</li>
+                </ol>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">수익 분배 구조</label>
+                <div class="revenue-structure">
+                    <div class="revenue-item">
+                        <span class="text-lg">판매자 수익</span>
+                        <span class="revenue-main">50.0%</span>
+                    </div>
+                    <div class="revenue-item">
+                        <span>One AI 플랫폼 수수료</span>
+                        <span class="text-tertiary font-semibold">43.5%</span>
+                    </div>
+                    <div class="revenue-item">
+                        <span>PG 결제 수수료 (카드)</span>
+                        <span class="text-tertiary font-semibold">3.3%</span>
+                    </div>
+                    <div class="revenue-item">
+                        <span>부가세 (10%)</span>
+                        <span class="text-tertiary font-semibold">3.0%</span>
+                    </div>
+                    <div class="revenue-item">
+                        <span class="text-sm">기타 수수료</span>
+                        <span class="text-quaternary text-sm">0.2%</span>
+                    </div>
+                    <div class="revenue-item">
+                        <span class="font-bold">총합</span>
+                        <span class="font-bold">100.0%</span>
+                    </div>
+                </div>
+                <div class="text-sm text-tertiary mt-sm">
+                    * PG 수수료는 신용카드 기준이며, 계좌이체 시 2.0%로 조정됩니다
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+        
+        <!-- 약관 동의 섹션 -->
+        <div class="content-section seller-terms-section">
+            <h3 class="text-2xl font-semibold mb-lg">판매자 약관 및 동의</h3>
+            
+            <!-- 전체 동의 -->
+            <div class="select-all-wrapper">
+                <label class="terms-checkbox-wrapper">
+                    <input type="checkbox" class="form-checkbox select-all-checkbox" id="agreeAll" onchange="toggleAllAgreements()">
+                    <div class="terms-content">
+                        <div class="select-all-title">모든 약관에 동의합니다</div>
+                        <div class="text-sm text-tertiary mt-xs">아래 모든 필수 및 선택 약관에 일괄 동의합니다</div>
+                    </div>
+                </label>
+            </div>
+            
+            <!-- 개별 약관 -->
+            <div class="terms-agreement-item">
+                <label class="terms-checkbox-wrapper">
+                    <input type="checkbox" class="form-checkbox terms-checkbox" id="agreeTerms" onchange="updateSelectAll()">
+                    <div class="terms-content">
+                        <div class="terms-title">[필수] One AI 판매자 서비스 약관에 동의합니다</div>
+                        <div class="terms-description">수익 분배, 트래킹 정책, 서비스 이용 조건을 포함한 전체 약관에 동의합니다</div>
+                    </div>
+                </label>
+            </div>
+            
+            <div class="terms-agreement-item">
+                <label class="terms-checkbox-wrapper">
+                    <input type="checkbox" class="form-checkbox terms-checkbox" id="agreeRevenue" onchange="updateSelectAll()">
+                    <div class="terms-content">
+                        <div class="terms-title">[필수] 수익 분배 구조 (판매자 50%)에 동의합니다</div>
+                        <div class="terms-description">플랫폼 수수료 43.5%, PG 수수료 3.3%, 부가세 3.0%, 기타 0.2%</div>
+                    </div>
+                </label>
+            </div>
+            
+            <div class="terms-agreement-item">
+                <label class="terms-checkbox-wrapper">
+                    <input type="checkbox" class="form-checkbox terms-checkbox" id="agreeTracking" onchange="updateSelectAll()">
+                    <div class="terms-content">
+                        <div class="terms-title">[필수] 트래킹 및 데이터 수집에 동의합니다</div>
+                        <div class="terms-description">사용자 행동 분석, 수익 추적, 성과 측정을 위한 데이터 수집에 동의합니다</div>
+                    </div>
+                </label>
+            </div>
+            
+            <div class="terms-agreement-item">
+                <label class="terms-checkbox-wrapper">
+                    <input type="checkbox" class="form-checkbox terms-checkbox" id="agreeTax" onchange="updateSelectAll()">
+                    <div class="terms-content">
+                        <div class="terms-title">[필수] 세금 신고 의무를 이해하고 동의합니다</div>
+                        <div class="terms-description">판매 수익에 대한 소득세 신고는 판매자 본인의 책임임을 이해합니다</div>
+                    </div>
+                </label>
+            </div>
+            
+            <div class="terms-agreement-item">
+                <label class="terms-checkbox-wrapper">
+                    <input type="checkbox" class="form-checkbox terms-checkbox" id="agreeMarketing" onchange="updateSelectAll()">
+                    <div class="terms-content">
+                        <div class="terms-title">[선택] 마케팅 정보 수신에 동의합니다</div>
+                        <div class="terms-description">신규 기능, 프로모션, 수익 증대 팁 등의 유용한 정보를 받아보겠습니다</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+        
+        <!-- 사업자 정보 섹션 -->
+        <div class="content-section">
+            <h3 class="text-2xl font-semibold mb-lg">사업자 정보</h3>
+            <div class="grid grid-cols-2 gap-lg">
+                <div class="form-group">
+                    <label class="form-label">사업자명 / 상호</label>
+                    <input type="text" class="form-input" id="businessName" placeholder="사업자명 또는 상호를 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">사업자 유형</label>
+                    <select class="form-select" id="businessType">
+                        <option value="">선택하세요</option>
+                        <option value="individual">개인사업자</option>
+                        <option value="corporate">법인사업자</option>
+                        <option value="freelancer">프리랜서</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">사업자등록번호</label>
+                    <input type="text" class="form-input" id="taxId" placeholder="000-00-00000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">정산 계좌</label>
+                    <input type="text" class="form-input" id="bankAccount" placeholder="은행명 계좌번호">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">사업장 주소</label>
+                <input type="text" class="form-input" id="businessAddress" placeholder="사업장 주소를 입력하세요">
+            </div>
+            
+            <div class="flex gap-lg mt-xl">
+                <button class="btn btn--primary btn--lg" onclick="registerAsSeller()">
+                    <span>📝</span>
+                    판매자 등록 신청
+                </button>
+                <button class="btn btn--secondary btn--lg" onclick="showHome()">
+                    <span>⏰</span>
+                    나중에 하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 컨설팅 페이지 -->
+    <div id="consultingPage" class="page-container hidden">
+        <div class="page-header">
+            <button class="back-btn" onclick="showHome()">←</button>
+            <h1 class="page-title">🎯 기업 AI 컨설팅</h1>
+        </div>
+        
+        <div class="content-section">
+            <div class="text-center mb-xl">
+                <h2 class="text-3xl font-semibold mb-md">기업 맞춤형 AI 솔루션</h2>
+                <p class="text-secondary text-lg">전문 컨설턴트가 귀하의 비즈니스에 최적화된 AI 솔루션을 제공합니다</p>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-lg mb-xl">
+                <div class="card text-center">
+                    <div class="text-4xl mb-md">📋</div>
+                    <h4 class="mb-sm">요구사항 분석</h4>
+                    <p class="text-secondary text-sm">비즈니스 목표와 현재 상황을 분석하여 최적의 AI 전략을 수립합니다</p>
+                </div>
+                <div class="card text-center">
+                    <div class="text-4xl mb-md">🛠️</div>
+                    <h4 class="mb-sm">맞춤 개발</h4>
+                    <p class="text-secondary text-sm">기업 특성에 맞는 AI 엔진을 설계하고 개발합니다</p>
+                </div>
+                <div class="card text-center">
+                    <div class="text-4xl mb-md">🚀</div>
+                    <h4 class="mb-sm">배포 & 운영</h4>
+                    <p class="text-secondary text-sm">안정적인 배포와 지속적인 운영 지원을 제공합니다</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3 class="mb-lg">컨설팅 견적 요청</h3>
+            <div class="grid grid-cols-2 gap-lg">
+                <div class="form-group">
+                    <label class="form-label">회사명</label>
+                    <input type="text" class="form-input" id="consultingCompanyName" placeholder="회사명을 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">담당자명</label>
+                    <input type="text" class="form-input" id="consultingContactPerson" placeholder="담당자명을 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">이메일</label>
+                    <input type="email" class="form-input" id="consultingEmail" placeholder="연락받을 이메일을 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">연락처</label>
+                    <input type="tel" class="form-input" placeholder="연락처를 입력하세요">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">프로젝트 요구사항</label>
+                <textarea class="form-textarea" id="consultingRequirements" placeholder="원하시는 AI 솔루션과 프로젝트 요구사항을 상세히 기술해주세요" style="min-height: 120px;"></textarea>
+            </div>
+            
+            <button class="btn btn--primary" onclick="requestConsultingQuote()">견적 요청하기</button>
+        </div>
+    </div>
+
+    <!-- 클라우드 구독 페이지 -->
+    <div id="cloudSubscriptionPage" class="page-container hidden">
+        <div class="page-header">
+            <button class="back-btn" onclick="showHome()">←</button>
+            <h1 class="page-title">☁️ 클라우드 최저가 구독</h1>
+        </div>
+        
+        <div class="content-section text-center mb-xl">
+            <h2 class="text-3xl font-semibold mb-md">One AI 파트너 클라우드 할인</h2>
+            <p class="text-secondary text-lg">One AI 파트너십을 통해 주요 클라우드 서비스를 할인된 가격으로 이용하세요</p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-lg mb-xl">
+            <!-- AWS -->
+            <div class="card">
+                <div class="flex items-center gap-md mb-md">
+                    <div class="w-12 h-12 bg-warning rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold">AWS</span>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold">Amazon Web Services</h4>
+                        <p class="text-sm text-tertiary">글로벌 1위 클라우드 서비스</p>
+                    </div>
+                </div>
+                <div class="mb-md">
+                    <div class="text-sm text-tertiary mb-xs">One AI 할인가</div>
+                    <div class="text-lg font-semibold text-success">12개월 무료 + 추가 20% 할인</div>
+                    <div class="text-xs text-tertiary">일반가: $500/월 → 할인가: $400/월</div>
+                </div>
+                <ul class="feature-list text-sm mb-lg">
+                    <li>EC2, S3, Lambda 무료 사용량</li>
+                    <li>12개월 무료 티어</li>
+                    <li>One AI 전용 할인 코드</li>
+                </ul>
+                <button class="btn btn--primary btn--full" onclick="openCloudSignup('aws')">AWS 할인 가입</button>
+            </div>
+            
+            <!-- Google Cloud -->
+            <div class="card">
+                <div class="flex items-center gap-md mb-md">
+                    <div class="w-12 h-12 bg-info rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold">GCP</span>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold">Google Cloud Platform</h4>
+                        <p class="text-sm text-tertiary">AI/ML 특화 클라우드</p>
+                    </div>
+                </div>
+                <div class="mb-md">
+                    <div class="text-sm text-tertiary mb-xs">One AI 할인가</div>
+                    <div class="text-lg font-semibold text-success">$300 크레딧 + 15% 추가 할인</div>
+                    <div class="text-xs text-tertiary">Vertex AI 사용량 25% 할인</div>
+                </div>
+                <ul class="feature-list text-sm mb-lg">
+                    <li>$300 무료 크레딧</li>
+                    <li>Vertex AI, BigQuery 할인</li>
+                    <li>TPU 무료 사용량</li>
+                </ul>
+                <button class="btn btn--primary btn--full" onclick="openCloudSignup('gcp')">GCP 할인 가입</button>
+            </div>
+            
+            <!-- Microsoft Azure -->
+            <div class="card">
+                <div class="flex items-center gap-md mb-md">
+                    <div class="w-12 h-12 bg-info rounded-lg flex items-center justify-center" style="background: #0078d4;">
+                        <span class="text-white font-bold text-xs">Azure</span>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold">Microsoft Azure</h4>
+                        <p class="text-sm text-tertiary">엔터프라이즈 클라우드</p>
+                    </div>
+                </div>
+                <div class="mb-md">
+                    <div class="text-sm text-tertiary mb-xs">One AI 할인가</div>
+                    <div class="text-lg font-semibold text-success">$200 크레딧 + OpenAI 할인</div>
+                    <div class="text-xs text-tertiary">Azure OpenAI 서비스 30% 할인</div>
+                </div>
+                <ul class="feature-list text-sm mb-lg">
+                    <li>$200 무료 크레딧</li>
+                    <li>Azure OpenAI 할인</li>
+                    <li>Cognitive Services 무료 사용량</li>
+                </ul>
+                <button class="btn btn--primary btn--full" onclick="openCloudSignup('azure')">Azure 할인 가입</button>
+            </div>
+            
+            <!-- Naver Cloud Platform -->
+            <div class="card">
+                <div class="flex items-center gap-md mb-md">
+                    <div class="w-12 h-12 bg-success rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-xs">NCP</span>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold">네이버 클라우드 플랫폼</h4>
+                        <p class="text-sm text-tertiary">국내 최적화 클라우드</p>
+                    </div>
+                </div>
+                <div class="mb-md">
+                    <div class="text-sm text-tertiary mb-xs">One AI 할인가</div>
+                    <div class="text-lg font-semibold text-success">6개월 무료 + 한국어 AI 할인</div>
+                    <div class="text-xs text-tertiary">CLOVA AI 서비스 40% 할인</div>
+                </div>
+                <ul class="feature-list text-sm mb-lg">
+                    <li>6개월 무료 사용</li>
+                    <li>CLOVA AI 할인</li>
+                    <li>국내 데이터센터</li>
+                </ul>
+                <button class="btn btn--primary btn--full" onclick="openCloudSignup('ncp')">NCP 할인 가입</button>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h3 class="mb-lg">🎯 클라우드 추천 가이드</h3>
+            <div class="grid grid-cols-2 gap-lg">
+                <div class="bg-raised rounded-lg p-lg">
+                    <h5 class="mb-md">🚀 스타트업/개인 개발자</h5>
+                    <p class="text-secondary text-sm mb-sm">추천: AWS 또는 GCP</p>
+                    <ul class="text-xs text-tertiary">
+                        <li>• 무료 크레딧 활용</li>
+                        <li>• 다양한 AI 서비스</li>
+                        <li>• 확장성 우수</li>
+                    </ul>
+                </div>
+                <div class="bg-raised rounded-lg p-lg">
+                    <h5 class="mb-md">🏢 기업/엔터프라이즈</h5>
+                    <p class="text-secondary text-sm mb-sm">추천: Azure 또는 AWS</p>
+                    <ul class="text-xs text-tertiary">
+                        <li>• 기업 보안 인증</li>
+                        <li>• 24/7 지원</li>
+                        <li>• 컴플라이언스</li>
+                    </ul>
+                </div>
+                <div class="bg-raised rounded-lg p-lg">
+                    <h5 class="mb-md">🇰🇷 국내 서비스</h5>
+                    <p class="text-secondary text-sm mb-sm">추천: NCP</p>
+                    <ul class="text-xs text-tertiary">
+                        <li>• 한국어 최적화</li>
+                        <li>• 국내 데이터센터</li>
+                        <li>• 현지 지원</li>
+                    </ul>
+                </div>
+                <div class="bg-raised rounded-lg p-lg">
+                    <h5 class="mb-md">🤖 AI/ML 특화</h5>
+                    <p class="text-secondary text-sm mb-sm">추천: GCP</p>
+                    <ul class="text-xs text-tertiary">
+                        <li>• Vertex AI</li>
+                        <li>• TPU 지원</li>
+                        <li>• AutoML</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <div class="card bg-raised border" style="border-color: var(--color-warning);">
+                <h5 class="mb-sm">💰 수익 분배 안내</h5>
+                <p class="text-secondary text-sm">고객이 One AI 전용 링크를 통해 클라우드 서비스에 가입하면, 해당 클라우드 제공업체로부터 One AI가 커미션을 받고 이를 다시 고객에게 할인 혜택으로 제공합니다. 추가 비용 없이 더 저렴한 가격으로 이용하실 수 있습니다.</p>
+            </div>
         </div>
     </div>
 
@@ -1090,11 +2480,6 @@
     </div>
 
     <script>
-        // 전역 변수
-        let currentPage = 'home';
-        let aiEngines = [];
-        let promptBlocks = [];
-
         // 페이지 네비게이션
         function showPage(pageId) {
             document.querySelectorAll('.page-container').forEach(page => {
@@ -1111,9 +2496,185 @@
         function showAIBuilder() { showPage('aiBuilderPage'); }
         function showMyEngines() { showPage('myEnginesPage'); }
         function showMarketplace() { showPage('marketplacePage'); }
-        function showAnalytics() { showPage('analyticsPage'); }
         function showSettings() { showPage('settingsPage'); }
-        function showConsulting() { showToast('컨설팅 서비스 페이지로 이동합니다', 'info'); }
+        function showConsulting() { showPage('consultingPage'); }
+        function showCloudSubscription() { showPage('cloudSubscriptionPage'); }
+        function showSellerRegistration() { showPage('sellerRegistrationPage'); }
+
+        function showAnalytics() {
+            if (!userProfile.isSeller) {
+                showToast('판매자 등록 후 이용 가능한 서비스입니다', 'warning');
+                showSellerRegistration();
+                return;
+            }
+            showPage('analyticsPage');
+        }
+
+        function registerAsSeller() {
+            const businessName = document.getElementById('businessName').value;
+            const businessType = document.getElementById('businessType').value;
+            const taxId = document.getElementById('taxId').value;
+            const bankAccount = document.getElementById('bankAccount').value;
+            const businessAddress = document.getElementById('businessAddress').value;
+            const aiEngineDomain = document.getElementById('aiEngineDomain').value;
+            const oneaiSubdomain = document.getElementById('oneaiSubdomain').value;
+            
+            // 필수 동의 체크
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+            const agreeRevenue = document.getElementById('agreeRevenue').checked;
+            const agreeTracking = document.getElementById('agreeTracking').checked;
+            const agreeTax = document.getElementById('agreeTax').checked;
+            
+            if (!businessName || !businessType || !taxId || !bankAccount || !businessAddress) {
+                showToast('모든 사업자 정보를 입력해주세요', 'error');
+                return;
+            }
+            
+            if (!aiEngineDomain || !oneaiSubdomain) {
+                showToast('AI 엔진 도메인과 One AI 서브도메인을 입력해주세요', 'error');
+                return;
+            }
+            
+            if (!agreeTerms || !agreeRevenue || !agreeTracking || !agreeTax) {
+                showToast('필수 약관에 모두 동의해주세요', 'error');
+                return;
+            }
+            
+            // 서브도메인 유효성 검사
+            if (!/^[a-z0-9-]+$/.test(oneaiSubdomain)) {
+                showToast('서브도메인은 영문 소문자, 숫자, 하이픈만 사용 가능합니다', 'error');
+                return;
+            }
+            
+            // 판매자 등록 처리
+            userProfile.isSeller = true;
+            userProfile.aiEngine = {
+                domain: aiEngineDomain,
+                oneaiDomain: `https://${oneaiSubdomain}.oneais.com`,
+                trackingId: `oa_${Date.now()}`,
+                subdomain: oneaiSubdomain
+            };
+            
+            showToast(`판매자 등록 완료! 전용 도메인: ${oneaiSubdomain}.oneais.com`, 'success');
+            
+            // 프로필 업데이트
+            updateProfileDisplay();
+            
+            // 트래킹 링크 생성 안내
+            setTimeout(() => {
+                showToast('트래킹 링크가 생성되었습니다. 수익은 50% 분배됩니다!', 'info');
+                showMarketplace();
+            }, 2000);
+        }
+
+        // 프로필 표시 업데이트
+        function updateProfileDisplay() {
+            const profileInfo = document.querySelector('.profile-info');
+            if (profileInfo && userProfile.isSeller) {
+                const sellerBadge = '<span class="badge badge--success ml-xs">판매자</span>';
+                if (!profileInfo.innerHTML.includes('판매자')) {
+                    profileInfo.innerHTML += sellerBadge;
+                }
+            }
+        }
+
+        // 컨설팅 견적 요청
+        function requestConsultingQuote() {
+            const companyName = document.getElementById('consultingCompanyName').value;
+            const contactPerson = document.getElementById('consultingContactPerson').value;
+            const email = document.getElementById('consultingEmail').value;
+            const requirements = document.getElementById('consultingRequirements').value;
+            
+            if (!companyName || !contactPerson || !email || !requirements) {
+                showToast('모든 필드를 입력해주세요', 'error');
+                return;
+            }
+            
+            showToast('컨설팅 견적 요청이 전송되었습니다. 24시간 내 연락드리겠습니다.', 'success');
+            
+            // 폼 리셋
+            document.getElementById('consultingCompanyName').value = '';
+            document.getElementById('consultingContactPerson').value = '';
+            document.getElementById('consultingEmail').value = '';
+            document.getElementById('consultingRequirements').value = '';
+        }
+
+        // 클라우드 구독 신청 - 전용 링크로 리다이렉트
+        function openCloudSignup(provider) {
+            const trackingLinks = {
+                aws: 'https://aws.amazon.com/free/?ref=oneai_partner&tracking_id=oneai_12345',
+                gcp: 'https://cloud.google.com/free/?ref=oneai_partner&utm_source=oneai',
+                azure: 'https://azure.microsoft.com/free/?ref=oneai_partner&tracking=oneai_12345',
+                ncp: 'https://www.ncloud.com/product/compute/server?ref=oneai_partner'
+            };
+            
+            const providerNames = {
+                aws: 'AWS',
+                gcp: 'Google Cloud',
+                azure: 'Microsoft Azure',
+                ncp: '네이버 클라우드'
+            };
+            
+            const link = trackingLinks[provider];
+            if (link) {
+                showToast(`${providerNames[provider]} 할인 가입 페이지로 이동합니다`, 'info');
+                // 실제 환경에서는 새 탭에서 열기
+                setTimeout(() => {
+                    if (confirm(`${providerNames[provider]} 공식 사이트로 이동하시겠습니까?\n\nOne AI 전용 할인 링크를 통해 가입하시면 자동으로 할인이 적용됩니다.`)) {
+                        // window.open(link, '_blank');
+                        showToast(`${providerNames[provider]} 전용 링크가 클립보드에 복사되었습니다`, 'success');
+                    }
+                }, 500);
+            }
+        }
+
+        function subscribeCloudPlan(planType) {
+            showToast('클라우드 서비스는 각 제공업체 사이트에서 직접 가입해주세요', 'info');
+        }
+
+        // 서비스 상세 정보 표시
+        function showServiceDetail(serviceType) {
+            const services = {
+                builder: {
+                    title: 'AI 엔진 빌더',
+                    description: '노코드 방식으로 AI 엔진을 제작하는 혁신적인 플랫폼입니다.',
+                    features: [
+                        '드래그 앤 드롭 인터페이스',
+                        '실시간 테스트 및 디버깅',
+                        '원클릭 배포',
+                        '자동 스케일링',
+                        '성능 모니터링'
+                    ]
+                },
+                marketplace: {
+                    title: 'AI 마켓플레이스',
+                    description: 'AI 엔진을 사고팔 수 있는 글로벌 마켓플레이스입니다.',
+                    features: [
+                        '글로벌 판매 네트워크',
+                        '안전한 결제 시스템',
+                        '실시간 수익 추적',
+                        '고객 리뷰 관리',
+                        '마케팅 지원'
+                    ]
+                },
+                analytics: {
+                    title: '비즈니스 애널리틱스',
+                    description: 'AI 엔진의 성과를 실시간으로 분석하고 최적화합니다.',
+                    features: [
+                        '실시간 대시보드',
+                        '수익 분석',
+                        '사용자 행동 분석',
+                        '예측 분석',
+                        '커스텀 리포트'
+                    ]
+                }
+            };
+            
+            const service = services[serviceType];
+            if (service) {
+                showToast(`${service.title} 상세 정보를 확인하세요`, 'info');
+            }
+        }
 
         // 프로필 메뉴
         function toggleProfile() {
@@ -1449,6 +3010,24 @@
                     e.dataTransfer.setData('text/plain', '');
                 });
             });
+
+            // 도메인 입력 시 실시간 미리보기
+            const subdomainInput = document.getElementById('oneaiSubdomain');
+            const domainInput = document.getElementById('aiEngineDomain');
+            
+            if (subdomainInput) {
+                subdomainInput.addEventListener('input', updateDomainPreview);
+            }
+            if (domainInput) {
+                domainInput.addEventListener('input', updateDomainPreview);
+            }
+
+            // 체크박스 이벤트 리스너 추가
+            document.querySelectorAll('.terms-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    updateTermsItemStyle(checkbox);
+                });
+            });
         });
 
         // 키보드 단축키
@@ -1498,4 +3077,4 @@
         });
     </script>
 </body>
-</html>
+</html> 

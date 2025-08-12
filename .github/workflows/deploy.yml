@@ -1,6 +1,5 @@
 name: Deploy to AWS
 
-# 언제 실행할지 (main 브랜치에 push할 때)
 on:
   push:
     branches: [ main ]
@@ -10,11 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    # 1. 코드 다운로드
+    # 1. 기본 설정 (항상 필요)
     - name: Checkout code
       uses: actions/checkout@v4
     
-    # 2. AWS 인증 설정
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -22,8 +20,22 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
     
-    # 3. S3에 파일 업로드 (예시)
+    # 2. S3 배포 (웹사이트라면)
     - name: Deploy to S3
       run: |
-        aws s3 sync . s3://oneai-frontend-7469/ --delete
-        echo "배포 완료!"
+        aws s3 sync ./frontend/ s3://oneai-frontend-7469/ --delete
+        echo "S3 배포 완료!"
+    
+    # 3. EC2 배포 (서버 재시작이 필요하다면)
+    - name: Deploy to EC2
+      run: |
+        aws ec2 reboot-instances --instance-ids i-07864f20254491add
+        echo "EC2 재시작 완료!"
+    
+    # 4. CloudFront 캐시 무효화 (CDN 사용한다면)
+    - name: Invalidate CloudFront
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id E246GTSG4PS8B8 \
+          --paths "/*"
+        echo "캐시 무효화 완료!"
