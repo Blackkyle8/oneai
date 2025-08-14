@@ -1,0 +1,35 @@
+# OneAI Dockerfile for AWS ECS/Fargate
+FROM node:18-alpine
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 시스템 의존성 설치
+RUN apk add --no-cache \
+    git \
+    curl \
+    && rm -rf /var/cache/apk/*
+
+# package.json과 package-lock.json 복사
+COPY package*.json ./
+
+# npm 의존성 설치
+RUN npm ci --only=production && npm cache clean --force
+
+# 애플리케이션 소스 복사
+COPY backend/ ./backend/
+COPY frontend/ ./frontend/
+
+# 환경 변수 설정
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# 포트 노출
+EXPOSE 3000
+
+# 헬스체크 설정
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3000/health || exit 1
+
+# 애플리케이션 실행
+CMD ["node", "backend/server.js"]
