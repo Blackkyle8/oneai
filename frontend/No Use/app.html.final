@@ -1,0 +1,2589 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One AI - 모든 AI를 하나로</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- One AI Language System -->
+    <link rel="stylesheet" href="assets/lang.css">
+    <script src="assets/lang.js"></script>
+    
+    <!-- One AI Scripts -->
+    <script src="script.js"></script>
+    <script src="api.js"></script>
+    
+    <style>
+        /* =========================
+           One AI Design System v2.0
+           통합 CSS 변수 및 컴포넌트
+        ========================= */
+        :root {
+            color-scheme: dark;
+            
+            /* Surface Colors - Dark Theme */
+            --color-surface-base: #000000;
+            --color-surface-raised: #0a0a0a;
+            --color-surface-elevated: #111111;
+            --color-surface-overlay: #1a1a1a;
+            --color-surface-modal: #222222;
+            --surface-glass: rgba(17, 17, 17, 0.8);
+            --surface-glass-border: rgba(255, 255, 255, 0.1);
+            
+            /* Text Colors */
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-tertiary: #a3a3a3;
+            --text-quaternary: #737373;
+            --text-disabled: #525252;
+            
+            /* Brand Colors */
+            --color-primary-200: #a7f3d0;
+            --color-primary-400: #34d399;
+            --color-primary-500: #10b981;
+            --color-primary-600: #059669;
+            --color-primary-700: #047857;
+            
+            /* Status Colors */
+            --color-success: #10b981;
+            --color-error: #ef4444;
+            --color-warning: #f59e0b;
+            --color-info: #3b82f6;
+            
+            /* AI Service Brand Colors */
+            --ai-gpt-gradient: linear-gradient(135deg, #10a37f, #1a7f72);
+            --ai-gemini-gradient: linear-gradient(135deg, #4285f4, #ea4335);
+            --ai-perplexity-gradient: linear-gradient(135deg, #20c997, #17a2b8);
+            --ai-midjourney-gradient: linear-gradient(135deg, #000, #333);
+            --ai-claude-gradient: linear-gradient(135deg, #ff6b35, #f7931e);
+            --ai-copilot-gradient: linear-gradient(135deg, #0078d4, #106ebe);
+            
+            /* Medical Theme */
+            --color-medical: #06b6d4;
+            --color-health: #8b5cf6;
+            
+            /* Typography */
+            --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --font-weight-extrabold: 800;
+            
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 20px;
+            --font-size-2xl: 24px;
+            --font-size-3xl: 30px;
+            --font-size-4xl: 36px;
+            --font-size-5xl: 48px;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            --spacing-3xl: 64px;
+            
+            /* Border Radius */
+            --radius-xs: 2px;
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-2xl: 16px;
+            --radius-full: 9999px;
+            
+            /* Layout */
+            --header-height: 60px;
+            --sidebar-width: 56px;
+            
+            /* Z-Index */
+            --z-index-base: 0;
+            --z-index-sidebar: 10;
+            --z-index-dropdown: 20;
+            --z-index-modal: 40;
+            --z-index-toast: 50;
+            --z-index-tooltip: 60;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            
+            /* Animation */
+            --motion-duration-fast: 150ms;
+            --motion-duration-normal: 250ms;
+            --motion-duration-slow: 350ms;
+            --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Scrollbar */
+            --scrollbar-width: 8px;
+            --scrollbar-track: var(--color-surface-elevated);
+            --scrollbar-thumb: var(--color-surface-overlay);
+            --scrollbar-thumb-hover: var(--color-surface-modal);
+        }
+        
+        /* Light Theme Variables */
+        [data-theme="light"] {
+            --color-surface-base: #ffffff;
+            --color-surface-raised: #f5f5f5;
+            --color-surface-elevated: #eaeaea;
+            --color-surface-overlay: #dddddd;
+            --color-surface-modal: #cccccc;
+            
+            --text-primary: #111111;
+            --text-secondary: #444444;
+            --text-tertiary: #666666;
+            --text-quaternary: #888888;
+            --text-disabled: #aaaaaa;
+        }
+
+        /* =========================
+           Base Styles & Reset
+        ========================= */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family-primary);
+            font-weight: var(--font-weight-normal);
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--color-surface-base);
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: var(--scrollbar-width);
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: var(--radius-full);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--scrollbar-thumb-hover);
+        }
+
+        /* =========================
+           App Layout Structure
+        ========================= */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            background: var(--color-surface-base);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Page Container */
+        .page {
+            display: none;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================
+           Header Component
+        ========================= */
+        .header {
+            background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0 var(--spacing-xl);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: var(--z-index-dropdown);
+            backdrop-filter: blur(10px);
+            height: var(--header-height);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xl);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: #fff;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            transition: transform var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: var(--spacing-xs);
+            background: rgba(0, 0, 0, 0.3);
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-tertiary);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-tab.active {
+            color: var(--text-primary);
+            background: var(--color-primary-500);
+            transform: scale(1.02);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        /* User Profile */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            background: var(--color-primary-500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-sm);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .user-name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .user-status {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+            line-height: 1.2;
+        }
+
+        /* =========================
+           Login Page Styles
+        ========================= */
+        .login-container {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-surface-base);
+            padding: var(--spacing-lg);
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            padding: var(--spacing-2xl);
+            background: var(--color-surface-raised);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .login-title {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-subtitle {
+            color: var(--text-tertiary);
+            font-size: var(--font-size-sm);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            background: var(--color-surface-overlay);
+            color: var(--text-primary);
+            font-size: var(--font-size-base);
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary-500);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: var(--spacing-md);
+            background: var(--color-primary-500);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .submit-button:hover:not(:disabled) {
+            background: var(--color-primary-600);
+            transform: translateY(-1px);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            color: var(--color-error);
+            background: rgba(239, 68, 68, 0.1);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-sm);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            display: none;
+        }
+
+        /* =========================
+           Content Area Styles
+        ========================= */
+        .content-area {
+            flex: 1;
+            padding: var(--spacing-xl);
+            overflow: auto;
+            background: var(--color-surface-base);
+        }
+
+        .page-header {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .page-title {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: var(--font-size-lg);
+            color: var(--text-tertiary);
+            font-weight: var(--font-weight-normal);
+        }
+
+        /* =========================
+           Card Components
+        ========================= */
+        .card {
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+        }
+
+        .card-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* =========================
+           Grid Layout
+        ========================= */
+        .grid {
+            display: grid;
+            gap: var(--spacing-xl);
+        }
+
+        .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+        @media (max-width: 768px) {
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* =========================
+           Button Components
+        ========================= */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-600);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--color-surface-overlay);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-surface-modal);
+        }
+
+        /* =========================
+           AI Service Cards
+        ========================= */
+        .ai-service-card {
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all var(--motion-duration-normal) var(--motion-ease);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--service-gradient, var(--color-primary-500));
+            opacity: 0;
+            transition: opacity var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .ai-service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .ai-service-card:hover::before {
+            opacity: 1;
+        }
+
+        .ai-service-card.gpt {
+            --service-gradient: var(--ai-gpt-gradient);
+        }
+
+        .ai-service-card.gemini {
+            --service-gradient: var(--ai-gemini-gradient);
+        }
+
+        .ai-service-card.claude {
+            --service-gradient: var(--ai-claude-gradient);
+        }
+
+        .ai-service-card.perplexity {
+            --service-gradient: var(--ai-perplexity-gradient);
+        }
+
+        .ai-service-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .ai-service-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            background: var(--service-gradient, var(--color-primary-500));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-lg);
+        }
+
+        .ai-service-info h3 {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .ai-service-info p {
+            color: var(--text-tertiary);
+            font-size: var(--font-size-sm);
+        }
+
+        /* =========================
+           Responsive Design
+        ========================= */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 var(--spacing-lg);
+            }
+            
+            .header-left {
+                gap: var(--spacing-lg);
+            }
+            
+            .nav-tabs {
+                display: none;
+            }
+            
+            .content-area {
+                padding: var(--spacing-lg);
+            }
+            
+            .page-title {
+                font-size: var(--font-size-2xl);
+            }
+            
+            .user-info {
+                display: none;
+            }
+        }
+
+        /* =========================
+           Animation Classes
+        ========================= */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn var(--motion-duration-normal) var(--motion-ease) forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .slide-up {
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUp var(--motion-duration-normal) var(--motion-ease) forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* =========================
+           Loading States
+        ========================= */
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .loading::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* =========================
+           Hidden utilities
+        ========================= */
+        .hidden {
+            display: none !important;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <a href="#" class="logo" onclick="navigateTo('home')">
+                        <span>🤖</span>
+                        <span>One AI</span>
+                    </a>
+                    
+                    <nav class="nav-tabs">
+                        <button class="nav-tab active" onclick="navigateTo('home')" data-page="home">홈</button>
+                        <button class="nav-tab" onclick="navigateTo('business')" data-page="business">비즈니스</button>
+                        <button class="nav-tab" onclick="navigateTo('healthcare')" data-page="healthcare">헬스케어</button>
+                        <button class="nav-tab" onclick="navigateTo('community')" data-page="community">커뮤니티</button>
+                        <button class="nav-tab" onclick="navigateTo('sharing')" data-page="sharing">쉐어링</button>
+                    </nav>
+                </div>
+                
+                <div class="header-right">
+                    <div class="user-profile" onclick="navigateTo('profile')" id="userProfile" style="display: none;">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <div class="user-info">
+                            <div class="user-name" id="userName">사용자</div>
+                            <div class="user-status" id="userStatus">온라인</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="navigateTo('login')" id="loginButton">로그인</button>
+                    <button class="btn btn-secondary" onclick="logout()" id="logoutButton" style="display: none;">로그아웃</button>
+                </div>
+            </header>
+
+            <!-- Login Page -->
+            <div id="loginPage" class="page">
+                <div class="login-container">
+                    <div class="login-box fade-in">
+                        <div class="login-header">
+                            <h1 class="login-title">One AI</h1>
+                            <p class="login-subtitle">모든 AI를 하나로 연결하는 플랫폼</p>
+                        </div>
+                        
+                        <div id="errorMessage" class="error-message"></div>
+                        
+                        <form id="loginForm" onsubmit="return handleLogin(event)">
+                            <div class="form-group">
+                                <label for="email" class="form-label">이메일</label>
+                                <input type="email" id="email" class="form-input" required value="test@oneai.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password" class="form-label">비밀번호</label>
+                                <input type="password" id="password" class="form-input" required value="test1234">
+                            </div>
+
+                            <button type="submit" class="submit-button" id="loginSubmitBtn">로그인</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Home Page -->
+            <div id="homePage" class="page active">
+                <div class="content-area">
+                    <div class="page-header fade-in">
+                        <h1 class="page-title">모든 AI를 하나로</h1>
+                        <p class="page-subtitle">One AI에서 다양한 AI 서비스를 통합 관리하고 활용하세요</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 slide-up">
+                        <div class="ai-service-card gpt" onclick="navigateTo('business')">
+                            <div class="ai-service-header">
+                                <div class="ai-service-icon">GPT</div>
+                                <div class="ai-service-info">
+                                    <h3>비즈니스 AI</h3>
+                                    <p>업무 효율성을 높이는 AI 도구들</p>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                문서 작성, 데이터 분석, 업무 자동화 등 비즈니스에 필요한 AI 기능을 제공합니다.
+                            </div>
+                        </div>
+                        
+                        <div class="ai-service-card claude" onclick="navigateTo('healthcare')">
+                            <div class="ai-service-header">
+                                <div class="ai-service-icon">🏥</div>
+                                <div class="ai-service-info">
+                                    <h3>헬스케어 AI</h3>
+                                    <p>건강 관리를 위한 AI 솔루션</p>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                건강 상담, 운동 계획, 영양 관리 등 개인 맞춤형 헬스케어 서비스를 제공합니다.
+                            </div>
+                        </div>
+                        
+                        <div class="ai-service-card gemini" onclick="navigateTo('community')">
+                            <div class="ai-service-header">
+                                <div class="ai-service-icon">👥</div>
+                                <div class="ai-service-info">
+                                    <h3>커뮤니티</h3>
+                                    <p>AI 사용자들과 소통하는 공간</p>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                AI 활용 노하우를 공유하고, 다른 사용자들과 정보를 교환할 수 있습니다.
+                            </div>
+                        </div>
+                        
+                        <div class="ai-service-card perplexity" onclick="navigateTo('sharing')">
+                            <div class="ai-service-header">
+                                <div class="ai-service-icon">🔗</div>
+                                <div class="ai-service-info">
+                                    <h3>AI 쉐어링</h3>
+                                    <p>AI 리소스 공유 플랫폼</p>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                AI 모델, 프롬프트, 워크플로우를 다른 사용자들과 공유하고 활용하세요.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Page -->
+            <div id="businessPage" class="page">
+                <div class="content-area">
+                    <div class="page-header fade-in">
+                        <h1 class="page-title">💼 비즈니스센터</h1>
+                        <p class="page-subtitle">나만의 AI 엔진을 제작하고 판매하여 새로운 수익원을 창출하세요</p>
+                    </div>
+                    
+                    <!-- Hero Section -->
+                    <div class="card slide-up" style="text-align: center; margin-bottom: var(--spacing-xl);">
+                        <div class="card-content">
+                            <h2 style="font-size: var(--font-size-2xl); margin-bottom: var(--spacing-lg);">🚀 AI 비즈니스의 모든 것</h2>
+                            <p style="color: var(--text-tertiary); margin-bottom: var(--spacing-xl); max-width: 600px; margin-left: auto; margin-right: auto;">
+                                노코드 빌더부터 기업 맞춤 솔루션까지, AI 비즈니스의 모든 것을 지원합니다.
+                            </p>
+                            <div style="display: flex; gap: var(--spacing-md); justify-content: center; flex-wrap: wrap;">
+                                <button class="btn btn-primary" onclick="showAIBuilder()">🛠️ AI 엔진 제작 시작</button>
+                                <button class="btn btn-secondary" onclick="showMarketplace()">🏪 마켓플레이스 둘러보기</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-4 slide-up" style="margin-bottom: var(--spacing-xl);">
+                        <div class="card" style="text-align: center; cursor: pointer;" onclick="showMyEngines()">
+                            <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-primary-500); margin-bottom: var(--spacing-xs);">3</div>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">제작된 AI 엔진</div>
+                        </div>
+                        <div class="card" style="text-align: center; cursor: pointer;" onclick="showAnalytics()">
+                            <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-success); margin-bottom: var(--spacing-xs);">₩0</div>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">이번 달 수익</div>
+                        </div>
+                        <div class="card" style="text-align: center; cursor: pointer;">
+                            <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-info); margin-bottom: var(--spacing-xs);">127</div>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">총 사용자</div>
+                        </div>
+                        <div class="card" style="text-align: center; cursor: pointer;">
+                            <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-warning); margin-bottom: var(--spacing-xs);">4.8</div>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">평균 평점</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Services Grid -->
+                    <div class="grid grid-cols-2 slide-up">
+                        <div class="card" style="cursor: pointer; position: relative; overflow: hidden;" onclick="showAIBuilder()">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-primary-500), var(--color-primary-400));"></div>
+                            <div class="card-header">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400)); display: flex; align-items: center; justify-content: center; color: white; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);">🛠️</div>
+                                    <div>
+                                        <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-xs);">AI 엔진 빌더</h3>
+                                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">노코드로 AI 엔진 제작</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <p>드래그 앤 드롭으로 쉽게 AI 엔진을 만들고, 바로 판매를 시작하세요.</p>
+                                <div style="margin-top: var(--spacing-lg);">
+                                    <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                                        <span style="background: rgba(16, 185, 129, 0.1); color: var(--color-primary-500); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">노코드</span>
+                                        <span style="background: rgba(59, 130, 246, 0.1); color: var(--color-info); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">실시간 배포</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="cursor: pointer; position: relative; overflow: hidden;" onclick="showMarketplace()">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-info), #60a5fa);"></div>
+                            <div class="card-header">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--color-info), #60a5fa); display: flex; align-items: center; justify-content: center; color: white; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);">🏪</div>
+                                    <div>
+                                        <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-xs);">마켓플레이스</h3>
+                                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">AI 엔진 구매 및 판매</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <p>다양한 AI 엔진을 구매하거나, 내가 만든 엔진을 판매할 수 있습니다.</p>
+                                <div style="margin-top: var(--spacing-lg);">
+                                    <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                                        <span style="background: rgba(59, 130, 246, 0.1); color: var(--color-info); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">수익 창출</span>
+                                        <span style="background: rgba(245, 158, 11, 0.1); color: var(--color-warning); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">글로벌 판매</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="cursor: pointer; position: relative; overflow: hidden;" onclick="showAnalytics()">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-warning), #fbbf24);"></div>
+                            <div class="card-header">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--color-warning), #fbbf24); display: flex; align-items: center; justify-content: center; color: white; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);">📊</div>
+                                    <div>
+                                        <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-xs);">비즈니스 분석</h3>
+                                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">수익 및 사용 현황 분석</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <p>AI 엔진의 성과를 분석하고, 수익을 최적화하세요.</p>
+                                <div style="margin-top: var(--spacing-lg);">
+                                    <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                                        <span style="background: rgba(245, 158, 11, 0.1); color: var(--color-warning); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">실시간 분석</span>
+                                        <span style="background: rgba(16, 185, 129, 0.1); color: var(--color-success); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">수익 최적화</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="cursor: pointer; position: relative; overflow: hidden;" onclick="showConsulting()">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #f97316, #fb923c);"></div>
+                            <div class="card-header">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: linear-gradient(135deg, #f97316, #fb923c); display: flex; align-items: center; justify-content: center; color: white; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);">🎯</div>
+                                    <div>
+                                        <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-xs);">AI 컨설팅</h3>
+                                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">전문가 상담 및 맞춤 솔루션</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <p>AI 전문가와 1:1 상담을 통해 맞춤형 솔루션을 개발하세요.</p>
+                                <div style="margin-top: var(--spacing-lg);">
+                                    <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                                        <span style="background: rgba(249, 115, 22, 0.1); color: #f97316; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">1:1 상담</span>
+                                        <span style="background: rgba(251, 146, 60, 0.1); color: #fb923c; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">맞춤 솔루션</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="card slide-up" style="margin-top: var(--spacing-xl);">
+                        <div class="card-header">
+                            <h2 class="card-title">⚡ 빠른 작업</h2>
+                        </div>
+                        <div class="card-content">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-md);">
+                                <button class="btn btn-secondary" style="justify-content: flex-start; height: auto; padding: var(--spacing-md);" onclick="createNewEngine()">
+                                    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-xs);">
+                                        <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                            <span>🆕</span>
+                                            <span style="font-weight: var(--font-weight-semibold);">새 AI 엔진</span>
+                                        </div>
+                                        <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">빠른 프로토타입 제작</span>
+                                    </div>
+                                </button>
+                                
+                                <button class="btn btn-secondary" style="justify-content: flex-start; height: auto; padding: var(--spacing-md);" onclick="importTemplate()">
+                                    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-xs);">
+                                        <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                            <span>📋</span>
+                                            <span style="font-weight: var(--font-weight-semibold);">템플릿 가져오기</span>
+                                        </div>
+                                        <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">기존 템플릿 활용</span>
+                                    </div>
+                                </button>
+                                
+                                <button class="btn btn-secondary" style="justify-content: flex-start; height: auto; padding: var(--spacing-md);" onclick="viewDocumentation()">
+                                    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-xs);">
+                                        <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                            <span>📚</span>
+                                            <span style="font-weight: var(--font-weight-semibold);">개발 가이드</span>
+                                        </div>
+                                        <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">API 문서 및 튜토리얼</span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Healthcare Page -->
+            <div id="healthcarePage" class="page">
+                <div class="content-area">
+                    <div class="page-header fade-in">
+                        <h1 class="page-title">🏥 헬스케어 AI</h1>
+                        <p class="page-subtitle">개인 맞춤형 건강 관리 AI 서비스로 더 건강한 삶을 시작하세요</p>
+                    </div>
+                    
+                    <!-- Health Dashboard -->
+                    <div class="card slide-up" style="margin-bottom: var(--spacing-xl);">
+                        <div class="card-header">
+                            <h2 class="card-title">📊 나의 건강 대시보드</h2>
+                            <button class="btn btn-primary">데이터 동기화</button>
+                        </div>
+                        <div class="card-content">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-xl);">
+                                <div style="text-align: center; padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md); border-left: 4px solid var(--color-medical);">
+                                    <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-medical); margin-bottom: var(--spacing-xs);">72</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">평균 심박수</div>
+                                    <div style="color: var(--color-success); font-size: var(--font-size-xs); margin-top: var(--spacing-xs);">정상 범위</div>
+                                </div>
+                                <div style="text-align: center; padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md); border-left: 4px solid var(--color-health);">
+                                    <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-health); margin-bottom: var(--spacing-xs);">8.2</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">수면 시간</div>
+                                    <div style="color: var(--color-success); font-size: var(--font-size-xs); margin-top: var(--spacing-xs);">양호</div>
+                                </div>
+                                <div style="text-align: center; padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md); border-left: 4px solid var(--color-success);">
+                                    <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-success); margin-bottom: var(--spacing-xs);">9,240</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">일일 걸음 수</div>
+                                    <div style="color: var(--color-success); font-size: var(--font-size-xs); margin-top: var(--spacing-xs);">목표 달성</div>
+                                </div>
+                                <div style="text-align: center; padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md); border-left: 4px solid var(--color-warning);">
+                                    <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-warning); margin-bottom: var(--spacing-xs);">BMI 23.1</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">체질량지수</div>
+                                    <div style="color: var(--color-success); font-size: var(--font-size-xs); margin-top: var(--spacing-xs);">정상</div>
+                                </div>
+                            </div>
+                            
+                            <div style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.1)); padding: var(--spacing-lg); border-radius: var(--radius-md); border: 1px solid rgba(6, 182, 212, 0.2);">
+                                <h3 style="color: var(--color-medical); margin-bottom: var(--spacing-sm);">💡 AI 건강 인사이트</h3>
+                                <p style="margin-bottom: var(--spacing-sm);">오늘 당신의 활동량은 평소보다 15% 높습니다. 수면 질도 개선되고 있어요!</p>
+                                <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">권장사항: 충분한 수분 섭취와 스트레칭을 통해 컨디션을 유지하세요.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Services Grid -->
+                    <div class="grid grid-cols-2 slide-up">
+                        <div class="card" style="cursor: pointer; position: relative; overflow: hidden;" onclick="startHealthConsultation()">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-medical), #22d3ee);"></div>
+                            <div class="card-header">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--color-medical), #22d3ee); display: flex; align-items: center; justify-content: center; color: white; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);">🩺</div>
+                                    <div>
+                                        <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-xs);">AI 건강 상담</h3>
+                                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">24시간 AI 의료진 상담</p>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary">상담 시작</button>
+                            </div>
+                            <div class="card-content">
+                                <p>증상을 설명하면 가능한 원인과 대처 방법을 제안해드립니다.</p>
+                                <div style="background: rgba(239, 68, 68, 0.1); padding: var(--spacing-md); border-radius: var(--radius-md); margin-top: var(--spacing-lg); border-left: 4px solid var(--color-error);">
+                                    <strong>⚠️ 중요 안내:</strong><br>
+                                    <span style="font-size: var(--font-size-sm); color: var(--text-tertiary);">
+                                        AI 상담은 참고용이며, 심각한 증상이 있으면 반드시 의료진과 상담하시기 바랍니다.
+                                    </span>
+                                </div>
+                                <div style="margin-top: var(--spacing-md);">
+                                    <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                                        <span style="background: rgba(6, 182, 212, 0.1); color: var(--color-medical); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">24시간 상담</span>
+                                        <span style="background: rgba(139, 92, 246, 0.1); color: var(--color-health); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">증상 분석</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="cursor: pointer; position: relative; overflow: hidden;" onclick="createWorkoutPlan()">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-health), #a855f7);"></div>
+                            <div class="card-header">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--color-health), #a855f7); display: flex; align-items: center; justify-content: center; color: white; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);">💪</div>
+                                    <div>
+                                        <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-xs);">AI 운동 계획</h3>
+                                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">맞춤형 운동 프로그램</p>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary">계획 생성</button>
+                            </div>
+                            <div class="card-content">
+                                <p>개인의 체력 수준과 목표에 맞는 맞춤형 운동 계획을 제공합니다.</p>
+                                <div style="background: var(--color-surface-overlay); padding: var(--spacing-md); border-radius: var(--radius-md); margin-top: var(--spacing-lg);">
+                                    <strong>🎯 이번 주 목표:</strong><br>
+                                    <span style="font-size: var(--font-size-sm); color: var(--text-tertiary);">
+                                        주 3회 유산소 운동, 근력 운동 2회, 총 운동 시간 300분
+                                    </span>
+                                </div>
+                                <div style="margin-top: var(--spacing-md);">
+                                    <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                                        <span style="background: rgba(139, 92, 246, 0.1); color: var(--color-health); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">개인 맞춤</span>
+                                        <span style="background: rgba(16, 185, 129, 0.1); color: var(--color-success); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">실시간 조정</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="cursor: pointer; position: relative; overflow: hidden;" onclick="getNutritionAdvice()">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-success), #22c55e);"></div>
+                            <div class="card-header">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--color-success), #22c55e); display: flex; align-items: center; justify-content: center; color: white; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);">🥗</div>
+                                    <div>
+                                        <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-xs);">AI 영양 관리</h3>
+                                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">식단 분석 및 추천</p>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary">분석 시작</button>
+                            </div>
+                            <div class="card-content">
+                                <p>일일 칼로리 섭취와 영양소 균형을 분석하고 개선안을 제시합니다.</p>
+                                <div style="background: var(--color-surface-overlay); padding: var(--spacing-md); border-radius: var(--radius-md); margin-top: var(--spacing-lg);">
+                                    <strong>📊 오늘의 영양 현황:</strong><br>
+                                    <div style="display: flex; justify-content: space-between; margin-top: var(--spacing-sm); font-size: var(--font-size-sm);">
+                                        <span>칼로리: 1,650/2,000</span>
+                                        <span style="color: var(--color-success);">82%</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-top: var(--spacing-xs); font-size: var(--font-size-sm);">
+                                        <span>단백질: 45/60g</span>
+                                        <span style="color: var(--color-warning);">75%</span>
+                                    </div>
+                                </div>
+                                <div style="margin-top: var(--spacing-md);">
+                                    <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                                        <span style="background: rgba(16, 185, 129, 0.1); color: var(--color-success); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">칼로리 추적</span>
+                                        <span style="background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">영양소 분석</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="cursor: pointer; position: relative; overflow: hidden;" onclick="trackMentalHealth()">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-info), #3b82f6);"></div>
+                            <div class="card-header">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <div style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--color-info), #3b82f6); display: flex; align-items: center; justify-content: center; color: white; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);">🧠</div>
+                                    <div>
+                                        <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-xs);">AI 정신 건강</h3>
+                                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">스트레스 관리 및 명상</p>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary">분석 시작</button>
+                            </div>
+                            <div class="card-content">
+                                <p>스트레스 수준을 모니터링하고 정신 건강 개선 방법을 제안합니다.</p>
+                                <div style="background: var(--color-surface-overlay); padding: var(--spacing-md); border-radius: var(--radius-md); margin-top: var(--spacing-lg);">
+                                    <strong>🧘 오늘의 마음 상태:</strong><br>
+                                    <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-top: var(--spacing-sm);">
+                                        <div style="color: var(--color-success); font-size: var(--font-size-xl);">😌</div>
+                                        <span style="color: var(--color-success);">평온함 (85%)</span>
+                                    </div>
+                                    <span style="font-size: var(--font-size-sm); color: var(--text-tertiary);">
+                                        권장: 10분 명상으로 하루를 마무리하세요
+                                    </span>
+                                </div>
+                                <div style="margin-top: var(--spacing-md);">
+                                    <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                                        <span style="background: rgba(59, 130, 246, 0.1); color: var(--color-info); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">스트레스 추적</span>
+                                        <span style="background: rgba(99, 102, 241, 0.1); color: #6366f1; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">명상 가이드</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Today's Recommendations -->
+                    <div class="card slide-up" style="margin-top: var(--spacing-xl);">
+                        <div class="card-header">
+                            <h2 class="card-title">🌟 오늘의 건강 추천</h2>
+                        </div>
+                        <div class="card-content">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg);">
+                                <div style="padding: var(--spacing-lg); background: rgba(6, 182, 212, 0.05); border-radius: var(--radius-md); border-left: 4px solid var(--color-medical);">
+                                    <h3 style="color: var(--color-medical); margin-bottom: var(--spacing-sm);">💧 수분 섭취</h3>
+                                    <p style="margin-bottom: var(--spacing-sm);">오늘 목표 대비 65% 달성했습니다.</p>
+                                    <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">앞으로 700ml 더 마시면 목표 달성!</p>
+                                    <button class="btn btn-secondary" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm);">물 마시기 알림 설정</button>
+                                </div>
+                                
+                                <div style="padding: var(--spacing-lg); background: rgba(139, 92, 246, 0.05); border-radius: var(--radius-md); border-left: 4px solid var(--color-health);">
+                                    <h3 style="color: var(--color-health); margin-bottom: var(--spacing-sm);">😴 수면 개선</h3>
+                                    <p style="margin-bottom: var(--spacing-sm);">어제보다 30분 일찍 잠들었네요!</p>
+                                    <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">오늘은 22:30에 수면 준비를 시작해보세요.</p>
+                                    <button class="btn btn-secondary" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm);">수면 가이드 보기</button>
+                                </div>
+                                
+                                <div style="padding: var(--spacing-lg); background: rgba(16, 185, 129, 0.05); border-radius: var(--radius-md); border-left: 4px solid var(--color-success);">
+                                    <h3 style="color: var(--color-success); margin-bottom: var(--spacing-sm);">🚶 활동량</h3>
+                                    <p style="margin-bottom: var(--spacing-sm);">목표 걸음 수를 달성했습니다!</p>
+                                    <p style="color: var(--text-tertiary); font-size: var(--font-size-sm);">내일은 10,000보에 도전해보세요.</p>
+                                    <button class="btn btn-secondary" style="margin-top: var(--spacing-md); font-size: var(--font-size-sm);">운동 계획 설정</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Page -->
+            <div id="communityPage" class="page">
+                <div class="content-area">
+                    <div class="page-header fade-in">
+                        <h1 class="page-title">👥 AI 커뮤니티</h1>
+                        <p class="page-subtitle">AI 사용자들과 함께 지식을 공유하고 소통하는 글로벌 커뮤니티</p>
+                    </div>
+                    
+                    <!-- Community Stats -->
+                    <div class="grid grid-cols-4 slide-up" style="margin-bottom: var(--spacing-xl);">
+                        <div class="card" style="text-align: center;">
+                            <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-primary-500); margin-bottom: var(--spacing-xs);">12.5K</div>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">활성 멤버</div>
+                        </div>
+                        <div class="card" style="text-align: center;">
+                            <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-info); margin-bottom: var(--spacing-xs);">2.1K</div>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">오늘 게시물</div>
+                        </div>
+                        <div class="card" style="text-align: center;">
+                            <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-success); margin-bottom: var(--spacing-xs);">850</div>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">AI 프로젝트</div>
+                        </div>
+                        <div class="card" style="text-align: center;">
+                            <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-warning); margin-bottom: var(--spacing-xs);">95%</div>
+                            <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">만족도</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="card slide-up" style="margin-bottom: var(--spacing-xl);">
+                        <div class="card-content">
+                            <div style="display: flex; gap: var(--spacing-md); align-items: center; flex-wrap: wrap;">
+                                <button class="btn btn-primary" onclick="createNewPost()">✍️ 새 게시물 작성</button>
+                                <button class="btn btn-secondary" onclick="askQuestion()">❓ 질문하기</button>
+                                <button class="btn btn-secondary" onclick="shareProject()">🚀 프로젝트 공유</button>
+                                <button class="btn btn-secondary" onclick="joinEvent()">🎉 이벤트 참여</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3" style="gap: var(--spacing-xl);">
+                        <!-- Main Content Area -->
+                        <div style="grid-column: span 2;">
+                            <!-- Featured Discussions -->
+                            <div class="card slide-up" style="margin-bottom: var(--spacing-xl);">
+                                <div class="card-header">
+                                    <h2 class="card-title">🔥 인기 토론</h2>
+                                    <div style="display: flex; gap: var(--spacing-sm);">
+                                        <button class="btn btn-secondary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">최신순</button>
+                                        <button class="btn btn-primary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">인기순</button>
+                                        <button class="btn btn-secondary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">답변순</button>
+                                    </div>
+                                </div>
+                                <div class="card-content">
+                                    <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+                                        <div style="padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md); border-left: 4px solid var(--color-primary-500); cursor: pointer; transition: all var(--motion-duration-fast) var(--motion-ease);" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='translateX(0)'">
+                                            <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-sm);">
+                                                <div style="width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--color-primary-500); display: flex; align-items: center; justify-content: center; color: white; font-weight: var(--font-weight-bold);">김</div>
+                                                <div>
+                                                    <h4 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-xs);">ChatGPT vs Gemini vs Claude - 실제 업무 비교 후기</h4>
+                                                    <div style="display: flex; align-items: center; gap: var(--spacing-md); font-size: var(--font-size-xs); color: var(--text-quaternary);">
+                                                        <span>김개발자</span>
+                                                        <span>•</span>
+                                                        <span>2시간 전</span>
+                                                        <span>•</span>
+                                                        <span style="color: var(--color-primary-500);">AI 비교</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p style="color: var(--text-tertiary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-md); line-height: 1.5;">
+                                                3개월간 실제 프로젝트에서 GPT-4, Gemini Pro, Claude-3를 모두 사용해본 솔직한 후기를 공유합니다. 각각의 장단점과 어떤 상황에 어떤 AI가 더 적합한지...
+                                            </p>
+                                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                                <div style="display: flex; gap: var(--spacing-lg); font-size: var(--font-size-sm); color: var(--text-tertiary);">
+                                                    <span style="display: flex; align-items: center; gap: var(--spacing-xs);">👍 24</span>
+                                                    <span style="display: flex; align-items: center; gap: var(--spacing-xs);">💬 12</span>
+                                                    <span style="display: flex; align-items: center; gap: var(--spacing-xs);">👁️ 156</span>
+                                                    <span style="display: flex; align-items: center; gap: var(--spacing-xs);">🔖 8</span>
+                                                </div>
+                                                <div style="display: flex; gap: var(--spacing-xs);">
+                                                    <span style="background: rgba(16, 185, 129, 0.1); color: var(--color-primary-500); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">HOT</span>
+                                                    <span style="background: rgba(59, 130, 246, 0.1); color: var(--color-info); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">비교</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md); border-left: 4px solid var(--color-info); cursor: pointer; transition: all var(--motion-duration-fast) var(--motion-ease);" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='translateX(0)'">
+                                            <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-sm);">
+                                                <div style="width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--color-info); display: flex; align-items: center; justify-content: center; color: white; font-weight: var(--font-weight-bold);">박</div>
+                                                <div>
+                                                    <h4 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-xs);">프롬프트 엔지니어링 완전 정복 가이드</h4>
+                                                    <div style="display: flex; align-items: center; gap: var(--spacing-md); font-size: var(--font-size-xs); color: var(--text-quaternary);">
+                                                        <span>박프롬프트</span>
+                                                        <span>•</span>
+                                                        <span>4시간 전</span>
+                                                        <span>•</span>
+                                                        <span style="color: var(--color-info);">프롬프트</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p style="color: var(--text-tertiary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-md); line-height: 1.5;">
+                                                더 나은 결과를 얻기 위한 프롬프트 작성법부터 고급 기법까지! Chain-of-Thought, Few-shot Learning, Temperature 조정 등 실무에서 바로 써먹을 수 있는...
+                                            </p>
+                                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                                <div style="display: flex; gap: var(--spacing-lg); font-size: var(--font-size-sm); color: var(--text-tertiary);">
+                                                    <span style="display: flex; align-items: center; gap: var(--spacing-xs);">👍 18</span>
+                                                    <span style="display: flex; align-items: center; gap: var(--spacing-xs);">💬 8</span>
+                                                    <span style="display: flex; align-items: center; gap: var(--spacing-xs);">👁️ 89</span>
+                                                    <span style="display: flex; align-items: center; gap: var(--spacing-xs);">🔖 15</span>
+                                                </div>
+                                                <div style="display: flex; gap: var(--spacing-xs);">
+                                                    <span style="background: rgba(59, 130, 246, 0.1); color: var(--color-info); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">가이드</span>
+                                                    <span style="background: rgba(245, 158, 11, 0.1); color: var(--color-warning); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">고급</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md); border-left: 4px solid var(--color-success); cursor: pointer; transition: all var(--motion-duration-fast) var(--motion-ease);" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='translateX(0)'">
+                                            <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-sm);">
+                                                <div style="width: 40px; height: 40px; border-radius: var(--radius-full); background: var(--color-success); display: flex; align-items: center; justify-content: center; color: white; font-weight: var(--font-weight-bold);">이</div>
+                                                <div>
+                                                    <h4 style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-xs);">AI로 만든 앱이 월 수익 $5,000 돌파!</h4>
+                                                    <div style="display: flex; align-items: center; gap: var(--spacing-md); font-size: var(--font-size-xs); color: var(--text-quaternary);">
+                                                        <span>이창업</span>
+                                                        <span>•</span>
+                                                        <span>6시간 전</span>
+                                                        <span>•</span>
+                                                        <span style="color: var(--color-success);">성공담</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p style="color: var(--text-tertiary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-md); line-height: 1.5;">
+                                                비개발자인 제가 One AI를 활용해 SaaS를 만들어 런칭 6개월 만에 월 $5,000 수익을 달성한 과정을 상세히 공유합니다. 사용한 AI 도구들과 마케팅 전략까지...
+                                            </p>
+                                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                                <div style="display: flex; gap: var(--spacing-lg); font-size: var(--font-size-sm); color: var(--text-tertiary);">
+                                                    <span style="display: flex; align-items: center; gap: var(--spacing-xs);">👍 35</span>
+                                                    <span style="display: flex; align-items: center; gap: var(--spacing-xs);">💬 22</span>
+                                                    <span style="display: flex; align-items: center; gap: var(--spacing-xs);">👁️ 234</span>
+                                                    <span style="display: flex; align-items: center; gap: var(--spacing-xs);">🔖 28</span>
+                                                </div>
+                                                <div style="display: flex; gap: var(--spacing-xs);">
+                                                    <span style="background: rgba(16, 185, 129, 0.1); color: var(--color-success); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">SUCCESS</span>
+                                                    <span style="background: rgba(245, 158, 11, 0.1); color: var(--color-warning); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">수익</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="btn btn-secondary" style="width: 100%; margin-top: var(--spacing-lg);">더 많은 토론 보기</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Latest Questions -->
+                            <div class="card slide-up">
+                                <div class="card-header">
+                                    <h2 class="card-title">❓ 최신 질문</h2>
+                                    <button class="btn btn-primary">질문하기</button>
+                                </div>
+                                <div class="card-content">
+                                    <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                                        <div style="padding: var(--spacing-md); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <div style="display: flex; align-items: center; justify-content: between; margin-bottom: var(--spacing-sm);">
+                                                <h4 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); flex: 1;">LangChain과 llamaindex 중 어떤 게 더 나을까요?</h4>
+                                                <span style="background: rgba(239, 68, 68, 0.1); color: var(--color-error); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs); margin-left: var(--spacing-md);">미해결</span>
+                                            </div>
+                                            <p style="color: var(--text-tertiary); font-size: var(--font-size-xs); margin-bottom: var(--spacing-sm);">
+                                                RAG 시스템을 구축하려고 하는데 어떤 프레임워크가 더 좋을지 고민이에요...
+                                            </p>
+                                            <div style="display: flex; align-items: center; justify-content: space-between; font-size: var(--font-size-xs); color: var(--text-quaternary);">
+                                                <span>정개발자 • 15분 전</span>
+                                                <span>💬 0 답변</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="padding: var(--spacing-md); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <div style="display: flex; align-items: center; justify-content: between; margin-bottom: var(--spacing-sm);">
+                                                <h4 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); flex: 1;">OpenAI API 요금이 너무 비싼데 대안이 있나요?</h4>
+                                                <span style="background: rgba(16, 185, 129, 0.1); color: var(--color-success); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs); margin-left: var(--spacing-md);">해결됨</span>
+                                            </div>
+                                            <p style="color: var(--text-tertiary); font-size: var(--font-size-xs); margin-bottom: var(--spacing-sm);">
+                                                월 API 비용이 $200를 넘어가는데 더 저렴한 대안이 있을까요?
+                                            </p>
+                                            <div style="display: flex; align-items: center; justify-content: space-between; font-size: var(--font-size-xs); color: var(--text-quaternary);">
+                                                <span>김스타트업 • 1시간 전</span>
+                                                <span>💬 5 답변</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="padding: var(--spacing-md); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <div style="display: flex; align-items: center; justify-content: between; margin-bottom: var(--spacing-sm);">
+                                                <h4 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); flex: 1;">AI 모델을 파인튜닝할 때 주의사항이 있나요?</h4>
+                                                <span style="background: rgba(245, 158, 11, 0.1); color: var(--color-warning); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs); margin-left: var(--spacing-md);">진행중</span>
+                                            </div>
+                                            <p style="color: var(--text-tertiary); font-size: var(--font-size-xs); margin-bottom: var(--spacing-sm);">
+                                                처음 파인튜닝을 시도하는데 데이터 준비부터 막막합니다...
+                                            </p>
+                                            <div style="display: flex; align-items: center; justify-content: space-between; font-size: var(--font-size-xs); color: var(--text-quaternary);">
+                                                <span>AI초보 • 2시간 전</span>
+                                                <span>💬 3 답변</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="btn btn-secondary" style="width: 100%; margin-top: var(--spacing-lg);">모든 질문 보기</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sidebar -->
+                        <div>
+                            <!-- Trending Topics -->
+                            <div class="card slide-up" style="margin-bottom: var(--spacing-xl);">
+                                <div class="card-header">
+                                    <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">🔥 트렌딩 토픽</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <span style="font-size: var(--font-size-sm);">#GPT-4o</span>
+                                            <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">124 posts</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <span style="font-size: var(--font-size-sm);">#LangChain</span>
+                                            <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">89 posts</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <span style="font-size: var(--font-size-sm);">#AutoGPT</span>
+                                            <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">67 posts</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <span style="font-size: var(--font-size-sm);">#Fine-tuning</span>
+                                            <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">52 posts</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <span style="font-size: var(--font-size-sm);">#AI창업</span>
+                                            <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">41 posts</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Top Contributors -->
+                            <div class="card slide-up" style="margin-bottom: var(--spacing-xl);">
+                                <div class="card-header">
+                                    <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">⭐ 이번 주 기여자</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                                        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                            <div style="width: 32px; height: 32px; border-radius: var(--radius-full); background: linear-gradient(135deg, #ffd700, #ffed4e); display: flex; align-items: center; justify-content: center; color: #000; font-weight: var(--font-weight-bold); font-size: var(--font-size-sm);">1</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm);">김AI전문가</div>
+                                                <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">15 답변 • 120 좋아요</div>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                            <div style="width: 32px; height: 32px; border-radius: var(--radius-full); background: linear-gradient(135deg, #c0c0c0, #e5e5e5); display: flex; align-items: center; justify-content: center; color: #000; font-weight: var(--font-weight-bold); font-size: var(--font-size-sm);">2</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm);">박개발자</div>
+                                                <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">12 답변 • 95 좋아요</div>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                            <div style="width: 32px; height: 32px; border-radius: var(--radius-full); background: linear-gradient(135deg, #cd7f32, #daa520); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: var(--font-weight-bold); font-size: var(--font-size-sm);">3</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm);">이스타트업</div>
+                                                <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">8 답변 • 78 좋아요</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Weekly Events -->
+                            <div class="card slide-up">
+                                <div class="card-header">
+                                    <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">📅 이번 주 이벤트</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                                        <div style="padding: var(--spacing-md); background: rgba(16, 185, 129, 0.1); border-radius: var(--radius-md); border-left: 4px solid var(--color-primary-500);">
+                                            <h4 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-xs);">AI 해커톤 2024</h4>
+                                            <p style="color: var(--text-tertiary); font-size: var(--font-size-xs); margin-bottom: var(--spacing-sm);">3월 15-17일</p>
+                                            <button class="btn btn-primary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">참가 신청</button>
+                                        </div>
+                                        
+                                        <div style="padding: var(--spacing-md); background: rgba(59, 130, 246, 0.1); border-radius: var(--radius-md); border-left: 4px solid var(--color-info);">
+                                            <h4 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-xs);">LLM 최적화 웨비나</h4>
+                                            <p style="color: var(--text-tertiary); font-size: var(--font-size-xs); margin-bottom: var(--spacing-sm);">3월 12일 오후 8시</p>
+                                            <button class="btn btn-secondary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">사전 등록</button>
+                                        </div>
+                                        
+                                        <div style="padding: var(--spacing-md); background: rgba(245, 158, 11, 0.1); border-radius: var(--radius-md); border-left: 4px solid var(--color-warning);">
+                                            <h4 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-xs);">AI 프로젝트 쇼케이스</h4>
+                                            <p style="color: var(--text-tertiary); font-size: var(--font-size-xs); margin-bottom: var(--spacing-sm);">3월 20일 오후 7시</p>
+                                            <button class="btn btn-secondary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">프로젝트 등록</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sharing Page -->
+            <div id="sharingPage" class="page">
+                <div class="content-area">
+                    <div class="page-header fade-in">
+                        <h1 class="page-title">🔗 AI 쉐어링</h1>
+                        <p class="page-subtitle">AI 리소스를 공유하고 다른 사용자의 창작물을 발견하는 글로벌 플랫폼</p>
+                    </div>
+                    
+                    <!-- Hero Section -->
+                    <div class="card slide-up" style="text-align: center; margin-bottom: var(--spacing-xl);">
+                        <div class="card-content">
+                            <div style="display: flex; justify-content: center; gap: var(--spacing-xl); margin-bottom: var(--spacing-xl);">
+                                <div>
+                                    <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-primary-500);">2.3K+</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">공유된 프롬프트</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-info);">856</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">AI 워크플로우</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-success);">15.2K</div>
+                                    <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">활성 사용자</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: var(--spacing-md); justify-content: center; flex-wrap: wrap;">
+                                <button class="btn btn-primary" onclick="sharePrompt()">📝 프롬프트 공유하기</button>
+                                <button class="btn btn-secondary" onclick="shareWorkflow()">🔄 워크플로우 공유하기</button>
+                                <button class="btn btn-secondary" onclick="shareTemplate()">📋 템플릿 공유하기</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3" style="gap: var(--spacing-xl);">
+                        <!-- Main Content -->
+                        <div style="grid-column: span 2;">
+                            <!-- Featured Content -->
+                            <div class="card slide-up" style="margin-bottom: var(--spacing-xl);">
+                                <div class="card-header">
+                                    <h2 class="card-title">⭐ 이번 주 인기 컨텐츠</h2>
+                                    <div style="display: flex; gap: var(--spacing-sm);">
+                                        <button class="btn btn-primary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">프롬프트</button>
+                                        <button class="btn btn-secondary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">워크플로우</button>
+                                        <button class="btn btn-secondary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">템플릿</button>
+                                    </div>
+                                </div>
+                                <div class="card-content">
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg);">
+                                        <div style="padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md); border: 1px solid rgba(16, 185, 129, 0.2); cursor: pointer; transition: all var(--motion-duration-fast) var(--motion-ease);" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-md);">
+                                                <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                                    <div style="width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--color-primary-500); display: flex; align-items: center; justify-content: center; color: white; font-weight: var(--font-weight-bold); font-size: var(--font-size-sm);">📝</div>
+                                                    <span style="background: rgba(16, 185, 129, 0.1); color: var(--color-primary-500); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">프롬프트</span>
+                                                </div>
+                                                <span style="background: rgba(255, 215, 0, 0.1); color: #ffd700; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">⭐ PREMIUM</span>
+                                            </div>
+                                            <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-sm);">마케팅 카피 생성 마스터</h3>
+                                            <p style="color: var(--text-tertiary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-md); line-height: 1.5;">
+                                                제품/서비스의 특징만 입력하면 매력적인 마케팅 카피를 자동으로 생성해주는 고급 프롬프트입니다. A/B 테스트용 다양한 버전 제공.
+                                            </p>
+                                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-md);">
+                                                <div style="display: flex; align-items: center; gap: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-tertiary);">
+                                                    <span>❤️ 234</span>
+                                                    <span>💬 45</span>
+                                                    <span>📁 89</span>
+                                                    <span>👁️ 1.2K</span>
+                                                </div>
+                                                <div style="font-size: var(--font-size-xs); color: var(--text-quaternary);">by 마케팅왕</div>
+                                            </div>
+                                            <div style="display: flex; gap: var(--spacing-xs); flex-wrap: wrap;">
+                                                <span style="background: rgba(16, 185, 129, 0.1); color: var(--color-primary-500); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">마케팅</span>
+                                                <span style="background: rgba(59, 130, 246, 0.1); color: var(--color-info); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">카피라이팅</span>
+                                                <span style="background: rgba(245, 158, 11, 0.1); color: var(--color-warning); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">자동화</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md); border: 1px solid rgba(59, 130, 246, 0.2); cursor: pointer; transition: all var(--motion-duration-fast) var(--motion-ease);" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-md);">
+                                                <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                                    <div style="width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--color-info); display: flex; align-items: center; justify-content: center; color: white; font-weight: var(--font-weight-bold); font-size: var(--font-size-sm);">🔄</div>
+                                                    <span style="background: rgba(59, 130, 246, 0.1); color: var(--color-info); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">워크플로우</span>
+                                                </div>
+                                                <span style="background: rgba(16, 185, 129, 0.1); color: var(--color-success); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">🆓 FREE</span>
+                                            </div>
+                                            <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-sm);">블로그 포스트 자동 생성</h3>
+                                            <p style="color: var(--text-tertiary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-md); line-height: 1.5;">
+                                                키워드만 입력하면 SEO 최적화된 블로그 포스트를 자동으로 생성하는 완전 자동화 워크플로우입니다. 제목, 본문, 메타태그 모두 포함.
+                                            </p>
+                                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--spacing-md);">
+                                                <div style="display: flex; align-items: center; gap: var(--spacing-md); font-size: var(--font-size-sm); color: var(--text-tertiary);">
+                                                    <span>❤️ 189</span>
+                                                    <span>💬 32</span>
+                                                    <span>📁 156</span>
+                                                    <span>👁️ 2.3K</span>
+                                                </div>
+                                                <div style="font-size: var(--font-size-xs); color: var(--text-quaternary);">by 블로거프로</div>
+                                            </div>
+                                            <div style="display: flex; gap: var(--spacing-xs); flex-wrap: wrap;">
+                                                <span style="background: rgba(59, 130, 246, 0.1); color: var(--color-info); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">블로그</span>
+                                                <span style="background: rgba(16, 185, 129, 0.1); color: var(--color-success); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">SEO</span>
+                                                <span style="background: rgba(139, 92, 246, 0.1); color: var(--color-health); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">컨텐츠</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Latest Shares -->
+                            <div class="card slide-up">
+                                <div class="card-header">
+                                    <h2 class="card-title">🆕 최신 공유</h2>
+                                    <div style="display: flex; gap: var(--spacing-sm);">
+                                        <button class="btn btn-secondary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">최신순</button>
+                                        <button class="btn btn-secondary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">인기순</button>
+                                        <button class="btn btn-secondary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">평점순</button>
+                                    </div>
+                                </div>
+                                <div class="card-content">
+                                    <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+                                        <div style="display: flex; gap: var(--spacing-lg); padding: var(--spacing-lg); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer; transition: all var(--motion-duration-fast) var(--motion-ease);" onmouseover="this.style.background='var(--color-surface-overlay)'" onmouseout="this.style.background='var(--color-surface-raised)'">
+                                            <div style="width: 80px; height: 80px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400)); display: flex; align-items: center; justify-content: center; color: white; font-size: var(--font-size-xl); flex-shrink: 0;">📊</div>
+                                            <div style="flex: 1;">
+                                                <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);">
+                                                    <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">데이터 분석 리포트 자동생성</h3>
+                                                    <span style="background: rgba(16, 185, 129, 0.1); color: var(--color-primary-500); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">템플릿</span>
+                                                </div>
+                                                <p style="color: var(--text-tertiary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-sm); line-height: 1.5;">
+                                                    CSV 파일을 업로드하면 자동으로 인사이트를 분석하고 시각화된 리포트를 생성하는 템플릿입니다.
+                                                </p>
+                                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                                    <div style="display: flex; align-items: center; gap: var(--spacing-lg); font-size: var(--font-size-sm); color: var(--text-tertiary);">
+                                                        <span>❤️ 42</span>
+                                                        <span>💬 8</span>
+                                                        <span>⭐ 4.8</span>
+                                                        <span style="color: var(--text-quaternary);">데이터분석왕 • 1시간 전</span>
+                                                    </div>
+                                                    <button class="btn btn-primary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-md);">사용하기</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="display: flex; gap: var(--spacing-lg); padding: var(--spacing-lg); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer; transition: all var(--motion-duration-fast) var(--motion-ease);" onmouseover="this.style.background='var(--color-surface-overlay)'" onmouseout="this.style.background='var(--color-surface-raised)'">
+                                            <div style="width: 80px; height: 80px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--color-info), #60a5fa); display: flex; align-items: center; justify-content: center; color: white; font-size: var(--font-size-xl); flex-shrink: 0;">🎨</div>
+                                            <div style="flex: 1;">
+                                                <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);">
+                                                    <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">소셜미디어 컨텐츠 크리에이터</h3>
+                                                    <span style="background: rgba(59, 130, 246, 0.1); color: var(--color-info); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">프롬프트</span>
+                                                </div>
+                                                <p style="color: var(--text-tertiary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-sm); line-height: 1.5;">
+                                                    인스타그램, 페이스북, 트위터용 매력적인 포스트를 한 번에 생성하는 멀티플랫폼 프롬프트입니다.
+                                                </p>
+                                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                                    <div style="display: flex; align-items: center; gap: var(--spacing-lg); font-size: var(--font-size-sm); color: var(--text-tertiary);">
+                                                        <span>❤️ 67</span>
+                                                        <span>💬 15</span>
+                                                        <span>⭐ 4.6</span>
+                                                        <span style="color: var(--text-quaternary);">소셜미디어킹 • 2시간 전</span>
+                                                    </div>
+                                                    <button class="btn btn-primary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-md);">사용하기</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="display: flex; gap: var(--spacing-lg); padding: var(--spacing-lg); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer; transition: all var(--motion-duration-fast) var(--motion-ease);" onmouseover="this.style.background='var(--color-surface-overlay)'" onmouseout="this.style.background='var(--color-surface-raised)'">
+                                            <div style="width: 80px; height: 80px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--color-success), #22c55e); display: flex; align-items: center; justify-content: center; color: white; font-size: var(--font-size-xl); flex-shrink: 0;">🤖</div>
+                                            <div style="flex: 1;">
+                                                <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);">
+                                                    <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">고객 서비스 챗봇 워크플로우</h3>
+                                                    <span style="background: rgba(16, 185, 129, 0.1); color: var(--color-success); padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">워크플로우</span>
+                                                </div>
+                                                <p style="color: var(--text-tertiary); font-size: var(--font-size-sm); margin-bottom: var(--spacing-sm); line-height: 1.5;">
+                                                    FAQ 자동 응답부터 복잡한 문의 처리까지, 완전 자동화된 고객 서비스 챗봇 시스템입니다.
+                                                </p>
+                                                <div style="display: flex; align-items: center; justify-content: space-between;">
+                                                    <div style="display: flex; align-items: center; gap: var(--spacing-lg); font-size: var(--font-size-sm); color: var(--text-tertiary);">
+                                                        <span>❤️ 91</span>
+                                                        <span>💬 23</span>
+                                                        <span>⭐ 4.9</span>
+                                                        <span style="color: var(--text-quaternary);">챗봇마스터 • 3시간 전</span>
+                                                    </div>
+                                                    <button class="btn btn-primary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-md);">사용하기</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="btn btn-secondary" style="width: 100%; margin-top: var(--spacing-lg);">더 많은 공유 보기</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sidebar -->
+                        <div>
+                            <!-- Categories -->
+                            <div class="card slide-up" style="margin-bottom: var(--spacing-xl);">
+                                <div class="card-header">
+                                    <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">📂 카테고리</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <span style="font-size: var(--font-size-sm);">💼 비즈니스</span>
+                                            <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">324</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <span style="font-size: var(--font-size-sm);">🎨 창작</span>
+                                            <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">298</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <span style="font-size: var(--font-size-sm);">📚 교육</span>
+                                            <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">187</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <span style="font-size: var(--font-size-sm);">💻 개발</span>
+                                            <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">156</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <span style="font-size: var(--font-size-sm);">📊 데이터분석</span>
+                                            <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">134</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm); background: var(--color-surface-raised); border-radius: var(--radius-md); cursor: pointer;">
+                                            <span style="font-size: var(--font-size-sm);">🎯 마케팅</span>
+                                            <span style="font-size: var(--font-size-xs); color: var(--text-tertiary);">112</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Top Creators -->
+                            <div class="card slide-up" style="margin-bottom: var(--spacing-xl);">
+                                <div class="card-header">
+                                    <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">🏆 인기 크리에이터</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                                        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                            <div style="width: 32px; height: 32px; border-radius: var(--radius-full); background: linear-gradient(135deg, #ffd700, #ffed4e); display: flex; align-items: center; justify-content: center; color: #000; font-weight: var(--font-weight-bold); font-size: var(--font-size-sm);">1</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm);">프롬프트마스터</div>
+                                                <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">45 작품 • 2.3K 좋아요</div>
+                                            </div>
+                                            <button class="btn btn-secondary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">팔로우</button>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                            <div style="width: 32px; height: 32px; border-radius: var(--radius-full); background: linear-gradient(135deg, #c0c0c0, #e5e5e5); display: flex; align-items: center; justify-content: center; color: #000; font-weight: var(--font-weight-bold); font-size: var(--font-size-sm);">2</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm);">AI워크플로우킹</div>
+                                                <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">32 작품 • 1.8K 좋아요</div>
+                                            </div>
+                                            <button class="btn btn-secondary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">팔로우</button>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                            <div style="width: 32px; height: 32px; border-radius: var(--radius-full); background: linear-gradient(135deg, #cd7f32, #daa520); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: var(--font-weight-bold); font-size: var(--font-size-sm);">3</div>
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm);">템플릿신</div>
+                                                <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">28 작품 • 1.5K 좋아요</div>
+                                            </div>
+                                            <button class="btn btn-secondary" style="font-size: var(--font-size-xs); padding: var(--spacing-xs) var(--spacing-sm);">팔로우</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- My Activity -->
+                            <div class="card slide-up">
+                                <div class="card-header">
+                                    <h3 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">📊 나의 활동</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                                        <div style="text-align: center; padding: var(--spacing-md); background: var(--color-surface-raised); border-radius: var(--radius-md);">
+                                            <div style="font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--color-primary-500); margin-bottom: var(--spacing-xs);">5</div>
+                                            <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">공유한 작품</div>
+                                        </div>
+                                        <div style="text-align: center; padding: var(--spacing-md); background: var(--color-surface-raised); border-radius: var(--radius-md);">
+                                            <div style="font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--color-info); margin-bottom: var(--spacing-xs);">127</div>
+                                            <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">받은 좋아요</div>
+                                        </div>
+                                        <div style="text-align: center; padding: var(--spacing-md); background: var(--color-surface-raised); border-radius: var(--radius-md);">
+                                            <div style="font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--color-success); margin-bottom: var(--spacing-xs);">23</div>
+                                            <div style="color: var(--text-tertiary); font-size: var(--font-size-xs);">팔로워</div>
+                                        </div>
+                                        
+                                        <button class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-md);">내 작품 관리</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profilePage" class="page">
+                <div class="content-area">
+                    <div class="page-header fade-in">
+                        <h1 class="page-title">마이페이지</h1>
+                        <p class="page-subtitle">계정 정보와 사용 현황을 확인하세요</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 slide-up">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">👤 프로필 정보</h2>
+                                <button class="btn btn-secondary">편집</button>
+                            </div>
+                            <div class="card-content">
+                                <div style="display: flex; gap: var(--spacing-xl); align-items: center; margin-bottom: var(--spacing-lg);">
+                                    <div style="width: 80px; height: 80px; border-radius: var(--radius-full); background: var(--color-primary-500); display: flex; align-items: center; justify-content: center; color: white; font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold);">
+                                        U
+                                    </div>
+                                    <div>
+                                        <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-xs);" data-user-info="name">사용자</h3>
+                                        <p style="color: var(--text-tertiary);" data-user-info="email">test@oneai.com</p>
+                                        <p style="color: var(--text-quaternary); font-size: var(--font-size-sm);">가입일: 2024.01.01</p>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg);">
+                                    <div style="text-align: center; padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md);">
+                                        <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-primary-500);">127</div>
+                                        <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">총 대화 수</div>
+                                    </div>
+                                    <div style="text-align: center; padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md);">
+                                        <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-info);">23</div>
+                                        <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">공유한 프롬프트</div>
+                                    </div>
+                                    <div style="text-align: center; padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md);">
+                                        <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-success);">42</div>
+                                        <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">받은 좋아요</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // ===== 전역 상태 관리 =====
+        window.OneAIApp = {
+            currentPage: 'home',
+            user: null,
+            isAuthenticated: false,
+            aiEngines: ['gpt', 'gemini', 'claude', 'perplexity'],
+            
+            // 초기화
+            init() {
+                this.checkAuth();
+                this.setupEventListeners();
+                this.loadInitialPage();
+                this.initializeAIEngines();
+            },
+            
+            // AI 엔진 초기화
+            initializeAIEngines() {
+                // AI 엔진 상태 확인
+                this.aiEngines.forEach(engine => {
+                    this.checkEngineStatus(engine);
+                });
+            },
+            
+            // AI 엔진 상태 확인
+            checkEngineStatus(engine) {
+                // 실제 구현에서는 API 호출로 상태 확인
+                console.log(`${engine} 엔진 상태 확인 중...`);
+            },
+            
+            // 인증 확인
+            checkAuth() {
+                const token = localStorage.getItem('oneai_token');
+                const userData = localStorage.getItem('oneai_user');
+                
+                if (token && userData) {
+                    this.user = JSON.parse(userData);
+                    this.isAuthenticated = true;
+                    this.updateUserUI();
+                } else {
+                    this.isAuthenticated = false;
+                    this.updateLoginUI();
+                }
+            },
+            
+            // 사용자 UI 업데이트
+            updateUserUI() {
+                const userProfile = document.getElementById('userProfile');
+                const userAvatar = document.getElementById('userAvatar');
+                const userName = document.getElementById('userName');
+                const userStatus = document.getElementById('userStatus');
+                const loginButton = document.getElementById('loginButton');
+                const logoutButton = document.getElementById('logoutButton');
+                
+                if (this.user) {
+                    userProfile.style.display = 'flex';
+                    loginButton.style.display = 'none';
+                    logoutButton.style.display = 'inline-flex';
+                    
+                    userAvatar.textContent = this.user.name ? this.user.name.charAt(0).toUpperCase() : 'U';
+                    userName.textContent = this.user.name || '사용자';
+                    userStatus.textContent = '온라인';
+                    
+                    // 프로필 페이지 정보 업데이트
+                    const profileElements = document.querySelectorAll('[data-user-info]');
+                    profileElements.forEach(element => {
+                        const field = element.getAttribute('data-user-info');
+                        element.textContent = this.user[field] || '';
+                    });
+                }
+            },
+            
+            // 로그인 UI 업데이트
+            updateLoginUI() {
+                const userProfile = document.getElementById('userProfile');
+                const loginButton = document.getElementById('loginButton');
+                const logoutButton = document.getElementById('logoutButton');
+                
+                userProfile.style.display = 'none';
+                loginButton.style.display = 'inline-flex';
+                logoutButton.style.display = 'none';
+            },
+            
+            // 이벤트 리스너 설정
+            setupEventListeners() {
+                // 뒤로가기/앞으로가기 처리
+                window.addEventListener('popstate', (event) => {
+                    const page = event.state?.page || 'home';
+                    this.showPage(page, false);
+                });
+                
+                // 키보드 단축키
+                document.addEventListener('keydown', (event) => {
+                    if (event.ctrlKey || event.metaKey) {
+                        switch(event.key) {
+                            case '1':
+                                event.preventDefault();
+                                this.navigateTo('home');
+                                break;
+                            case '2':
+                                event.preventDefault();
+                                this.navigateTo('business');
+                                break;
+                            case '3':
+                                event.preventDefault();
+                                this.navigateTo('healthcare');
+                                break;
+                            case '4':
+                                event.preventDefault();
+                                this.navigateTo('community');
+                                break;
+                            case '5':
+                                event.preventDefault();
+                                this.navigateTo('sharing');
+                                break;
+                        }
+                    }
+                });
+                
+                // 전역 클릭 이벤트 (모달 닫기 등)
+                document.addEventListener('click', (event) => {
+                    // 모달 밖 클릭 시 모달 닫기
+                    if (event.target.classList.contains('modal')) {
+                        this.closeModal();
+                    }
+                });
+            },
+            
+            // 초기 페이지 로드
+            loadInitialPage() {
+                const hash = window.location.hash.slice(1);
+                const page = hash || 'home';
+                this.showPage(page, false);
+            },
+            
+            // 페이지 네비게이션
+            navigateTo(page) {
+                this.showPage(page, true);
+            },
+            
+            // 페이지 표시
+            showPage(page, updateHistory = true) {
+                // 인증이 필요한 페이지 체크
+                const authRequiredPages = ['profile', 'business', 'healthcare', 'community', 'sharing'];
+                if (authRequiredPages.includes(page) && !this.isAuthenticated) {
+                    this.showPage('login', updateHistory);
+                    return;
+                }
+                
+                // 현재 활성 페이지 숨기기
+                const currentPage = document.querySelector('.page.active');
+                if (currentPage) {
+                    currentPage.classList.remove('active');
+                }
+                
+                // 새 페이지 표시
+                const newPage = document.getElementById(page + 'Page');
+                if (newPage) {
+                    newPage.classList.add('active');
+                    this.currentPage = page;
+                    
+                    // 네비게이션 탭 업데이트
+                    this.updateNavTabs(page);
+                    
+                    // 브라우저 히스토리 업데이트
+                    if (updateHistory) {
+                        const url = page === 'home' ? '/' : `/#${page}`;
+                        history.pushState({ page }, '', url);
+                    }
+                    
+                    // 페이지별 초기화
+                    this.initPage(page);
+                    
+                    // 페이지 변경 애니메이션
+                    this.animatePageTransition(newPage);
+                }
+            },
+            
+            // 페이지 전환 애니메이션
+            animatePageTransition(page) {
+                page.style.opacity = '0';
+                page.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    page.style.transition = 'all 0.3s ease-out';
+                    page.style.opacity = '1';
+                    page.style.transform = 'translateY(0)';
+                }, 50);
+            },
+            
+            // 네비게이션 탭 업데이트
+            updateNavTabs(page) {
+                const tabs = document.querySelectorAll('.nav-tab');
+                tabs.forEach(tab => {
+                    tab.classList.remove('active');
+                    if (tab.getAttribute('data-page') === page) {
+                        tab.classList.add('active');
+                    }
+                });
+            },
+            
+            // 페이지별 초기화
+            initPage(page) {
+                switch(page) {
+                    case 'home':
+                        this.initHomePage();
+                        break;
+                    case 'business':
+                        this.initBusinessPage();
+                        break;
+                    case 'healthcare':
+                        this.initHealthcarePage();
+                        break;
+                    case 'community':
+                        this.initCommunityPage();
+                        break;
+                    case 'sharing':
+                        this.initSharingPage();
+                        break;
+                    case 'profile':
+                        this.initProfilePage();
+                        break;
+                }
+            },
+            
+            // 홈 페이지 초기화
+            initHomePage() {
+                // 애니메이션 효과
+                const cards = document.querySelectorAll('#homePage .ai-service-card');
+                cards.forEach((card, index) => {
+                    card.style.animationDelay = `${index * 100}ms`;
+                    card.classList.add('slide-up');
+                });
+            },
+            
+            // 비즈니스 페이지 초기화
+            initBusinessPage() {
+                console.log('비즈니스 페이지 초기화');
+                this.loadBusinessData();
+            },
+            
+            // 비즈니스 데이터 로드
+            loadBusinessData() {
+                // 실제 구현에서는 API 호출
+                console.log('비즈니스 데이터 로딩...');
+            },
+            
+            // 헬스케어 페이지 초기화
+            initHealthcarePage() {
+                console.log('헬스케어 페이지 초기화');
+                this.loadHealthData();
+            },
+            
+            // 건강 데이터 로드
+            loadHealthData() {
+                // 실제 구현에서는 웨어러블 기기나 헬스 API 연동
+                console.log('건강 데이터 로딩...');
+            },
+            
+            // 커뮤니티 페이지 초기화
+            initCommunityPage() {
+                console.log('커뮤니티 페이지 초기화');
+                this.loadCommunityPosts();
+            },
+            
+            // 커뮤니티 게시물 로드
+            loadCommunityPosts() {
+                // 실제 구현에서는 API 호출
+                console.log('커뮤니티 게시물 로딩...');
+            },
+            
+            // 쉐어링 페이지 초기화
+            initSharingPage() {
+                console.log('쉐어링 페이지 초기화');
+                this.loadSharedContent();
+            },
+            
+            // 공유 콘텐츠 로드
+            loadSharedContent() {
+                // 실제 구현에서는 API 호출
+                console.log('공유 콘텐츠 로딩...');
+            },
+            
+            // 프로필 페이지 초기화
+            initProfilePage() {
+                if (this.user) {
+                    this.updateUserUI();
+                    this.loadUserStats();
+                }
+            },
+            
+            // 사용자 통계 로드
+            loadUserStats() {
+                // 실제 구현에서는 API 호출
+                console.log('사용자 통계 로딩...');
+            },
+            
+            // 모달 관리
+            showModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                }
+            },
+            
+            closeModal() {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    modal.style.display = 'none';
+                });
+                document.body.style.overflow = 'auto';
+            },
+            
+            // 로그아웃
+            logout() {
+                localStorage.removeItem('oneai_token');
+                localStorage.removeItem('oneai_user');
+                this.user = null;
+                this.isAuthenticated = false;
+                this.updateLoginUI();
+                this.navigateTo('home');
+                this.showToast('로그아웃되었습니다.', 'info');
+            },
+            
+            // 토스트 메시지 표시
+            showToast(message, type = 'info', duration = 3000) {
+                // 기존 토스트 제거
+                const existingToast = document.querySelector('.toast');
+                if (existingToast) {
+                    existingToast.remove();
+                }
+                
+                // 새 토스트 생성
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                const colors = {
+                    success: 'var(--color-success)',
+                    error: 'var(--color-error)',
+                    warning: 'var(--color-warning)',
+                    info: 'var(--color-info)'
+                };
+                
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: var(--color-surface-modal);
+                    color: var(--text-primary);
+                    padding: var(--spacing-md) var(--spacing-lg);
+                    border-radius: var(--radius-md);
+                    box-shadow: var(--shadow-xl);
+                    z-index: var(--z-index-toast);
+                    animation: slideInRight 0.3s ease-out;
+                    border-left: 4px solid ${colors[type] || colors.info};
+                    max-width: 400px;
+                    word-wrap: break-word;
+                `;
+                toast.textContent = message;
+                
+                document.body.appendChild(toast);
+                
+                // duration 후 제거
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.style.animation = 'slideOutRight 0.3s ease-out';
+                        setTimeout(() => toast.remove(), 300);
+                    }
+                }, duration);
+            },
+            
+            // API 요청 래퍼
+            async apiRequest(endpoint, options = {}) {
+                const baseURL = '/api';
+                const token = localStorage.getItem('oneai_token');
+                
+                const defaultOptions = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token && { 'Authorization': `Bearer ${token}` })
+                    }
+                };
+                
+                const finalOptions = { ...defaultOptions, ...options };
+                if (finalOptions.body && typeof finalOptions.body === 'object') {
+                    finalOptions.body = JSON.stringify(finalOptions.body);
+                }
+                
+                try {
+                    const response = await fetch(`${baseURL}${endpoint}`, finalOptions);
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.message || '요청 처리 중 오류가 발생했습니다.');
+                    }
+                    
+                    return data;
+                } catch (error) {
+                    console.error('API 요청 오류:', error);
+                    this.showToast(error.message, 'error');
+                    throw error;
+                }
+            }
+        };
+        
+        // ===== 로그인 처리 =====
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMessage');
+            const submitBtn = document.getElementById('loginSubmitBtn');
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('loading');
+                submitBtn.textContent = '로그인 중...';
+                errorMsg.style.display = 'none';
+                
+                const data = await OneAIApp.apiRequest('/auth/login', {
+                    method: 'POST',
+                    body: { email, password }
+                });
+                
+                // 로그인 성공
+                localStorage.setItem('oneai_token', data.token);
+                localStorage.setItem('oneai_user', JSON.stringify(data.user));
+                
+                OneAIApp.user = data.user;
+                OneAIApp.isAuthenticated = true;
+                OneAIApp.updateUserUI();
+                OneAIApp.showToast('로그인되었습니다!', 'success');
+                OneAIApp.navigateTo('home');
+                
+            } catch (error) {
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = '로그인';
+            }
+        }
+        
+        // ===== 비즈니스 페이지 함수들 =====
+        function showAIBuilder() {
+            OneAIApp.showToast('AI 엔진 빌더를 준비 중입니다...', 'info');
+            // 실제 구현에서는 AI 빌더 페이지로 이동
+        }
+        
+        function showMarketplace() {
+            OneAIApp.showToast('마켓플레이스를 로딩 중입니다...', 'info');
+            // 실제 구현에서는 마켓플레이스 페이지로 이동
+        }
+        
+        function showAnalytics() {
+            OneAIApp.showToast('분석 대시보드를 준비 중입니다...', 'info');
+            // 실제 구현에서는 분석 페이지로 이동
+        }
+        
+        function showConsulting() {
+            OneAIApp.showToast('AI 컨설팅 서비스를 준비 중입니다...', 'info');
+            // 실제 구현에서는 컨설팅 예약 페이지로 이동
+        }
+        
+        function createNewEngine() {
+            OneAIApp.showToast('새 AI 엔진 생성을 시작합니다...', 'info');
+            // 실제 구현에서는 엔진 생성 워크플로우 시작
+        }
+        
+        function importTemplate() {
+            OneAIApp.showToast('템플릿 라이브러리를 여는 중입니다...', 'info');
+            // 실제 구현에서는 템플릿 선택 모달 표시
+        }
+        
+        function viewDocumentation() {
+            OneAIApp.showToast('개발 문서를 로딩 중입니다...', 'info');
+            // 실제 구현에서는 문서 페이지로 이동
+        }
+        
+        function showMyEngines() {
+            OneAIApp.showToast('내 AI 엔진 목록을 불러오는 중입니다...', 'info');
+            // 실제 구현에서는 내 엔진 관리 페이지로 이동
+        }
+        
+        // ===== 헬스케어 페이지 함수들 =====
+        function startHealthConsultation() {
+            OneAIApp.showToast('AI 건강 상담을 시작합니다...', 'info');
+            // 실제 구현에서는 상담 채팅 인터페이스 표시
+        }
+        
+        function createWorkoutPlan() {
+            OneAIApp.showToast('개인 맞춤 운동 계획을 생성 중입니다...', 'info');
+            // 실제 구현에서는 운동 계획 생성 워크플로우 시작
+        }
+        
+        function getNutritionAdvice() {
+            OneAIApp.showToast('영양 분석을 시작합니다...', 'info');
+            // 실제 구현에서는 영양 분석 인터페이스 표시
+        }
+        
+        function trackMentalHealth() {
+            OneAIApp.showToast('정신 건강 체크를 시작합니다...', 'info');
+            // 실제 구현에서는 정신 건강 설문 또는 분석 시작
+        }
+        
+        // ===== 커뮤니티 페이지 함수들 =====
+        function createNewPost() {
+            OneAIApp.showToast('새 게시물 작성 페이지로 이동합니다...', 'info');
+            // 실제 구현에서는 게시물 작성 모달 또는 페이지 표시
+        }
+        
+        function askQuestion() {
+            OneAIApp.showToast('질문 작성 폼을 준비 중입니다...', 'info');
+            // 실제 구현에서는 질문 작성 모달 표시
+        }
+        
+        function shareProject() {
+            OneAIApp.showToast('프로젝트 공유 폼을 로딩 중입니다...', 'info');
+            // 실제 구현에서는 프로젝트 공유 모달 표시
+        }
+        
+        function joinEvent() {
+            OneAIApp.showToast('이벤트 목록을 불러오는 중입니다...', 'info');
+            // 실제 구현에서는 이벤트 리스트 모달 표시
+        }
+        
+        // ===== 쉐어링 페이지 함수들 =====
+        function sharePrompt() {
+            OneAIApp.showToast('프롬프트 공유 폼을 준비 중입니다...', 'info');
+            // 실제 구현에서는 프롬프트 공유 모달 표시
+        }
+        
+        function shareWorkflow() {
+            OneAIApp.showToast('워크플로우 공유 폼을 로딩 중입니다...', 'info');
+            // 실제 구현에서는 워크플로우 공유 모달 표시
+        }
+        
+        function shareTemplate() {
+            OneAIApp.showToast('템플릿 공유 폼을 준비 중입니다...', 'info');
+            // 실제 구현에서는 템플릿 공유 모달 표시
+        }
+        
+        // ===== 전역 함수들 =====
+        function navigateTo(page) {
+            OneAIApp.navigateTo(page);
+        }
+        
+        function logout() {
+            OneAIApp.logout();
+        }
+        
+        // ===== 유틸리티 함수들 =====
+        function formatDate(date) {
+            return new Intl.DateTimeFormat('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(new Date(date));
+        }
+        
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+        
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        // ===== 검색 기능 =====
+        function initSearch() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                const debouncedSearch = debounce((query) => {
+                    console.log('검색 중:', query);
+                    // 실제 구현에서는 API 호출
+                }, 300);
+                
+                searchInput.addEventListener('input', (e) => {
+                    debouncedSearch(e.target.value);
+                });
+            }
+        }
+        
+        // ===== 다크/라이트 테마 전환 =====
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('oneai_theme', newTheme);
+            
+            OneAIApp.showToast(`${newTheme === 'dark' ? '다크' : '라이트'} 테마로 변경되었습니다.`, 'info');
+        }
+        
+        // ===== 키보드 단축키 도움말 =====
+        function showKeyboardShortcuts() {
+            const shortcuts = [
+                'Ctrl+1: 홈 페이지',
+                'Ctrl+2: 비즈니스 페이지',
+                'Ctrl+3: 헬스케어 페이지',
+                'Ctrl+4: 커뮤니티 페이지',
+                'Ctrl+5: 쉐어링 페이지'
+            ];
+            
+            OneAIApp.showToast(shortcuts.join('\n'), 'info', 5000);
+        }
+        
+        // ===== 앱 초기화 =====
+        document.addEventListener('DOMContentLoaded', () => {
+            OneAIApp.init();
+            initSearch();
+            
+            // 저장된 테마 적용
+            const savedTheme = localStorage.getItem('oneai_theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+            
+            // 키보드 단축키 도움말 (Ctrl+?)
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+                    e.preventDefault();
+                    showKeyboardShortcuts();
+                }
+            });
+            
+            console.log('One AI 앱이 성공적으로 초기화되었습니다! 🚀');
+        });
+        
+        // ===== 애니메이션 CSS 추가 =====
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

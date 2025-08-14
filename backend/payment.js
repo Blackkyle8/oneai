@@ -81,7 +81,7 @@ router.post('/create-subscription', authenticateToken, async (req, res) => {
         const userEmail = req.user.email;
 
         // Stripe 고객 조회 또는 생성
-        let customer = await findOrCreateCustomer(userId, userEmail);
+        const customer = await findOrCreateCustomer(userId, userEmail);
 
         // 결제 방법 고객에게 연결
         if (paymentMethodId) {
@@ -480,11 +480,15 @@ async function handleWebhookEvent(event) {
             break;
 
         case 'customer.subscription.updated':
-            await handleSubscriptionUpdated(event.data.object);
+            // TODO: 구독 업데이트 핸들러 구현 필요
+            // await handleSubscriptionUpdated(event.data.object);
+            console.log('Subscription updated:', event.data.object.id);
             break;
 
         case 'customer.subscription.deleted':
-            await handleSubscriptionDeleted(event.data.object);
+            // TODO: 구독 삭제 핸들러 구현 필요
+            // await handleSubscriptionDeleted(event.data.object);
+            console.log('Subscription deleted:', event.data.object.id);
             break;
 
         default:
@@ -573,7 +577,9 @@ async function handleInvoicePaymentFailed(invoice) {
     // 사용자 알림
     const user = await getUserById(userId);
     if (user) {
-        await sendSubscriptionPaymentFailedEmail(user.email, subscription, invoice);
+        // TODO: 이메일 발송 함수 구현 필요
+        // await sendSubscriptionPaymentFailedEmail(user.email, subscription, invoice);
+        console.log('Payment failed notification needed for:', user.email);
     }
 
     console.log(`구독 결제 실패: ${subscriptionId} (사용자: ${userId})`);
@@ -587,7 +593,7 @@ async function handleInvoicePaymentFailed(invoice) {
 async function findOrCreateCustomer(userId, email) {
     try {
         // DB에서 기존 고객 정보 조회
-        let customer = await findCustomerByUserId(userId);
+        const customer = await findCustomerByUserId(userId);
         
         if (customer) {
             // Stripe에서 고객 정보 확인

@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One AI - 모든 AI를 하나로</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- One AI Language System -->
+    <link rel="stylesheet" href="assets/lang.css">
+    <script src="assets/lang.js"></script>
+    
+    <!-- One AI Scripts -->
+    <script src="script.js"></script>
+    <script src="api.js"></script>
+    
+    <style>
+        /* =========================
+           One AI Design System v2.0
+           통합 CSS 변수 및 컴포넌트
+        ========================= */
+        :root {
+            color-scheme: dark;
+            
+            /* Surface Colors - Dark Theme */
+            --color-surface-base: #000000;
+            --color-surface-raised: #0a0a0a;
+            --color-surface-elevated: #111111;
+            --color-surface-overlay: #1a1a1a;
+            --color-surface-modal: #222222;
+            --surface-glass: rgba(17, 17, 17, 0.8);
+            --surface-glass-border: rgba(255, 255, 255, 0.1);
+            
+            /* Text Colors */
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-tertiary: #a3a3a3;
+            --text-quaternary: #737373;
+            --text-disabled: #525252;
+            
+            /* Brand Colors */
+            --color-primary-200: #a7f3d0;
+            --color-primary-400: #34d399;
+            --color-primary-500: #10b981;
+            --color-primary-600: #059669;
+            --color-primary-700: #047857;
+            
+            /* Status Colors */
+            --color-success: #10b981;
+            --color-error: #ef4444;
+            --color-warning: #f59e0b;
+            --color-info: #3b82f6;
+            
+            /* AI Service Brand Colors */
+            --ai-gpt-gradient: linear-gradient(135deg, #10a37f, #1a7f72);
+            --ai-gemini-gradient: linear-gradient(135deg, #4285f4, #ea4335);
+            --ai-perplexity-gradient: linear-gradient(135deg, #20c997, #17a2b8);
+            --ai-midjourney-gradient: linear-gradient(135deg, #000, #333);
+            --ai-claude-gradient: linear-gradient(135deg, #ff6b35, #f7931e);
+            --ai-copilot-gradient: linear-gradient(135deg, #0078d4, #106ebe);
+            
+            /* Medical Theme */
+            --color-medical: #06b6d4;
+            --color-health: #8b5cf6;
+            
+            /* Typography */
+            --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --font-weight-extrabold: 800;
+            
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 20px;
+            --font-size-2xl: 24px;
+            --font-size-3xl: 30px;
+            --font-size-4xl: 36px;
+            --font-size-5xl: 48px;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            --spacing-3xl: 64px;
+            
+            /* Border Radius */
+            --radius-xs: 2px;
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-2xl: 16px;
+            --radius-full: 9999px;
+            
+            /* Layout */
+            --header-height: 60px;
+            --sidebar-width: 56px;
+            
+            /* Z-Index */
+            --z-index-base: 0;
+            --z-index-sidebar: 10;
+            --z-index-dropdown: 20;
+            --z-index-modal: 40;
+            --z-index-toast: 50;
+            --z-index-tooltip: 60;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            
+            /* Animation */
+            --motion-duration-fast: 150ms;
+            --motion-duration-normal: 250ms;
+            --motion-duration-slow: 350ms;
+            --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Scrollbar */
+            --scrollbar-width: 8px;
+            --scrollbar-track: var(--color-surface-elevated);
+            --scrollbar-thumb: var(--color-surface-overlay);
+            --scrollbar-thumb-hover: var(--color-surface-modal);
+        }
+        
+        /* Light Theme Variables */
+        [data-theme="light"] {
+            --color-surface-base: #ffffff;
+            --color-surface-raised: #f5f5f5;
+            --color-surface-elevated: #eaeaea;
+            --color-surface-overlay: #dddddd;
+            --color-surface-modal: #cccccc;
+            
+            --text-primary: #111111;
+            --text-secondary: #444444;
+            --text-tertiary: #666666;
+            --text-quaternary: #888888;
+            --text-disabled: #aaaaaa;
+        }
+
+        /* =========================
+           Base Styles & Reset
+        ========================= */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family-primary);
+            font-weight: var(--font-weight-normal);
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--color-surface-base);
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: var(--scrollbar-width);
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: var(--radius-full);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--scrollbar-thumb-hover);
+        }
+
+        /* =========================
+           App Layout Structure
+        ========================= */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            background: var(--color-surface-base);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Page Container */
+        .page {
+            display: none;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================
+           Header Component
+        ========================= */
+        .header {
+            background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0 var(--spacing-xl);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: var(--z-index-dropdown);
+            backdrop-filter: blur(10px);
+            height: var(--header-height);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xl);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: #fff;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            transition: transform var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: var(--spacing-xs);
+            background: rgba(0, 0, 0, 0.3);
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-tertiary);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-tab.active {
+            color: var(--text-primary);
+            background: var(--color-primary-500);
+            transform: scale(1.02);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        /* User Profile */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            background: var(--color-primary-500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-sm);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .user-name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .user-status {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+            line-height: 1.2;
+        }
+
+        /* =========================
+           Login Page Styles
+        ========================= */
+        .login-container {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-surface-base);
+            padding: var(--spacing-lg);
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            padding: var(--spacing-2xl);
+            background: var(--color-surface-raised);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .login-title {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-subtitle {
+            color: var(--text-tertiary);
+            font-size: var(--font-size-sm);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            background: var(--color-surface-overlay);
+            color: var(--text-primary);
+            font-size: var(--font-size-base);
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary-500);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: var(--spacing-md);
+            background: var(--color-primary-500);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .submit-button:hover:not(:disabled) {
+            background: var(--color-primary-600);
+            transform: translateY(-1px);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            color: var(--color-error);
+            background: rgba(239, 68, 68, 0.1);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-lg);
+            font-size: var(--font-size-sm);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            display: none;
+        }
+
+        /* =========================
+           Content Area Styles
+        ========================= */
+        .content-area {
+            flex: 1;
+            padding: var(--spacing-xl);
+            overflow: auto;
+            background: var(--color-surface-base);
+        }
+
+        .page-header {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .page-title {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: var(--font-size-lg);
+            color: var(--text-tertiary);
+            font-weight: var(--font-weight-normal);
+        }
+
+        /* =========================
+           Card Components
+        ========================= */
+        .card {
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+        }
+
+        .card-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* =========================
+           Grid Layout
+        ========================= */
+        .grid {
+            display: grid;
+            gap: var(--spacing-xl);
+        }
+
+        .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+        @media (max-width: 768px) {
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* =========================
+           Button Components
+        ========================= */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-600);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--color-surface-overlay);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-surface-modal);
+        }
+
+        /* =========================
+           AI Service Cards
+        ========================= */
+        .ai-service-card {
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all var(--motion-duration-normal) var(--motion-ease);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--service-gradient, var(--color-primary-500));
+            opacity: 0;
+            transition: opacity var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        .ai-service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .ai-service-card:hover::before {
+            opacity: 1;
+        }
+
+        .ai-service-card.gpt {
+            --service-gradient: var(--ai-gpt-gradient);
+        }
+
+        .ai-service-card.gemini {
+            --service-gradient: var(--ai-gemini-gradient);
+        }
+
+        .ai-service-card.claude {
+            --service-gradient: var(--ai-claude-gradient);
+        }
+
+        .ai-service-card.perplexity {
+            --service-gradient: var(--ai-perplexity-gradient);
+        }
+
+        .ai-service-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .ai-service-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            background: var(--service-gradient, var(--color-primary-500));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-lg);
+        }
+
+        .ai-service-info h3 {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .ai-service-info p {
+            color: var(--text-tertiary);
+            font-size: var(--font-size-sm);
+        }
+
+        /* =========================
+           Responsive Design
+        ========================= */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 var(--spacing-lg);
+            }
+            
+            .header-left {
+                gap: var(--spacing-lg);
+            }
+            
+            .nav-tabs {
+                display: none;
+            }
+            
+            .content-area {
+                padding: var(--spacing-lg);
+            }
+            
+            .page-title {
+                font-size: var(--font-size-2xl);
+            }
+            
+            .user-info {
+                display: none;
+            }
+        }
+
+        /* =========================
+           Animation Classes
+        ========================= */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn var(--motion-duration-normal) var(--motion-ease) forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .slide-up {
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUp var(--motion-duration-normal) var(--motion-ease) forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* =========================
+           Loading States
+        ========================= */
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .loading::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* =========================
+           Hidden utilities
+        ========================= */
+        .hidden {
+            display: none !important;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <a href="#" class="logo" onclick="navigateTo('home')">
+                        <span>🤖</span>
+                        <span>One AI</span>
+                    </a>
+                    
+                    <nav class="nav-tabs">
+                        <button class="nav-tab active" onclick="navigateTo('home')" data-page="home">홈</button>
+                        <button class="nav-tab" onclick="navigateTo('business')" data-page="business">비즈니스</button>
+                        <button class="nav-tab" onclick="navigateTo('healthcare')" data-page="healthcare">헬스케어</button>
+                        <button class="nav-tab" onclick="navigateTo('community')" data-page="community">커뮤니티</button>
+                        <button class="nav-tab" onclick="navigateTo('sharing')" data-page="sharing">쉐어링</button>
+                    </nav>
+                </div>
+                
+                <div class="header-right">
+                    <div class="user-profile" onclick="navigateTo('profile')" id="userProfile" style="display: none;">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <div class="user-info">
+                            <div class="user-name" id="userName">사용자</div>
+                            <div class="user-status" id="userStatus">온라인</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="navigateTo('login')" id="loginButton">로그인</button>
+                    <button class="btn btn-secondary" onclick="logout()" id="logoutButton" style="display: none;">로그아웃</button>
+                </div>
+            </header>
+
+            <!-- Login Page -->
+            <div id="loginPage" class="page">
+                <div class="login-container">
+                    <div class="login-box fade-in">
+                        <div class="login-header">
+                            <h1 class="login-title">One AI</h1>
+                            <p class="login-subtitle">모든 AI를 하나로 연결하는 플랫폼</p>
+                        </div>
+                        
+                        <div id="errorMessage" class="error-message"></div>
+                        
+                        <form id="loginForm" onsubmit="return handleLogin(event)">
+                            <div class="form-group">
+                                <label for="email" class="form-label">이메일</label>
+                                <input type="email" id="email" class="form-input" required value="test@oneai.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password" class="form-label">비밀번호</label>
+                                <input type="password" id="password" class="form-input" required value="test1234">
+                            </div>
+
+                            <button type="submit" class="submit-button" id="loginSubmitBtn">로그인</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Home Page -->
+            <div id="homePage" class="page active">
+                <div class="content-area">
+                    <div class="page-header fade-in">
+                        <h1 class="page-title">모든 AI를 하나로</h1>
+                        <p class="page-subtitle">One AI에서 다양한 AI 서비스를 통합 관리하고 활용하세요</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 slide-up">
+                        <div class="ai-service-card gpt" onclick="navigateTo('business')">
+                            <div class="ai-service-header">
+                                <div class="ai-service-icon">GPT</div>
+                                <div class="ai-service-info">
+                                    <h3>비즈니스 AI</h3>
+                                    <p>업무 효율성을 높이는 AI 도구들</p>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                문서 작성, 데이터 분석, 업무 자동화 등 비즈니스에 필요한 AI 기능을 제공합니다.
+                            </div>
+                        </div>
+                        
+                        <div class="ai-service-card claude" onclick="navigateTo('healthcare')">
+                            <div class="ai-service-header">
+                                <div class="ai-service-icon">🏥</div>
+                                <div class="ai-service-info">
+                                    <h3>헬스케어 AI</h3>
+                                    <p>건강 관리를 위한 AI 솔루션</p>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                건강 상담, 운동 계획, 영양 관리 등 개인 맞춤형 헬스케어 서비스를 제공합니다.
+                            </div>
+                        </div>
+                        
+                        <div class="ai-service-card gemini" onclick="navigateTo('community')">
+                            <div class="ai-service-header">
+                                <div class="ai-service-icon">👥</div>
+                                <div class="ai-service-info">
+                                    <h3>커뮤니티</h3>
+                                    <p>AI 사용자들과 소통하는 공간</p>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                AI 활용 노하우를 공유하고, 다른 사용자들과 정보를 교환할 수 있습니다.
+                            </div>
+                        </div>
+                        
+                        <div class="ai-service-card perplexity" onclick="navigateTo('sharing')">
+                            <div class="ai-service-header">
+                                <div class="ai-service-icon">🔗</div>
+                                <div class="ai-service-info">
+                                    <h3>AI 쉐어링</h3>
+                                    <p>AI 리소스 공유 플랫폼</p>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                AI 모델, 프롬프트, 워크플로우를 다른 사용자들과 공유하고 활용하세요.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Page -->
+            <div id="businessPage" class="page">
+                <div class="content-area">
+                    <div class="page-header fade-in">
+                        <h1 class="page-title">비즈니스 AI 센터</h1>
+                        <p class="page-subtitle">업무 효율성을 높이는 AI 도구들을 한 곳에서 관리하세요</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 slide-up">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">🤖 AI 어시스턴트</h2>
+                                <button class="btn btn-primary">새 대화 시작</button>
+                            </div>
+                            <div class="card-content">
+                                <p>업무 관련 질문에 답하고, 문서 작성을 도와주는 AI 어시스턴트입니다.</p>
+                                <div style="margin-top: var(--spacing-lg);">
+                                    <div style="background: var(--color-surface-overlay); padding: var(--spacing-lg); border-radius: var(--radius-md); margin-bottom: var(--spacing-md);">
+                                        <strong>💡 오늘의 추천 기능:</strong><br>
+                                        회의록 자동 요약, 이메일 작성 도움, 프레젠테이션 구조 제안
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Healthcare Page -->
+            <div id="healthcarePage" class="page">
+                <div class="content-area">
+                    <div class="page-header fade-in">
+                        <h1 class="page-title">헬스케어 AI</h1>
+                        <p class="page-subtitle">개인 맞춤형 건강 관리 AI 서비스</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 slide-up">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">🏥 건강 상담 AI</h2>
+                                <button class="btn btn-primary">상담 시작</button>
+                            </div>
+                            <div class="card-content">
+                                <p>증상을 설명하면 가능한 원인과 대처 방법을 제안해드립니다.</p>
+                                <div style="margin-top: var(--spacing-lg);">
+                                    <div style="background: var(--color-surface-overlay); padding: var(--spacing-lg); border-radius: var(--radius-md); margin-bottom: var(--spacing-md); border-left: 4px solid var(--color-medical);">
+                                        <strong>⚠️ 중요 안내:</strong><br>
+                                        AI 상담은 참고용이며, 심각한 증상이 있으면 반드시 의료진과 상담하시기 바랍니다.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">💪 운동 계획 AI</h2>
+                                <button class="btn btn-primary">계획 생성</button>
+                            </div>
+                            <div class="card-content">
+                                <p>개인의 체력 수준과 목표에 맞는 맞춤형 운동 계획을 제공합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Page -->
+            <div id="communityPage" class="page">
+                <div class="content-area">
+                    <div class="page-header fade-in">
+                        <h1 class="page-title">AI 커뮤니티</h1>
+                        <p class="page-subtitle">AI 사용자들과 함께 지식을 공유하고 소통하세요</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 slide-up">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">💬 최근 토론</h2>
+                                <button class="btn btn-primary">새 토론 시작</button>
+                            </div>
+                            <div class="card-content">
+                                <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                                    <div style="padding: var(--spacing-md); background: var(--color-surface-overlay); border-radius: var(--radius-md);">
+                                        <h4>ChatGPT vs Gemini 비교 후기</h4>
+                                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm); margin-top: var(--spacing-xs);">
+                                            실제 업무에서 사용해본 경험을 공유합니다...
+                                        </p>
+                                        <div style="margin-top: var(--spacing-sm); font-size: var(--font-size-xs); color: var(--text-quaternary);">
+                                            👍 24 · 💬 12 · 2시간 전
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="padding: var(--spacing-md); background: var(--color-surface-overlay); border-radius: var(--radius-md);">
+                                        <h4>프롬프트 엔지니어링 팁 모음</h4>
+                                        <p style="color: var(--text-tertiary); font-size: var(--font-size-sm); margin-top: var(--spacing-xs);">
+                                            더 나은 결과를 얻기 위한 프롬프트 작성법...
+                                        </p>
+                                        <div style="margin-top: var(--spacing-sm); font-size: var(--font-size-xs); color: var(--text-quaternary);">
+                                            👍 18 · 💬 8 · 4시간 전
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sharing Page -->
+            <div id="sharingPage" class="page">
+                <div class="content-area">
+                    <div class="page-header fade-in">
+                        <h1 class="page-title">AI 쉐어링</h1>
+                        <p class="page-subtitle">AI 리소스를 공유하고 다른 사용자의 창작물을 발견하세요</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 slide-up">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">📝 프롬프트 라이브러리</h2>
+                                <button class="btn btn-primary">프롬프트 공유</button>
+                            </div>
+                            <div class="card-content">
+                                <p>효과적인 프롬프트를 공유하고 다른 사용자의 프롬프트를 활용하세요.</p>
+                                <div style="margin-top: var(--spacing-lg);">
+                                    <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                                        <span style="background: var(--color-primary-500); color: white; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">비즈니스</span>
+                                        <span style="background: var(--color-info); color: white; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">창작</span>
+                                        <span style="background: var(--color-warning); color: white; padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-sm); font-size: var(--font-size-xs);">교육</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">🔄 워크플로우</h2>
+                                <button class="btn btn-primary">워크플로우 공유</button>
+                            </div>
+                            <div class="card-content">
+                                <p>AI를 활용한 업무 프로세스와 자동화 워크플로우를 공유하세요.</p>
+                                <div style="margin-top: var(--spacing-lg);">
+                                    <div style="background: var(--color-surface-overlay); padding: var(--spacing-md); border-radius: var(--radius-md);">
+                                        <strong>💡 인기 워크플로우:</strong><br>
+                                        자동 이메일 분류, 컨텐츠 생성 파이프라인, 데이터 분석 자동화
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profilePage" class="page">
+                <div class="content-area">
+                    <div class="page-header fade-in">
+                        <h1 class="page-title">마이페이지</h1>
+                        <p class="page-subtitle">계정 정보와 사용 현황을 확인하세요</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 slide-up">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">👤 프로필 정보</h2>
+                                <button class="btn btn-secondary">편집</button>
+                            </div>
+                            <div class="card-content">
+                                <div style="display: flex; gap: var(--spacing-xl); align-items: center; margin-bottom: var(--spacing-lg);">
+                                    <div style="width: 80px; height: 80px; border-radius: var(--radius-full); background: var(--color-primary-500); display: flex; align-items: center; justify-content: center; color: white; font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold);">
+                                        U
+                                    </div>
+                                    <div>
+                                        <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--spacing-xs);" data-user-info="name">사용자</h3>
+                                        <p style="color: var(--text-tertiary);" data-user-info="email">test@oneai.com</p>
+                                        <p style="color: var(--text-quaternary); font-size: var(--font-size-sm);">가입일: 2024.01.01</p>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg);">
+                                    <div style="text-align: center; padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md);">
+                                        <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-primary-500);">127</div>
+                                        <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">총 대화 수</div>
+                                    </div>
+                                    <div style="text-align: center; padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md);">
+                                        <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-info);">23</div>
+                                        <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">공유한 프롬프트</div>
+                                    </div>
+                                    <div style="text-align: center; padding: var(--spacing-lg); background: var(--color-surface-overlay); border-radius: var(--radius-md);">
+                                        <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-success);">42</div>
+                                        <div style="color: var(--text-tertiary); font-size: var(--font-size-sm);">받은 좋아요</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // ===== 전역 상태 관리 =====
+        window.OneAIApp = {
+            currentPage: 'home',
+            user: null,
+            isAuthenticated: false,
+            
+            // 초기화
+            init() {
+                this.checkAuth();
+                this.setupEventListeners();
+                this.loadInitialPage();
+            },
+            
+            // 인증 확인
+            checkAuth() {
+                const token = localStorage.getItem('oneai_token');
+                const userData = localStorage.getItem('oneai_user');
+                
+                if (token && userData) {
+                    this.user = JSON.parse(userData);
+                    this.isAuthenticated = true;
+                    this.updateUserUI();
+                } else {
+                    this.isAuthenticated = false;
+                    this.updateLoginUI();
+                }
+            },
+            
+            // 사용자 UI 업데이트
+            updateUserUI() {
+                const userProfile = document.getElementById('userProfile');
+                const userAvatar = document.getElementById('userAvatar');
+                const userName = document.getElementById('userName');
+                const userStatus = document.getElementById('userStatus');
+                const loginButton = document.getElementById('loginButton');
+                const logoutButton = document.getElementById('logoutButton');
+                
+                if (this.user) {
+                    userProfile.style.display = 'flex';
+                    loginButton.style.display = 'none';
+                    logoutButton.style.display = 'inline-flex';
+                    
+                    userAvatar.textContent = this.user.name ? this.user.name.charAt(0).toUpperCase() : 'U';
+                    userName.textContent = this.user.name || '사용자';
+                    userStatus.textContent = '온라인';
+                    
+                    // 프로필 페이지 정보 업데이트
+                    const profileElements = document.querySelectorAll('[data-user-info]');
+                    profileElements.forEach(element => {
+                        const field = element.getAttribute('data-user-info');
+                        element.textContent = this.user[field] || '';
+                    });
+                }
+            },
+            
+            // 로그인 UI 업데이트
+            updateLoginUI() {
+                const userProfile = document.getElementById('userProfile');
+                const loginButton = document.getElementById('loginButton');
+                const logoutButton = document.getElementById('logoutButton');
+                
+                userProfile.style.display = 'none';
+                loginButton.style.display = 'inline-flex';
+                logoutButton.style.display = 'none';
+            },
+            
+            // 이벤트 리스너 설정
+            setupEventListeners() {
+                // 뒤로가기/앞으로가기 처리
+                window.addEventListener('popstate', (event) => {
+                    const page = event.state?.page || 'home';
+                    this.showPage(page, false);
+                });
+                
+                // 키보드 단축키
+                document.addEventListener('keydown', (event) => {
+                    if (event.ctrlKey || event.metaKey) {
+                        switch(event.key) {
+                            case '1':
+                                event.preventDefault();
+                                this.navigateTo('home');
+                                break;
+                            case '2':
+                                event.preventDefault();
+                                this.navigateTo('business');
+                                break;
+                            case '3':
+                                event.preventDefault();
+                                this.navigateTo('healthcare');
+                                break;
+                            case '4':
+                                event.preventDefault();
+                                this.navigateTo('community');
+                                break;
+                            case '5':
+                                event.preventDefault();
+                                this.navigateTo('sharing');
+                                break;
+                        }
+                    }
+                });
+            },
+            
+            // 초기 페이지 로드
+            loadInitialPage() {
+                const hash = window.location.hash.slice(1);
+                const page = hash || 'home';
+                this.showPage(page, false);
+            },
+            
+            // 페이지 네비게이션
+            navigateTo(page) {
+                this.showPage(page, true);
+            },
+            
+            // 페이지 표시
+            showPage(page, updateHistory = true) {
+                // 인증이 필요한 페이지 체크
+                const authRequiredPages = ['profile', 'business', 'healthcare', 'community', 'sharing'];
+                if (authRequiredPages.includes(page) && !this.isAuthenticated) {
+                    this.showPage('login', updateHistory);
+                    return;
+                }
+                
+                // 현재 활성 페이지 숨기기
+                const currentPage = document.querySelector('.page.active');
+                if (currentPage) {
+                    currentPage.classList.remove('active');
+                }
+                
+                // 새 페이지 표시
+                const newPage = document.getElementById(page + 'Page');
+                if (newPage) {
+                    newPage.classList.add('active');
+                    this.currentPage = page;
+                    
+                    // 네비게이션 탭 업데이트
+                    this.updateNavTabs(page);
+                    
+                    // 브라우저 히스토리 업데이트
+                    if (updateHistory) {
+                        const url = page === 'home' ? '/' : `/#${page}`;
+                        history.pushState({ page }, '', url);
+                    }
+                    
+                    // 페이지별 초기화
+                    this.initPage(page);
+                }
+            },
+            
+            // 네비게이션 탭 업데이트
+            updateNavTabs(page) {
+                const tabs = document.querySelectorAll('.nav-tab');
+                tabs.forEach(tab => {
+                    tab.classList.remove('active');
+                    if (tab.getAttribute('data-page') === page) {
+                        tab.classList.add('active');
+                    }
+                });
+            },
+            
+            // 페이지별 초기화
+            initPage(page) {
+                switch(page) {
+                    case 'home':
+                        this.initHomePage();
+                        break;
+                    case 'business':
+                        this.initBusinessPage();
+                        break;
+                    case 'healthcare':
+                        this.initHealthcarePage();
+                        break;
+                    case 'community':
+                        this.initCommunityPage();
+                        break;
+                    case 'sharing':
+                        this.initSharingPage();
+                        break;
+                    case 'profile':
+                        this.initProfilePage();
+                        break;
+                }
+            },
+            
+            // 홈 페이지 초기화
+            initHomePage() {
+                // 애니메이션 효과
+                const cards = document.querySelectorAll('#homePage .ai-service-card');
+                cards.forEach((card, index) => {
+                    card.style.animationDelay = `${index * 100}ms`;
+                    card.classList.add('slide-up');
+                });
+            },
+            
+            // 비즈니스 페이지 초기화
+            initBusinessPage() {
+                console.log('비즈니스 페이지 초기화');
+            },
+            
+            // 헬스케어 페이지 초기화
+            initHealthcarePage() {
+                console.log('헬스케어 페이지 초기화');
+            },
+            
+            // 커뮤니티 페이지 초기화
+            initCommunityPage() {
+                console.log('커뮤니티 페이지 초기화');
+            },
+            
+            // 쉐어링 페이지 초기화
+            initSharingPage() {
+                console.log('쉐어링 페이지 초기화');
+            },
+            
+            // 프로필 페이지 초기화
+            initProfilePage() {
+                if (this.user) {
+                    this.updateUserUI();
+                }
+            },
+            
+            // 로그아웃
+            logout() {
+                localStorage.removeItem('oneai_token');
+                localStorage.removeItem('oneai_user');
+                this.user = null;
+                this.isAuthenticated = false;
+                this.updateLoginUI();
+                this.navigateTo('home');
+                this.showToast('로그아웃되었습니다.', 'info');
+            },
+            
+            // 토스트 메시지 표시
+            showToast(message, type = 'info') {
+                // 기존 토스트 제거
+                const existingToast = document.querySelector('.toast');
+                if (existingToast) {
+                    existingToast.remove();
+                }
+                
+                // 새 토스트 생성
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: var(--color-surface-modal);
+                    color: var(--text-primary);
+                    padding: var(--spacing-md) var(--spacing-lg);
+                    border-radius: var(--radius-md);
+                    box-shadow: var(--shadow-xl);
+                    z-index: var(--z-index-toast);
+                    animation: slideInRight 0.3s ease-out;
+                    border-left: 4px solid var(--color-${type === 'error' ? 'error' : type === 'success' ? 'success' : 'info'});
+                `;
+                toast.textContent = message;
+                
+                document.body.appendChild(toast);
+                
+                // 3초 후 제거
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.style.animation = 'slideOutRight 0.3s ease-out';
+                        setTimeout(() => toast.remove(), 300);
+                    }
+                }, 3000);
+            }
+        };
+        
+        // ===== 로그인 처리 =====
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMessage');
+            const submitBtn = document.getElementById('loginSubmitBtn');
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('loading');
+                submitBtn.textContent = '로그인 중...';
+                errorMsg.style.display = 'none';
+                
+                // API 호출 (실제 구현에서는 api.js의 OneAIClient 사용)
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // 로그인 성공
+                    localStorage.setItem('oneai_token', data.token);
+                    localStorage.setItem('oneai_user', JSON.stringify(data.user));
+                    
+                    OneAIApp.user = data.user;
+                    OneAIApp.isAuthenticated = true;
+                    OneAIApp.updateUserUI();
+                    OneAIApp.showToast('로그인되었습니다!', 'success');
+                    OneAIApp.navigateTo('home');
+                } else {
+                    // 로그인 실패
+                    errorMsg.textContent = data.message || '로그인에 실패했습니다.';
+                    errorMsg.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('로그인 오류:', error);
+                errorMsg.textContent = '네트워크 오류가 발생했습니다.';
+                errorMsg.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = '로그인';
+            }
+        }
+        
+        // ===== 전역 함수들 =====
+        function navigateTo(page) {
+            OneAIApp.navigateTo(page);
+        }
+        
+        function logout() {
+            OneAIApp.logout();
+        }
+        
+        // ===== 앱 초기화 =====
+        document.addEventListener('DOMContentLoaded', () => {
+            OneAIApp.init();
+        });
+        
+        // ===== 애니메이션 CSS 추가 =====
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

@@ -72,7 +72,7 @@ const corsMiddleware = cors({
  * API 요청 로그 기록
  */
 const loggingMiddleware = morgan('combined', {
-    skip: function (req, res) {
+    skip: function (req) {
         // 헬스체크는 로그 제외
         return req.url === '/health';
     }
@@ -222,22 +222,29 @@ const validateApiKey = (req, res, next) => {
 /**
  * 입력 검증 미들웨어
  */
-const validateInput = (req, res, next) => {
-    const errors = validationResult(req);
-    
-    if (!errors.isEmpty()) {
-        return res.status(400).json({
-            error: 'Validation failed',
-            message: '입력 데이터가 유효하지 않습니다.',
-            details: errors.array().map(error => ({
-                field: error.param,
-                message: error.msg,
-                value: error.value
-            }))
-        });
-    }
-    
-    next();
+const { body } = require('express-validator');
+
+const validateInput = (fields) => {
+    const validations = fields.map(field => 
+        body(field).notEmpty().withMessage('이 필드는 필수입니다.')
+    );
+
+    return [...validations, (req, res, next) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    error: 'Validation failed',
+                    message: '입력 데이터가 유효하지 않습니다.',
+                    details: errors.array().map(error => ({
+                        field: error.param,
+                        message: error.msg,
+                        value: error.value
+                    }))
+                });
+            }
+            next();
+        }
+    ];
 };
 
 /**
@@ -276,7 +283,7 @@ const validateFileUpload = (req, res, next) => {
 /**
  * 에러 핸들링 미들웨어
  */
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res) => {
     // 로그 기록
     console.error('Error occurred:', {
         message: err.message,
@@ -395,6 +402,7 @@ const cacheControl = (duration = 3600) => {
  * 요청 크기 제한 미들웨어
  */
 const limitRequestSize = (limit = '10mb') => {
+    const express = require('express');
     return express.json({ limit });
 };
 
@@ -447,7 +455,9 @@ const ipWhitelist = (allowedIPs = []) => {
  */
 const requestMonitor = (req, res, next) => {
     // 실시간 대시보드나 모니터링 시스템에 데이터 전송
+    /* eslint-disable no-unused-vars */
     const requestData = {
+    /* eslint-enable no-unused-vars */
         timestamp: new Date().toISOString(),
         method: req.method,
         path: req.path,

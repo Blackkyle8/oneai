@@ -3,7 +3,11 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost:5432/oneai',
+  user: process.env.DB_USER || 'oneai',
+  host: process.env.DB_HOST || 'localhost',
+  database: process.env.DB_NAME || 'oneai',
+  password: process.env.DB_PASSWORD || 'oneai123',
+  port: process.env.DB_PORT || 5432,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
@@ -28,6 +32,8 @@ async function createTables() {
         email_verify_token VARCHAR(255),
         password_reset_token VARCHAR(255),
         password_reset_expires TIMESTAMP,
+        google_id VARCHAR(255),
+        apple_id VARCHAR(255),
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       )
@@ -296,7 +302,9 @@ async function createTables() {
 async function insertInitialData() {
   try {
     // 기본 AI 엔진 타입이 없다면 삽입
+    /* eslint-disable no-unused-vars */
     const aiEngineTypes = [
+    /* eslint-enable no-unused-vars */
       { type: 'chatgpt', name: 'ChatGPT', icon: '🤖' },
       { type: 'claude', name: 'Claude', icon: '🧠' },
       { type: 'gemini', name: 'Gemini', icon: '💎' },

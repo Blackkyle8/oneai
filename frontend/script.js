@@ -25,7 +25,7 @@ window.OneAI = window.OneAI || {};
     // ===== CONFIGURATION =====
     const CONFIG = {
         // API Configuration
-        API_BASE_URL: process.env.NODE_ENV === 'production' 
+        API_BASE_URL: window.location.hostname === 'oneai.com'
             ? 'https://api.oneai.kr' 
             : 'http://localhost:3000',
         API_VERSION: 'v1',
@@ -219,9 +219,14 @@ window.OneAI = window.OneAI || {};
         get: (key, defaultValue = null) => {
             try {
                 const item = localStorage.getItem(key);
-                return item ? JSON.parse(item) : defaultValue;
+                if (item === null || item === 'undefined') {
+                    return defaultValue;
+                }
+                return JSON.parse(item);
             } catch (error) {
                 console.error('Storage get error:', error);
+                // 손상된 데이터 제거
+                localStorage.removeItem(key);
                 return defaultValue;
             }
         },
@@ -383,7 +388,16 @@ window.OneAI = window.OneAI || {};
         },
         
         getCurrentUser: () => State.user,
-        isAuthenticated: () => State.isAuthenticated
+        isAuthenticated: () => State.isAuthenticated,
+        
+        // 인증 필요한 페이지 체크
+        requireAuth: () => {
+            if (!State.isAuthenticated) {
+                window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+                return false;
+            }
+            return true;
+        }
     };
 
     // ===== API COMMUNICATION =====
@@ -963,6 +977,33 @@ window.OneAI = window.OneAI || {};
         }
     };
 
+    // ===== HEADER UI MANAGEMENT =====
+    const Header = {
+        updateAuthState: (user = null) => {
+            const loginBtn = document.getElementById('loginBtn');
+            const userProfile = document.getElementById('userProfile');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+
+            if (user && State.isAuthenticated) {
+                // 로그인된 상태
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (userProfile) userProfile.style.display = 'flex';
+                
+                if (userAvatar) {
+                    userAvatar.textContent = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+                }
+                if (userName) {
+                    userName.textContent = user.name || user.email || '사용자';
+                }
+            } else {
+                // 로그인되지 않은 상태
+                if (loginBtn) loginBtn.style.display = 'inline-block';
+                if (userProfile) userProfile.style.display = 'none';
+            }
+        }
+    };
+
     // ===== INITIALIZATION =====
     const init = async () => {
         console.log('🚀 One AI 시스템 초기화 시작...');
@@ -976,6 +1017,9 @@ window.OneAI = window.OneAI || {};
             
             // Check authentication
             const isAuth = await Auth.checkAuth();
+            
+            // Initialize header
+            Header.updateAuthState(State.user);
             
             // Initialize UI components
             initializeEventListeners();
@@ -1049,6 +1093,18 @@ window.OneAI = window.OneAI || {};
             Toast.warning('인터넷 연결이 끊어졌습니다.');
             EventBus.emit('network:offline');
         });
+
+        // Authentication state changes
+        EventBus.on('auth:login', (data) => {
+            Header.updateAuthState(data.user || data);
+        });
+
+        EventBus.on('auth:logout', () => {
+            Header.updateAuthState(null);
+        });
+
+        // Initialize header state on load
+        Header.updateAuthState(State.user);
     };
 
     // Handle form submissions
@@ -1145,6 +1201,7 @@ window.OneAI = window.OneAI || {};
     OneAI.router = Router;
     OneAI.form = Form;
     OneAI.animation = Animation;
+    OneAI.header = Header;
     OneAI.init = init;
 
     // Convenience methods for global access
@@ -1163,12 +1220,16 @@ if (document.readyState === 'loading') {
 // ===== GLOBAL ERROR HANDLING =====
 window.addEventListener('error', (event) => {
     console.error('Global error:', event.error);
-    OneAI.toast.error('예상치 못한 오류가 발생했습니다.');
+    if (typeof OneAI !== 'undefined' && OneAI.toast && OneAI.toast.error) {
+        OneAI.toast.error('예상치 못한 오류가 발생했습니다.');
+    }
 });
 
 window.addEventListener('unhandledrejection', (event) => {
     console.error('Unhandled promise rejection:', event.reason);
-    OneAI.toast.error('네트워크 요청 중 오류가 발생했습니다.');
+    if (typeof OneAI !== 'undefined' && OneAI.toast && OneAI.toast.error) {
+        OneAI.toast.error('네트워크 요청 중 오류가 발생했습니다.');
+    }
 });
 
 // ===== EXPORT FOR MODULE SYSTEMS =====

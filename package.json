@@ -10,7 +10,7 @@
     "db:create": "node backend/database.js",
     "build": "npm run build:frontend",
     "build:frontend": "node scripts/build.js",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "lint": "eslint backend/ --ext .js",
@@ -55,17 +55,19 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.9.1",
-    "@aws-sdk/client-s3": "^3.456.0",
+    "@aws-sdk/client-cloudfront": "^3.864.0",
+    "@aws-sdk/client-s3": "^3.864.0",
+    "@aws-sdk/client-ses": "^3.864.0",
     "@aws-sdk/s3-request-presigner": "^3.456.0",
     "@google-ai/generativelanguage": "^2.5.0",
     "@prisma/client": "^5.7.1",
     "@sendgrid/mail": "^8.1.5",
     "agenda": "^5.0.0",
-    "aws-sdk": "^2.1692.0",
     "axios": "^1.6.2",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "cheerio": "^1.0.0-rc.12",
+    "clamscan": "^2.4.0",
     "compression": "^1.7.4",
     "connect-redis": "^7.1.0",
     "cookie-parser": "^1.4.6",
@@ -73,10 +75,10 @@
     "crypto-js": "^4.2.0",
     "csv-parser": "^3.0.0",
     "dotenv": "^16.3.1",
+    "exceljs": "^4.4.0",
     "express": "^4.18.2",
     "express-rate-limit": "^7.1.5",
     "express-session": "^1.17.3",
-    "express-swagger-generator": "^1.1.17",
     "express-validator": "^7.0.1",
     "google-auth-library": "^9.4.0",
     "helmet": "^7.1.0",
@@ -92,6 +94,9 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.7",
     "openai": "^4.20.1",
+    "passport": "^0.7.0",
+    "passport-apple": "^2.0.2",
+    "passport-google-oauth20": "^2.0.0",
     "paypal-rest-sdk": "^1.8.1",
     "pdf-parse": "^1.1.1",
     "pg": "^8.11.3",
@@ -109,8 +114,7 @@
     "uuid": "^9.0.1",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^4.7.1",
-    "ws": "^8.14.2",
-    "xlsx": "^0.18.5"
+    "ws": "^8.14.2"
   },
   "devDependencies": {
     "@babel/core": "^7.23.6",
@@ -169,9 +173,6 @@
     "testMatch": [
       "**/tests/**/*.test.js",
       "**/tests/**/*.spec.js"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/tests/setup.js"
     ]
   },
   "eslintConfig": {

@@ -12,12 +12,10 @@
 
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const { authenticateToken, validateInput, rateLimitStrict } = require('./middleware');
-const { pool, getConnection, executeQuery } = require('./database');
-const { processPayment, createSubscription, cancelSubscription } = require('./payment');
+const { authenticateToken, validateInput } = require('./middleware');
+const { getConnection, executeQuery } = require('./database');
+const { processPayment, createSubscription } = require('./payment');
 
 // ===== 상수 정의 =====
 const AI_SERVICES = {
@@ -295,7 +293,7 @@ router.post('/create', authenticateToken, validateInput([
 router.post('/:id/join', authenticateToken, validateInput([
     'nickname',
     'email'
-]), rateLimitStrict, async (req, res) => {
+]), async (req, res) => {
     const connection = await getConnection();
     
     try {

@@ -1003,77 +1003,6 @@
     </style>
 </head>
 <body>
-    <!-- 고정 헤더 -->
-    <header class="header">
-        <div class="header__logo" onclick="showContent('main')">
-            <div class="header__logo-icon">1</div>
-            <span>One AI</span>
-        </div>
-        
-        <nav class="header__nav">
-            <div class="nav-item nav-item--emergency" onclick="showEmergency()">
-                🚨 응급상황
-            </div>
-        </nav>
-        
-        <div class="header__actions" id="headerActions">
-            <!-- 로그인 전 상태 -->
-            <div id="beforeLogin" class="flex gap-sm">
-                <button class="btn btn--primary" onclick="showLogin()">로그인</button>
-            </div>
-            
-            <!-- 로그인 후 상태 -->
-            <div id="afterLogin" class="hidden">
-                <div class="profile">
-                    <button class="profile__btn" onclick="toggleProfileMenu()">
-                        <div class="profile__avatar">👤</div>
-                        <span class="profile__name">김건강</span>
-                        <div class="profile__badge hidden" id="notificationBadge">3</div>
-                    </button>
-                    
-                    <div class="profile__dropdown" id="profileDropdown">
-                        <div class="profile__header">
-                            <div class="profile__avatar--large">👤</div>
-                            <div>
-                                <div class="profile__name--large">김건강님</div>
-                                <div class="profile__email">user@example.com</div>
-                            </div>
-                        </div>
-                        
-                        <div class="profile__divider"></div>
-                        
-                        <div class="profile__menu-item" onclick="showContent('healthManagement')">
-                            📊 내 건강 관리
-                        </div>
-                        <div class="profile__menu-item" onclick="showContent('consultationHistory')">
-                            💻 상담 내역
-                        </div>
-                        <div class="profile__menu-item" onclick="showContent('prescriptionHistory')">
-                            💊 처방전 내역
-                        </div>
-                        <div class="profile__menu-item" onclick="showContent('paymentHistory')">
-                            💳 결제 내역
-                        </div>
-                        
-                        <div class="profile__divider"></div>
-                        
-                        <div class="profile__menu-item" onclick="showContent('settings')">
-                            ⚙️ 설정
-                        </div>
-                        <div class="profile__menu-item" onclick="showContent('help')">
-                            ❓ 고객지원
-                        </div>
-                        
-                        <div class="profile__divider"></div>
-                        
-                        <div class="profile__menu-item profile__menu-item--logout" onclick="logout()">
-                            🚪 로그아웃
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
 
     <!-- 메인 콘텐츠 -->
     <div id="mainContent" class="content content--active">
@@ -2212,8 +2141,7 @@
         }
 
         function showLogin() {
-            const title = '🔐 로그인 데모';
-            const content = '<p>로그인을 시뮬레이션하시겠습니까?</p>';
+            window.location.href = '/login.html?redirect=/healthcare.html';
             
             showConfirmModal(title, content,
                 () => {

@@ -900,17 +900,6 @@
     </style>
 </head>
 <body>
-    <!-- Header Component -->
-    <header class="header">
-        <div class="header__logo">🤖 One AI</div>
-        <div class="header__spacer"></div>
-        <div class="header__actions">
-            <button class="btn btn--primary btn--header" onclick="createSharingAction()">
-                <span class="btn__icon">+</span>
-                쉐어링 만들기
-            </button>
-        </div>
-    </header>
 
     <div class="container">
         <!-- Sharing Header -->
@@ -920,7 +909,7 @@
                 AI 구독비를 나누어 부담하고, 함께 사용하여 최대 80%까지 비용을 절약하세요!<br>
                 안전한 결제 시스템과 실시간 관리로 걱정 없이 이용하실 수 있습니다.
             </p>
-            <button class="btn btn--primary" onclick="createSharingAction()">
+            <button class="btn btn--primary" data-action="create-sharing">
                 <span class="btn__icon">+</span>
                 쉐어링 만들기
             </button>
@@ -995,7 +984,11 @@
                         <div class="progress-bar">
                             <div class="progress-bar__fill" style="width: 75%"></div>
                         </div>
-                        <button class="btn btn--primary btn--full" onclick="joinSharing('gpt-001', 'ChatGPT Plus 4인 쉐어링', 6900)">참여 신청하기</button>
+                        <button class="btn btn--primary btn--full" 
+                                data-action="join-sharing" 
+                                data-sharing-id="gpt-001" 
+                                data-sharing-name="ChatGPT Plus 4인 쉐어링" 
+                                data-base-price="6900">참여 신청하기</button>
                     </div>
                 </div>
 
@@ -1035,7 +1028,11 @@
                         <div class="progress-bar">
                             <div class="progress-bar__fill" style="width: 40%"></div>
                         </div>
-                        <button class="btn btn--primary btn--full" onclick="joinSharing('midjourney-002', 'Midjourney Pro 5인 쉐어링', 8300)">참여 신청하기</button>
+                        <button class="btn btn--primary btn--full" 
+                                data-action="join-sharing" 
+                                data-sharing-id="midjourney-002" 
+                                data-sharing-name="Midjourney Pro 5인 쉐어링" 
+                                data-base-price="8300">참여 신청하기</button>
                     </div>
                 </div>
 
@@ -1115,7 +1112,11 @@
                         <div class="progress-bar">
                             <div class="progress-bar__fill" style="width: 60%"></div>
                         </div>
-                        <button class="btn btn--primary btn--full" onclick="joinSharing('copilot-005', 'GitHub Copilot 5인 쉐어링', 2800)">참여 신청하기</button>
+                        <button class="btn btn--primary btn--full" 
+                                data-action="join-sharing" 
+                                data-sharing-id="copilot-005" 
+                                data-sharing-name="GitHub Copilot 5인 쉐어링" 
+                                data-base-price="2800">참여 신청하기</button>
                     </div>
                 </div>
             </div>
@@ -1127,7 +1128,7 @@
                 <div class="empty-state__icon">📋</div>
                 <h3 class="empty-state__title">개설한 쉐어링이 없습니다</h3>
                 <p class="empty-state__description">AI 구독을 쉐어링하여 비용을 절약하고 수익도 창출해보세요!</p>
-                <button class="btn btn--primary" onclick="createSharingAction()">
+                <button class="btn btn--primary" data-action="create-sharing">
                     <span class="btn__icon">+</span>
                     쉐어링 만들기
                 </button>
@@ -1269,7 +1270,7 @@
         <div class="modal__content">
             <div class="modal__header">
                 <h2 class="modal__title">🤝 쉐어링 참여 신청</h2>
-                <button class="modal__close" onclick="hideJoinModal()">&times;</button>
+                <button class="modal__close" data-action="close-modal">&times;</button>
             </div>
             
             <!-- 선택한 쉐어링 정보 -->
@@ -1333,7 +1334,7 @@
         <div class="modal__content">
             <div class="modal__header">
                 <h2 class="modal__title">쉐어링 만들기</h2>
-                <button class="modal__close" onclick="hideCreateModal()">&times;</button>
+                <button class="modal__close" data-action="close-modal">&times;</button>
             </div>
             
             <form id="createForm">
@@ -1400,7 +1401,7 @@
             
             <div class="modal__actions">
                 <button type="button" class="btn btn--cancel" onclick="hideCreateModal()">취소</button>
-                <button type="submit" class="btn btn--primary" onclick="createSharing()">만들기</button>
+                <button type="submit" class="btn btn--primary" data-action="create-sharing-submit">만들기</button>
             </div>
         </div>
     </div>
@@ -1490,6 +1491,8 @@
     </div>
 
     <script>
+        console.log('Script loading...'); // 디버깅용
+        
         // 로그인 상태 체크 (실제로는 서버나 localStorage에서 확인)
         function isLoggedIn() {
             // 예시: localStorage에서 토큰 확인
@@ -1509,12 +1512,20 @@
 
         // 쉐어링 만들기 (로그인 상태 체크)
         function createSharingAction() {
+            console.log('createSharingAction called'); // 디버깅용
             handleAuthAction(showCreateModal);
         }
 
         // 로그인 페이지로 리다이렉트
         function redirectToLogin() {
+            console.log('redirectToLogin called'); // 디버깅용
             window.location.href = 'login.html';
+        }
+
+        // Show Create Modal
+        function showCreateModal() {
+            console.log('showCreateModal called'); // 디버깅용
+            document.getElementById('createModal').classList.add('modal--show');
         }
 
         let currentTab = 'popular';
@@ -1537,13 +1548,20 @@
 
         // Tab Switching
         function switchTab(tabName) {
+            // 모든 탭 버튼과 콘텐츠에서 active 클래스 제거
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('tab-btn--active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('tab-content--active'));
             
-            document.querySelector(`[data-tab="${tabName}"]`).classList.add('tab-btn--active');
-            document.getElementById(tabName + 'Tab').classList.add('tab-content--active');
+            // 선택된 탭 버튼과 콘텐츠에 active 클래스 추가
+            const targetButton = document.querySelector(`[data-tab="${tabName}"]`);
+            const targetContent = document.getElementById(tabName + 'Tab');
+            
+            if (targetButton) targetButton.classList.add('tab-btn--active');
+            if (targetContent) targetContent.classList.add('tab-content--active');
             
             currentTab = tabName;
+            
+            console.log(`Switched to tab: ${tabName}`); // 디버깅용
         }
 
         // Modal Functions
@@ -1556,6 +1574,12 @@
         }
 
         function createSharing() {
+            const form = document.getElementById('createForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
             showToast('쉐어링이 성공적으로 생성되었습니다!', 'success');
             hideCreateModal();
             setTimeout(() => {
@@ -1564,8 +1588,11 @@
             }, 100);
         }
         function joinSharing(sharingId, sharingName, basePrice) {
+            console.log('joinSharing called with:', sharingId, sharingName, basePrice); // 디버깅용
+            
             // 로그인 상태 체크 후 참여 처리
             handleAuthAction(() => {
+                console.log('User is logged in, proceeding with join'); // 디버깅용
                 selectedSharingId = sharingId;
                 
                 // 서비스 아이콘 설정
@@ -1591,6 +1618,7 @@
                 updateJoinModalForLoggedInUser();
                 
                 document.getElementById('joinModal').classList.add('modal--show');
+                console.log('Join modal should be visible now'); // 디버깅용
             });
         }
 
@@ -1751,12 +1779,98 @@
 
         // Event Listeners
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - Initializing sharing page'); // 디버깅용
+            
             // Tab Events
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            console.log('Found tab buttons:', tabButtons.length); // 디버깅용
+            
+            tabButtons.forEach((btn, index) => {
+                console.log(`Setting up tab button ${index}:`, btn.dataset.tab); // 디버깅용
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
                     const tabName = this.dataset.tab;
+                    console.log(`Tab clicked: ${tabName}`); // 디버깅용
                     switchTab(tabName);
                 });
+            });
+
+            // 쉐어링 만들기 버튼들
+            const createButtons = document.querySelectorAll('[data-action="create-sharing"]');
+            console.log('Found create sharing buttons:', createButtons.length); // 디버깅용
+            
+            createButtons.forEach((btn, index) => {
+                console.log(`Setting up create button ${index}`); // 디버깅용
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Create sharing button clicked!'); // 디버깅용
+                    createSharingAction();
+                });
+            });
+
+            // 참여 신청하기 버튼들
+            const joinButtons = document.querySelectorAll('[data-action="join-sharing"]');
+            console.log('Found join sharing buttons:', joinButtons.length); // 디버깅용
+            
+            joinButtons.forEach((btn, index) => {
+                console.log(`Setting up join button ${index}`); // 디버깅용
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const sharingId = this.dataset.sharingId;
+                    const sharingName = this.dataset.sharingName;
+                    const basePrice = parseInt(this.dataset.basePrice);
+                    
+                    console.log('Join sharing button clicked!', {sharingId, sharingName, basePrice}); // 디버깅용
+                    joinSharing(sharingId, sharingName, basePrice);
+                });
+            });
+
+            // 기타 버튼들에 대한 이벤트 처리
+            document.addEventListener('click', function(e) {
+                const target = e.target.closest('button');
+                if (!target) return;
+                
+                const action = target.dataset.action;
+                console.log('Button clicked with action:', action); // 디버깅용
+                
+                switch(action) {
+                    case 'close-modal':
+                        e.preventDefault();
+                        const modal = target.closest('.modal');
+                        if (modal) {
+                            modal.classList.remove('modal--show');
+                            console.log('Modal closed'); // 디버깅용
+                        }
+                        break;
+                        
+                    case 'create-sharing-submit':
+                        e.preventDefault();
+                        console.log('Create sharing submit clicked'); // 디버깅용
+                        createSharing();
+                        break;
+                }
+                
+                // 모달 닫기 버튼들 (클래스 기반)
+                if (target.classList.contains('modal__close')) {
+                    e.preventDefault();
+                    const modal = target.closest('.modal');
+                    if (modal) {
+                        modal.classList.remove('modal--show');
+                    }
+                }
+                
+                // 취소 버튼들
+                if (target.classList.contains('btn--cancel')) {
+                    e.preventDefault();
+                    const modal = target.closest('.modal');
+                    if (modal) {
+                        modal.classList.remove('modal--show');
+                    }
+                }
             });
 
             // Modal Outside Click
@@ -1803,6 +1917,8 @@
                     createSharingAction();
                 }
             });
+            
+            console.log('Event listeners setup complete'); // 디버깅용
         });
     </script>
 </body>

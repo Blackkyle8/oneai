@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneAI - Debug</title>
+    <script src="auth.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: #fff;
+            padding: 20px;
+        }
+        .debug-section {
+            background: #222;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        pre {
+            background: #000;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>OneAI 인증 시스템 디버그</h1>
+    
+    <div class="debug-section">
+        <h2>현재 인증 상태</h2>
+        <p>OneAIAuth 사용 가능: <span id="authAvailable">확인 중...</span></p>
+        <p>로그인 상태: <span id="authState">확인 중...</span></p>
+        <p>현재 사용자: <span id="currentUser">확인 중...</span></p>
+        <p>토큰: <span id="currentToken">확인 중...</span></p>
+        <button onclick="refreshStatus()">상태 새로고침</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>Storage 내용</h2>
+        <h3>localStorage</h3>
+        <pre id="localStorageContent">확인 중...</pre>
+        <h3>sessionStorage</h3>
+        <pre id="sessionStorageContent">확인 중...</pre>
+        <button onclick="refreshStorage()">스토리지 새로고침</button>
+        <button onclick="clearStorage()">스토리지 초기화</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>테스트 액션</h2>
+        <button onclick="testLogin()">테스트 로그인</button>
+        <button onclick="testLogout()">테스트 로그아웃</button>
+        <button onclick="goToLogin()">로그인 페이지로</button>
+        <button onclick="goToCommunity()">커뮤니티로</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>콘솔 로그</h2>
+        <div id="consoleLog" style="background: #000; padding: 10px; height: 200px; overflow-y: auto;"></div>
+        <button onclick="clearConsole()">로그 지우기</button>
+    </div>
+
+    <script>
+        // 콘솔 로그를 화면에 표시
+        const originalLog = console.log;
+        const originalError = console.error;
+        const consoleDiv = document.getElementById('consoleLog');
+
+        function addToConsole(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff6b6b' : '#50c878';
+            consoleDiv.innerHTML += `<div style="color: ${color};">[${timestamp}] ${message}</div>`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.join(' '), 'log');
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole(args.join(' '), 'error');
+        };
+
+        function refreshStatus() {
+            document.getElementById('authAvailable').textContent = !!window.OneAIAuth ? '✅ 사용 가능' : '❌ 사용 불가';
+            
+            if (window.OneAIAuth) {
+                document.getElementById('authState').textContent = OneAIAuth.isAuthenticated() ? '✅ 로그인됨' : '❌ 로그인 안됨';
+                document.getElementById('currentUser').textContent = JSON.stringify(OneAIAuth.getCurrentUser()) || 'null';
+                document.getElementById('currentToken').textContent = OneAIAuth.getToken() || 'null';
+            } else {
+                document.getElementById('authState').textContent = '❌ OneAIAuth 없음';
+                document.getElementById('currentUser').textContent = 'N/A';
+                document.getElementById('currentToken').textContent = 'N/A';
+            }
+        }
+
+        function refreshStorage() {
+            const localStorage_content = {};
+            const sessionStorage_content = {};
+
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                localStorage_content[key] = localStorage.getItem(key);
+            }
+
+            for (let i = 0; i < sessionStorage.length; i++) {
+                const key = sessionStorage.key(i);
+                sessionStorage_content[key] = sessionStorage.getItem(key);
+            }
+
+            document.getElementById('localStorageContent').textContent = JSON.stringify(localStorage_content, null, 2);
+            document.getElementById('sessionStorageContent').textContent = JSON.stringify(sessionStorage_content, null, 2);
+        }
+
+        function clearStorage() {
+            localStorage.clear();
+            sessionStorage.clear();
+            refreshStorage();
+            refreshStatus();
+            console.log('Storage cleared');
+        }
+
+        function testLogin() {
+            if (window.OneAIAuth) {
+                const testUser = {
+                    id: 1,
+                    email: 'test@oneai.com',
+                    username: 'TestUser'
+                };
+                const testToken = 'test-token-12345';
+                
+                console.log('Testing login with:', testUser);
+                OneAIAuth.login(testUser, testToken, false);
+                
+                setTimeout(() => {
+                    refreshStatus();
+                    refreshStorage();
+                }, 100);
+            } else {
+                console.error('OneAIAuth not available');
+            }
+        }
+
+        function testLogout() {
+            if (window.OneAIAuth) {
+                console.log('Testing logout');
+                OneAIAuth.logout();
+                
+                setTimeout(() => {
+                    refreshStatus();
+                    refreshStorage();
+                }, 100);
+            } else {
+                console.error('OneAIAuth not available');
+            }
+        }
+
+        function goToLogin() {
+            window.location.href = 'login.html';
+        }
+
+        function goToCommunity() {
+            window.location.href = 'community.html';
+        }
+
+        function clearConsole() {
+            consoleDiv.innerHTML = '';
+        }
+
+        // 페이지 로드 시 초기 상태 확인
+        setTimeout(() => {
+            refreshStatus();
+            refreshStorage();
+            console.log('Debug page loaded');
+        }, 500);
+    </script>
+</body>
+</html>

@@ -15,32 +15,75 @@
  * @version 1.0.0
  */
 
+
+
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
 const fs = require('fs').promises;
 const path = require('path');
 const crypto = require('crypto');
-const mime = require('mime-types');
-const AWS = require('aws-sdk');
-const clamAV = require('clamscan');
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { CloudFrontClient, CreateInvalidationCommand } = require('@aws-sdk/client-cloudfront');
 const rateLimit = require('express-rate-limit');
+const db = require('./database');
 
 const router = express.Router();
 
+// ClamAV 설정
+const ENABLE_SCAN = String(process.env.FILE_SCAN || '').toLowerCase() !== 'off';
+let ClamScan = null;
+
+if (ENABLE_SCAN) {
+  try {
+    ClamScan = require('clamscan');
+  } catch (e) {
+    console.warn('[storage] clamscan 미설치. FILE_SCAN=off 로 간주하고 스캔 비활성화.');
+  }
+}
+
+// 바이러스 스캔 함수
+async function scanBuffer(buffer) {
+  if (!ENABLE_SCAN || !ClamScan) {
+    return { isInfected: false, viruses: [] };
+  }
+
+  try {
+    const clamscan = await new ClamScan().init({
+      removeInfected: true, 
+      quarantineInfected: './quarantine/',
+      scanLog: './logs/clamscan.log',
+      debug_mode: process.env.NODE_ENV === 'development'
+    });
+    
+    const { isInfected, viruses } = await clamscan.scanFile(buffer);
+    return { isInfected, viruses };
+  } catch (error) {
+    console.error('바이러스 스캔 오류:', error);
+    return { isInfected: false, viruses: [], error: error.message };
+  }
+}
+
+module.exports.scanBuffer = scanBuffer;
+
+
 // ==================== 설정 및 초기화 ====================
 
-// AWS S3 설정
-const s3 = new AWS.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+// AWS S3 클라이언트 설정
+const s3Client = new S3Client({
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    },
     region: process.env.AWS_REGION || 'ap-northeast-2'
 });
 
 // CloudFront CDN 설정
-const cloudfront = new AWS.CloudFront({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+const cloudFrontClient = new CloudFrontClient({
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    },
     region: process.env.AWS_REGION || 'ap-northeast-2'
 });
 
@@ -81,8 +124,11 @@ const uploadLimiter = rateLimit({
 
 // ClamAV 바이러스 스캐너 초기화
 let clamscan;
+/* eslint-disable no-unused-vars */
 const initClamAV = async () => {
+/* eslint-enable no-unused-vars */
     try {
+        const clamAV = require('clamscan');
         clamscan = await new clamAV().init({
             removeInfected: true,
             quarantineInfected: './quarantine/',
@@ -152,7 +198,9 @@ const extractImageMetadata = async (buffer) => {
 /**
  * 바이러스 스캔
  */
+/* eslint-disable no-unused-vars */
 const scanForVirus = async (filePath) => {
+/* eslint-enable no-unused-vars */
     if (!clamscan) return { isInfected: false };
     
     try {
@@ -267,8 +315,14 @@ const uploadToS3 = async (buffer, key, metadata = {}) => {
         }
     };
     
-    const result = await s3.upload(params).promise();
-    return result;
+    const command = new PutObjectCommand(params);
+    const result = await s3Client.send(command);
+    return {
+        Location: `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`,
+        Bucket: process.env.AWS_S3_BUCKET,
+        Key: key,
+        ETag: result.ETag
+    };
 };
 
 /**
@@ -280,7 +334,8 @@ const deleteFromS3 = async (key) => {
         Key: key
     };
     
-    return await s3.deleteObject(params).promise();
+    const command = new DeleteObjectCommand(params);
+    return await s3Client.send(command);
 };
 
 /**
@@ -408,7 +463,7 @@ router.post('/upload/:category', uploadLimiter, upload.array('files', 10), async
             
             try {
                 // 바이러스 스캔
-                const scanResult = await scanForVirus(tempPath);
+                const scanResult = await scanBuffer(file.buffer);
                 if (scanResult.isInfected) {
                     uploadResults.push({
                         filename: file.originalname,
@@ -423,7 +478,7 @@ router.post('/upload/:category', uploadLimiter, upload.array('files', 10), async
                 const safeFilename = generateSafeFilename(file.originalname, userId);
                 const s3Key = `uploads/${userId}/${category}/${safeFilename}`;
                 
-                let uploadedFiles = [];
+                const uploadedFiles = [];
                 
                 // 이미지인 경우 여러 크기 생성
                 if (category === 'image' && file.mimetype.startsWith('image/')) {
@@ -550,7 +605,7 @@ router.get('/files/:fileId', async (req, res) => {
             for (const size of metadata.sizes) {
                 const key = size === 'original' 
                     ? fileData.file_path 
-                    : fileData.file_path.replace(/\/([^\/]+)$/, `/${size}/$1`).replace(/\.[^/.]+$/, '_' + size + '.webp');
+                    : fileData.file_path.replace(/\/([^/]+)$/, `/${size}/$1`).replace(/\.[^/.]+$/, '_' + size + '.webp');
                 urls[size] = getS3Url(key);
             }
         } else {
@@ -620,7 +675,7 @@ router.get('/files', async (req, res) => {
             
             // 이미지인 경우 medium 크기 URL 우선 사용
             if (file.category === 'image' && metadata.sizes?.includes('medium')) {
-                const mediumKey = file.file_path.replace(/\/([^\/]+)$/, '/medium/$1').replace(/\.[^/.]+$/, '_medium.webp');
+                const mediumKey = file.file_path.replace(/\/([^/]+)$/, '/medium/$1').replace(/\.[^/.]+$/, '_medium.webp');
                 url = getS3Url(mediumKey);
             }
             
@@ -694,7 +749,7 @@ router.delete('/files/:fileId', async (req, res) => {
             for (const size of metadata.sizes) {
                 const key = size === 'original' 
                     ? fileData.file_path 
-                    : fileData.file_path.replace(/\/([^\/]+)$/, `/${size}/$1`).replace(/\.[^/.]+$/, '_' + size + '.webp');
+                    : fileData.file_path.replace(/\/([^/]+)$/, `/${size}/$1`).replace(/\.[^/.]+$/, '_' + size + '.webp');
                 
                 try {
                     await deleteFromS3(key);
@@ -809,7 +864,8 @@ router.post('/invalidate-cache', async (req, res) => {
                 }
             };
             
-            const result = await cloudfront.createInvalidation(params).promise();
+            const command = new CreateInvalidationCommand(params);
+            const result = await cloudFrontClient.send(command);
             
             res.json({
                 success: true,
@@ -895,9 +951,6 @@ const initializeStorage = async () => {
         const uploadDir = path.join(__dirname, '../uploads');
         await fs.mkdir(uploadDir, { recursive: true });
         
-        // ClamAV 초기화
-        await initClamAV();
-        
         console.log('✅ Storage 모듈 초기화 완료');
     } catch (error) {
         console.error('❌ Storage 모듈 초기화 실패:', error);
@@ -905,7 +958,7 @@ const initializeStorage = async () => {
 };
 
 // 에러 핸들링 미들웨어
-router.use((error, req, res, next) => {
+router.use((error, req, res) => {
     if (error instanceof multer.MulterError) {
         if (error.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).json({

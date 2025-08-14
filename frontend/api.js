@@ -20,6 +20,7 @@ class OneAIClient {
         this.isOnline = navigator.onLine;
         this.retryAttempts = 3;
         this.retryDelay = 1000;
+        this.userCache = new UserDataCache();
         
         this.initializeEventListeners();
         this.setupRequestInterceptors();
@@ -30,9 +31,14 @@ class OneAIClient {
      */
     getAPIBaseURL() {
         const hostname = window.location.hostname;
+        const port = window.location.port;
         
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
             return 'http://localhost:3000/api';
+        } else if (hostname.includes('github.dev') || hostname.includes('codespaces')) {
+            // GitHub Codespaces 환경 - 백엔드 3000번 포트로 직접 연결
+            const backendURL = window.location.protocol + '//' + hostname.replace('-8000.', '-3000.');
+            return backendURL + '/api';
         } else if (hostname.includes('staging')) {
             return 'https://api-staging.oneai.com/api';
         } else {
@@ -267,6 +273,7 @@ class OneAIClient {
      */
     handleTokenExpiry() {
         this.removeToken();
+        this.userCache.clearUserData(); // 캐시 클리어 추가
         
         // 로그인 페이지로 리다이렉트 (현재 페이지가 로그인 페이지가 아닌 경우)
         if (!window.location.pathname.includes('login')) {
@@ -483,6 +490,169 @@ class OneAIClient {
             body: formData
         });
     }
+
+    /**
+     * 캐시를 활용한 사용자 정보 조회 개선
+     */
+    async getUserWithCache() {
+        // 캐시에서 먼저 확인
+        const cached = this.userCache.get('current_user');
+        if (cached) {
+            return cached;
+        }
+        
+        // 캐시에 없으면 API 호출
+        try {
+            const response = await this.get('/users/me');
+            const userData = response.data || response;
+            
+            // 캐시에 저장
+            this.userCache.set('current_user', userData);
+            
+            return userData;
+        } catch (error) {
+            console.error('사용자 정보 조회 실패:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * 실시간 사용자 상태 업데이트를 위한 WebSocket 연결 (선택사항)
+     */
+    initializeWebSocket() {
+        if (!this.token) return;
+        
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${wsProtocol}//${window.location.host}/ws?token=${this.token}`;
+        
+        try {
+            this.ws = new WebSocket(wsUrl);
+            
+            this.ws.onopen = () => {
+                console.log('WebSocket 연결됨');
+            };
+            
+            this.ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    this.handleWebSocketMessage(data);
+                } catch (error) {
+                    console.error('WebSocket 메시지 파싱 오류:', error);
+                }
+            };
+            
+            this.ws.onclose = () => {
+                console.log('WebSocket 연결 종료');
+                // 재연결 로직 (필요시)
+                setTimeout(() => {
+                    if (this.token) {
+                        this.initializeWebSocket();
+                    }
+                }, 5000);
+            };
+            
+            this.ws.onerror = (error) => {
+                console.error('WebSocket 오류:', error);
+            };
+            
+        } catch (error) {
+            console.error('WebSocket 연결 실패:', error);
+        }
+    }
+
+    /**
+     * WebSocket 메시지 처리
+     */
+    handleWebSocketMessage(data) {
+        switch (data.type) {
+            case 'user_update':
+                // 사용자 정보 업데이트
+                this.userCache.set('current_user', data.user);
+                this.notifyUserUpdate(data.user);
+                break;
+                
+            case 'stats_update':
+                // 통계 정보 업데이트
+                this.userCache.set('user_stats', data.stats);
+                this.notifyStatsUpdate(data.stats);
+                break;
+                
+            case 'notification':
+                // 새 알림
+                this.notifyNewNotification(data.notification);
+                break;
+        }
+    }
+
+    /**
+     * 사용자 업데이트 알림
+     */
+    notifyUserUpdate(user) {
+        window.dispatchEvent(new CustomEvent('oneai:user:updated', {
+            detail: { user }
+        }));
+    }
+
+    /**
+     * 통계 업데이트 알림
+     */
+    notifyStatsUpdate(stats) {
+        window.dispatchEvent(new CustomEvent('oneai:stats:updated', {
+            detail: { stats }
+        }));
+    }
+
+    /**
+     * 새 알림 알림
+     */
+    notifyNewNotification(notification) {
+        window.dispatchEvent(new CustomEvent('oneai:notification:new', {
+            detail: { notification }
+        }));
+    }
+}
+
+/**
+ * 사용자 데이터 캐싱 관리
+ */
+class UserDataCache {
+    constructor() {
+        this.cache = new Map();
+        this.cacheTimeout = 5 * 60 * 1000; // 5분
+    }
+    
+    set(key, data) {
+        this.cache.set(key, {
+            data,
+            timestamp: Date.now()
+        });
+    }
+    
+    get(key) {
+        const cached = this.cache.get(key);
+        if (!cached) return null;
+        
+        // 캐시 만료 체크
+        if (Date.now() - cached.timestamp > this.cacheTimeout) {
+            this.cache.delete(key);
+            return null;
+        }
+        
+        return cached.data;
+    }
+    
+    clear() {
+        this.cache.clear();
+    }
+    
+    clearUserData() {
+        // 사용자 관련 캐시만 제거
+        for (const [key] of this.cache) {
+            if (key.includes('user') || key.includes('profile') || key.includes('stats')) {
+                this.cache.delete(key);
+            }
+        }
+    }
 }
 
 /**
@@ -605,6 +775,87 @@ class OneAIAPI {
      */
     async updateUserSettings(settings) {
         return this.client.patch('/users/me/settings', settings);
+    }
+
+    /**
+     * 사용자 통계 정보 조회
+     */
+    async getUserStats(userId = null, period = '30d') {
+        const endpoint = userId ? `/users/${userId}/stats` : '/users/me/stats';
+        return this.client.get(endpoint, { period });
+    }
+
+    /**
+     * 사용자의 최근 활동 조회
+     */
+    async getRecentActivity(userId = null, limit = 10) {
+        const endpoint = userId ? `/users/${userId}/activity` : '/users/me/activity';
+        return this.client.get(endpoint, { limit });
+    }
+
+    /**
+     * 사용자 구독 정보 조회
+     */
+    async getSubscriptionInfo() {
+        return this.client.get('/users/me/subscription');
+    }
+
+    /**
+     * 사용자 사용량 통계 조회
+     */
+    async getUsageStats(period = '7d') {
+        return this.client.get('/users/me/usage', { period });
+    }
+
+    /**
+     * 알림 설정 조회
+     */
+    async getNotificationSettings() {
+        return this.client.get('/users/me/notifications/settings');
+    }
+
+    /**
+     * 알림 설정 업데이트
+     */
+    async updateNotificationSettings(settings) {
+        return this.client.patch('/users/me/notifications/settings', settings);
+    }
+
+    /**
+     * 이메일 변경
+     */
+    async changeEmail(newEmail, currentPassword) {
+        return this.client.patch('/users/me/email', {
+            email: newEmail,
+            password: currentPassword
+        });
+    }
+
+    /**
+     * 비밀번호 변경
+     */
+    async changePassword(currentPassword, newPassword) {
+        return this.client.patch('/users/me/password', {
+            currentPassword,
+            newPassword
+        });
+    }
+
+    /**
+     * 언어 설정 변경
+     */
+    async changeLanguage(language) {
+        return this.client.patch('/users/me/language', { language });
+    }
+
+    /**
+     * 계정 삭제
+     */
+    async deleteAccount(password) {
+        return this.client.delete('/users/me', {
+            body: JSON.stringify({ password }),
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 
     // ===== AI 엔진 관련 API =====

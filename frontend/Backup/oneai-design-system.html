@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>원AI Design System v1</title>
+    <style>
+        /* =========================
+           원AI Design System v1 - CSS 토큰 & 컴포넌트
+        ========================= */
+
+        /* 1) 기본 토큰 */
+        :root{
+          /* Layout invariants */
+          --sidebar-w-collapsed: 52px;
+          --sidebar-w-expanded: 200px;
+          --topbar-h: 60px;
+
+          /* Radius & Elevation */
+          --radius-sm: 8px;
+          --radius-md: 12px;
+          --radius-lg: 16px;
+          --shadow-sm: 0 4px 12px rgba(0,0,0,.06);
+          --shadow-md: 0 8px 24px rgba(0,0,0,.08);
+          --shadow-lg: 0 12px 36px rgba(0,0,0,.12);
+
+          /* Spacing scale (8pt 기반) */
+          --space-2: 8px;
+          --space-3: 12px;
+          --space-4: 16px;
+          --space-5: 20px;
+          --space-6: 24px;
+          --space-8: 32px;
+          --space-10: 40px;
+
+          /* Typography */
+          --font-family: Inter, "Noto Sans KR", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+          --fs-xs: 12px;   --lh-xs: 18px;
+          --fs-sm: 14px;   --lh-sm: 20px;
+          --fs-md: 16px;   --lh-md: 24px;
+          --fs-lg: 18px;   --lh-lg: 26px;
+          --fs-xl: 22px;   --lh-xl: 30px;
+          --fs-2xl: 28px;  --lh-2xl: 36px;
+        }
+
+        /* THEME: Light (Warm-bias) */
+        :root,[data-theme="light"]{
+          --bg: #fffdfb;
+          --surface: #ffffffee;
+          --surface-2: #fafafacc;
+          --text: #1b1f23;
+          --text-2: #5a6370;
+          --border: #e6e8ec;
+
+          /* brand (warm full-spectrum) */
+          --brand: #ff6f61;       /* coral */
+          --brand-2: #ff9e00;     /* orange */
+          --brand-3: #ff2d55;     /* pink-red */
+          --brand-ink: #3a1c1c;
+
+          /* Focus & States */
+          --focus: #ff9e00;
+          --success: #1f9d55;
+          --warn: #b7791f;
+          --danger: #e11d48;
+
+          /* Scrollbar */
+          --scroll-thumb: rgba(230, 150, 110, .55);
+          --scroll-thumb-hover: rgba(230,150,110,.8);
+
+          /* Icon colors */
+          --ic: #2b3036;
+          --ic-muted: #8a94a3;
+          --ic-ghost: #c7cdd6;
+          --ic-active: #ff6f61;
+          --ic-bg: #ffffff;
+
+          /* Mesh accents (warm) – 포인트용만 사용 */
+          --mesh-warm: 
+            radial-gradient(800px 600px at 8% 18%,  #ffd400 0%, transparent 46%),
+            radial-gradient(700px 520px at 32% 12%, #ff9e00 0%, transparent 44%),
+            radial-gradient(720px 520px at 62% 16%, #ff3d3d 0%, transparent 45%),
+            radial-gradient(680px 520px at 80% 22%, #ff00a0 0%, transparent 44%),
+            radial-gradient(720px 520px at 18% 70%, #ff6f61 0%, transparent 46%),
+            radial-gradient(720px 540px at 88% 82%, #ff4b1f 0%, transparent 48%);
+        }
+
+        /* THEME: Dark (Cool-bias) */
+        [data-theme="dark"]{
+          --bg: #0b0f16;
+          --surface: #121826dd;
+          --surface-2: #0f1421cc;
+          --text: #e7edf6;
+          --text-2: #a9b4c3;
+          --border: rgba(255,255,255,.09);
+
+          --brand: #5aa5ff;      /* blue */
+          --brand-2: #00c8a3;    /* teal */
+          --brand-3: #725bff;    /* royal purple */
+          --brand-ink: #0c111b;
+
+          --focus: #5aa5ff;
+          --success: #22c55e;
+          --warn: #f59e0b;
+          --danger: #ef4444;
+
+          --scroll-thumb: rgba(90,165,255,.35);
+          --scroll-thumb-hover: rgba(90,165,255,.6);
+
+          /* Icon colors */
+          --ic: #e7edf6;
+          --ic-muted: #9aa7ba;
+          --ic-ghost: #5b6b82;
+          --ic-active: #5aa5ff;
+          --ic-bg: #0b0f16;
+
+          --mesh-cool:
+            radial-gradient(820px 600px at 10% 16%,  #00e676 0%, transparent 46%),
+            radial-gradient(740px 520px at 30% 12%,  #00bfa5 0%, transparent 44%),
+            radial-gradient(740px 520px at 58% 14%,  #1e88e5 0%, transparent 45%),
+            radial-gradient(700px 520px at 78% 18%,  #6a00ff 0%, transparent 44%),
+            radial-gradient(720px 540px at 16% 76%,  #00a8e8 0%, transparent 46%),
+            radial-gradient(740px 560px at 92% 84%,  #304ffe 0%, transparent 48%);
+        }
+
+        /* 2) 기본 리셋 & 타이포 */
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+          margin:0; background:var(--bg); color:var(--text); font-family:var(--font-family);
+          -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+        }
+
+        /* Type scale */
+        .h1{font-size:var(--fs-2xl); line-height:var(--lh-2xl); font-weight:700}
+        .h2{font-size:var(--fs-xl);  line-height:var(--lh-xl);  font-weight:700}
+        .h3{font-size:var(--fs-lg);  line-height:var(--lh-lg);  font-weight:600}
+        .body{font-size:var(--fs-md); line-height:var(--lh-md)}
+        .caption{font-size:var(--fs-xs); line-height:var(--lh-xs); color:var(--text-2)}
+
+        /* 3) 메시 그라데이션 "포인트" 유틸 */
+        .mesh-border{ position:relative; border-radius:var(--radius-md); }
+        .mesh-border::before{
+          content:""; position:absolute; inset:-1px; z-index:-1; border-radius:inherit;
+          background: var(--mesh-warm, var(--mesh-cool, transparent));
+          filter: blur(10px) saturate(1.08);
+          -webkit-mask: 
+             linear-gradient(#000,#000) content-box,
+             linear-gradient(#000,#000);
+          -webkit-mask-composite: xor; mask-composite: exclude;
+          padding:1px;
+        }
+
+        .mesh-underline{
+          background:
+            linear-gradient(var(--surface),var(--surface)) padding-box,
+            var(--mesh-warm, var(--mesh-cool, transparent)) border-box;
+          border-bottom:2px solid transparent;
+        }
+
+        .mesh-ring{
+          position:relative; border-radius:999px; padding:2px;
+          background: var(--mesh-warm, var(--mesh-cool, transparent));
+        }
+        .mesh-ring > .inner{
+          background:var(--surface); border-radius:999px; padding:0 var(--space-3); height:28px;
+          display:inline-flex; align-items:center; gap:8px; color:var(--text);
+        }
+
+        .mesh-divider{
+          height:1px;
+          background:
+            linear-gradient(90deg, transparent, rgba(0,0,0,.08) 10%, rgba(0,0,0,.1) 50%, transparent 90%) var(--surface),
+            var(--mesh-warm, var(--mesh-cool, transparent));
+          background-blend-mode: overlay, normal;
+          opacity:.7;
+        }
+
+        /* 4) 카드, 컨테이너 */
+        .card{
+          background:var(--surface);
+          border:1px solid var(--border);
+          border-radius:var(--radius-lg);
+          box-shadow:var(--shadow-sm);
+          padding:var(--space-6);
+        }
+        .card--elevated{ box-shadow:var(--shadow-md) }
+        .card--mesh{
+          border-top:0;
+          position:relative;
+        }
+        .card--mesh::before{
+          content:""; position:absolute; left:0; right:0; top:-1px; height:3px; border-radius:inherit;
+          background: var(--mesh-warm, var(--mesh-cool, transparent));
+          filter: blur(6px) saturate(1.12);
+          opacity:.9;
+        }
+
+        /* 5) 버튼 */
+        .btn{
+          --btn-h: 36px;
+          display:inline-flex; align-items:center; gap:8px;
+          height:var(--btn-h); padding:0 var(--space-4);
+          border-radius:12px; border:1px solid var(--border);
+          background:var(--surface-2); color:var(--text); cursor:pointer;
+          transition: transform .06s ease, background-color .15s ease, border-color .15s ease;
+          font-size: var(--fs-sm);
+          text-decoration: none;
+        }
+        .btn:hover{ background: color-mix(in srgb, var(--surface-2) 88%, var(--brand) 12%); }
+        .btn:active{ transform: translateY(1px); }
+
+        .btn--primary{
+          background:linear-gradient(var(--surface),var(--surface)) padding-box,
+                     linear-gradient( to right, var(--brand), var(--brand-2), var(--brand-3) ) border-box;
+          border:1px solid transparent;
+        }
+        .btn--primary:hover{
+          background:
+            linear-gradient(color-mix(in srgb, var(--surface) 85%, var(--brand) 15%),
+                            color-mix(in srgb, var(--surface) 85%, var(--brand-2) 15%)) padding-box,
+            linear-gradient( to right, var(--brand), var(--brand-2), var(--brand-3) ) border-box;
+        }
+
+        .btn--ghost{ background:transparent }
+        .btn--ghost:hover{ background: color-mix(in srgb, var(--surface) 70%, transparent) }
+
+        .btn--danger{
+          border-color: color-mix(in srgb, var(--danger) 30%, var(--border));
+          color: var(--danger);
+        }
+        .btn--danger:hover{
+          background: color-mix(in srgb, var(--surface) 85%, var(--danger) 15%);
+        }
+
+        .btn--icon{ width:36px; padding:0; justify-content:center }
+
+        /* 6) 테마 토글 스위치 */
+        .theme-toggle-container {
+            display: flex;
+            align-items: center;
+            margin-right: var(--space-4);
+        }
+
+        .theme-toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 32px;
+            cursor: pointer;
+        }
+
+        .theme-toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--surface-2);
+            border: 2px solid var(--border);
+            border-radius: 34px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .theme-toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 2px;
+            top: 2px;
+            background: var(--text);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2;
+        }
+
+        .theme-toggle-icon-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 90%;
+            z-index: 1;
+        }
+
+        .theme-icon {
+            font-size: 14px;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .theme-icon.sun {
+            margin-left: -2px;
+        }
+
+        .theme-icon.moon {
+            margin-right: -2px;
+        }
+
+        /* Checked state (Light theme) */
+        input:checked + .theme-toggle-slider {
+            background: linear-gradient(var(--surface),var(--surface)) padding-box,
+                       var(--mesh-warm, var(--mesh-cool, transparent)) border-box;
+            border: 2px solid transparent;
+        }
+
+        input:checked + .theme-toggle-slider:before {
+            transform: translateX(28px);
+        }
+
+        input:checked + .theme-toggle-slider .theme-icon.sun {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        input:checked + .theme-toggle-slider .theme-icon.moon {
+            opacity: 0.3;
+        }
+
+        input:not(:checked) + .theme-toggle-slider .theme-icon.moon {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        input:not(:checked) + .theme-toggle-slider .theme-icon.sun {
+            opacity: 0.3;
+        }
+
+        .theme-toggle-switch:hover .theme-toggle-slider {
+            transform: scale(1.05);
+        }
+
+        /* 7) 유틸리티 클래스 */
+        .p-4{padding:var(--space-4)} .p-6{padding:var(--space-6)} .px-4{padding-inline:var(--space-4)} .py-4{padding-block:var(--space-4)}
+        .mt-4{margin-top:var(--space-4)} .mb-6{margin-bottom:var(--space-6)} .gap-4{gap:var(--space-4)} .gap-6{gap:var(--space-6)}
+
+        .flex{display:flex} .col{flex-direction:column} .center{align-items:center; justify-content:center}
+        .full{width:100%} .hfull{height:100%}
+        .round-sm{border-radius:var(--radius-sm)} .round-md{border-radius:var(--radius-md)} .round-lg{border-radius:var(--radius-lg)}
+        .elev-sm{box-shadow:var(--shadow-sm)} .elev-md{box-shadow:var(--shadow-md)} .elev-lg{box-shadow:var(--shadow-lg)}
+
+        .surface{background:var(--surface); border:1px solid var(--border)}
+        .surface-2{background:var(--surface-2); border:1px solid var(--border)}
+
+        .text-muted{color:var(--text-2)}
+
+        /* 8) 접근성 */
+        :focus-visible{
+          outline: 2px solid var(--focus);
+          outline-offset: 2px;
+          border-radius: 6px;
+        }
+        @media (prefers-reduced-motion: reduce){
+          *{ transition:none !important; animation:none !important }
+        }
+
+        /* 9) 레이아웃 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-6);
+        }
+
+        .header {
+            height: var(--topbar-h);
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-6);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-6);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+
+        .logo {
+            font-size: var(--fs-xl);
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .demo-section {
+            margin: var(--space-10) 0;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-6);
+            margin-top: var(--space-6);
+        }
+    </style>
+</head>
+<body>
+    <!-- SVG 아이콘 스프라이트 -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+        <!-- Home -->
+        <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 11.5L12 4l9 7.5"></path>
+            <path d="M5.5 10.5V20a1 1 0 0 0 1 1H17.5a1 1 0 0 0 1-1v-9.5"></path>
+            <path d="M9.5 21V14.5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1V21"></path>
+        </symbol>
+
+        <!-- Search -->
+        <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="6.5"></circle>
+            <path d="M16.2 16.2L20.5 20.5"></path>
+        </symbol>
+
+        <!-- Settings -->
+        <symbol id="ic-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3.2"></circle>
+            <path d="M19 12a7 7 0 0 0-.1-1l2-1.6-1.8-3.1-2.4.8a7 7 0 0 0-1.7-1l-.3-2.5h-3.6l-.3 2.5a7 7 0 0 0-1.7 1l-2.4-.8L3.1 9.4 5.1 11a7 7 0 0 0 0 2l-2 1.6 1.8 3.1 2.4-.8a7 7 0 0 0 1.7 1l.3 2.5h3.6l.3-2.5a7 7 0 0 0 1.7-1l2.4.8 1.8-3.1-2-1.6c.06-.33.09-.66.09-1Z"></path>
+        </symbol>
+
+        <!-- User -->
+        <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="3.2"></circle>
+            <path d="M5 20.5a7 7 0 0 1 14 0"></path>
+        </symbol>
+    </svg>
+
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-left">
+            <a href="#" class="logo">원AI</a>
+        </div>
+        
+        <div class="header-right">
+            <!-- 테마 토글 스위치 -->
+            <div class="theme-toggle-container">
+                <label class="theme-toggle-switch" for="theme-checkbox">
+                    <input type="checkbox" id="theme-checkbox" onchange="toggleTheme()">
+                    <span class="theme-toggle-slider">
+                        <span class="theme-toggle-icon-container">
+                            <span class="theme-icon sun">☀️</span>
+                            <span class="theme-icon moon">🌙</span>
+                        </span>
+                    </span>
+                </label>
+            </div>
+
+            <button class="btn btn--ghost">
+                <svg width="20" height="20"><use href="#ic-user"/></svg>
+                프로필
+            </button>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <div class="container">
+        <div class="demo-section">
+            <div class="h1 mb-6">원AI Design System <span class="caption">v1</span></div>
+            <p class="body text-muted">라이트=웜 전범위, 다크=쿨 전범위 메시 그라데이션을 포인트로만 절제해 사용하는 디자인 시스템</p>
+        </div>
+
+        <!-- 메시 포인트 데모 -->
+        <div class="demo-section">
+            <div class="h2 mb-6">메시 포인트 외곽선 카드</div>
+            <div class="demo-grid">
+                <div class="mesh-border p-6 round-lg elev-sm">
+                    <div class="h3 mb-4">메시 외곽선 카드</div>
+                    <p class="body text-muted">외곽선만 그라데이션, 내부는 중립 톤으로 가독성 유지.</p>
+                    <div class="mt-4 flex gap-4">
+                        <button class="btn btn--primary">Primary</button>
+                        <button class="btn">Default</button>
+                        <button class="btn btn--danger">Delete</button>
+                    </div>
+
+                    <div class="mesh-divider mt-6"></div>
+
+                    <div class="mt-6">
+                        <label class="caption">검색</label>
+                        <input class="input mt-4" placeholder="모델, 대화, 파일 검색" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font:inherit;" />
+                    </div>
+
+                    <div class="mt-6 flex gap-4">
+                        <span class="mesh-ring"><span class="inner">Beta</span></span>
+                        <span class="mesh-ring"><span class="inner">New</span></span>
+                        <span class="mesh-ring"><span class="inner">AI</span></span>
+                    </div>
+                </div>
+
+                <div class="card card--mesh">
+                    <div class="h3 mb-4">상단 메시 카드</div>
+                    <p class="body text-muted">카드 상단에만 메시 포인트 적용한 예시입니다.</p>
+                    <div class="mt-4">
+                        <button class="btn btn--ghost">
+                            <svg width="20" height="20"><use href="#ic-settings"/></svg>
+                            설정
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="h3 mb-4">일반 카드</div>
+                    <p class="body text-muted">기본 카드 스타일입니다. 깔끔하고 모던한 느낌을 줍니다.</p>
+                    <div class="mt-4 flex gap-4">
+                        <button class="btn">
+                            <svg width="20" height="20"><use href="#ic-search"/></svg>
+                            검색
+                        </button>
+                        <button class="btn">
+                            <svg width="20" height="20"><use href="#ic-home"/></svg>
+                            홈
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 컴포넌트 쇼케이스 -->
+        <div class="demo-section">
+            <div class="h2 mb-6">컴포넌트 쇼케이스</div>
+            <div class="card p-6">
+                <div class="h3 mb-4">버튼 컬렉션</div>
+                <div class="flex gap-4 flex-wrap">
+                    <button class="btn btn--primary">Primary</button>
+                    <button class="btn">Default</button>
+                    <button class="btn btn--ghost">Ghost</button>
+                    <button class="btn btn--danger">Danger</button>
+                    <button class="btn btn--icon" aria-label="검색">
+                        <svg width="20" height="20"><use href="#ic-search"/></svg>
+                    </button>
+                </div>
+
+                <div class="mesh-divider mt-6"></div>
+
+                <div class="mt-6">
+                    <div class="h3 mb-4">타이포그래피</div>
+                    <div class="h1 mb-4">Heading 1 - 주요 타이틀</div>
+                    <div class="h2 mb-4">Heading 2 - 섹션 제목</div>
+                    <div class="h3 mb-4">Heading 3 - 서브 제목</div>
+                    <div class="body mb-4">Body - 본문 텍스트입니다. 읽기 쉽고 적당한 크기로 설정되어 있습니다.</div>
+                    <div class="caption">Caption - 작은 설명 텍스트나 메타 정보에 사용합니다.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 테마 토글 함수
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // 테마 변경
+            document.documentElement.setAttribute('data-theme', newTheme);
+            
+            // 로컬스토리지에 저장
+            localStorage.setItem('oneai_theme', newTheme);
+            
+            // 체크박스 상태 업데이트
+            const themeCheckbox = document.getElementById('theme-checkbox');
+            if (themeCheckbox) {
+                themeCheckbox.checked = newTheme === 'light';
+            }
+            
+            console.log(`테마가 ${newTheme}로 변경되었습니다.`);
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            // 저장된 테마 적용
+            const savedTheme = localStorage.getItem('oneai_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // 체크박스 상태 초기화
+            const themeCheckbox = document.getElementById('theme-checkbox');
+            if (themeCheckbox) {
+                themeCheckbox.checked = savedTheme === 'light';
+            }
+        });
+    </script>
+</body>
+</html>

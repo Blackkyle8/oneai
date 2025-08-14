@@ -182,6 +182,42 @@
             box-sizing: border-box;
         }
 
+        /* 통합 스크롤바 스타일 */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+        }
+
+        *::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        *::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        *::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        *::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+
+        .trending-list {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            width: 100%;
+        }
+
         /* 페이지 뷰 */
         .page-view {
             display: none;
@@ -1339,27 +1375,6 @@
     </style>
 </head>
 <body>
-    <!-- 상단 헤더 -->
-    <div class="header">
-        <div class="header-left">
-            <div class="logo" onclick="goHome()">
-                ⚡ One AI
-            </div>
-            
-            <!-- 네비게이션 탭 -->
-            <div class="nav-tabs">
-                <button class="nav-tab active" onclick="switchTab('ai-content')">🎨 AI 콘텐츠</button>
-                <button class="nav-tab" onclick="switchTab('community')">💬 자유게시판</button>
-                <button class="nav-tab" onclick="switchTab('qna')">❓ Q&A</button>
-                <button class="nav-tab" onclick="switchTab('tutorials')">📚 튜토리얼</button>
-            </div>
-        </div>
-        
-        <div class="header-actions">
-            <button class="btn" onclick="goBack()" id="backBtn">← 뒤로</button>
-            <button class="btn btn-primary" onclick="showActionModal()" id="actionBtn">✍️ 글쓰기</button>
-        </div>
-    </div>
 
     <div class="container">
         <!-- 메인 목록 페이지 -->

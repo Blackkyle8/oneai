@@ -893,67 +893,52 @@
             padding: var(--spacing-lg) 0;
         }
 
-        /* 개선된 헤더 스타일 */
+        /* Header Component */
         .header {
-            position: sticky;
-            top: 0;
-            background: var(--color-surface-elevated);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--surface-glass-border);
-            z-index: var(--z-index-sidebar);
-            transition: all var(--motion-duration-normal) var(--motion-ease);
             height: 60px;
             box-sizing: border-box;
             overflow: hidden;
-        }
-
-        .header__content {
-            margin: 0 auto;
+            background: var(--surface-elevated);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 var(--spacing-lg);
-            height: 100%;
+            padding: 0 var(--spacing-2xl);
+            position: sticky;
+            top: 0;
+            z-index: var(--z-index-sidebar);
+            transition: background-color var(--motion-standard);
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            text-decoration: none;
-            color: var(--text-primary);
-            transition: transform var(--motion-duration-fast) var(--motion-ease);
+        .header__logo {
             font-size: 18px;
             flex-shrink: 0;
-            height: 100%;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .logo:hover {
-            transform: translateY(-1px);
+        .header__spacer {
+            flex: 1;
         }
 
-        .logo__icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, var(--color-primary-500), var(--color-info));
-            border-radius: var(--radius-lg);
+        .header__actions {
             display: flex;
+            gap: var(--spacing-md);
             align-items: center;
-            justify-content: center;
-            font-size: var(--font-size-base);
         }
 
-        .logo__text {
-            font-size: var(--font-size-lg);
-            font-weight: var(--font-weight-semibold);
+        .btn--header {
+            padding: 6px 16px;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
         }
 
-        .header .flex {
-            height: 100%;
-        }
-
-        .header .flex.items-center {
-            align-items: center;
+        .btn--header:hover {
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         .nav-tab {
@@ -963,26 +948,172 @@
             height: 40px;
         }
 
+        /* 프로필 메뉴 스타일 */
         .profile-btn {
             width: 40px;
             height: 40px;
-            border-radius: var(--radius-full);
-            background: linear-gradient(135deg, var(--color-primary-500), var(--color-info));
-            border: 2px solid var(--surface-glass-border);
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary-500), #3b82f6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             color: white;
-            font-weight: var(--font-weight-semibold);
+            font-weight: 600;
             cursor: pointer;
             position: relative;
-            transition: all var(--motion-duration-fast) var(--motion-ease);
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: var(--font-size-sm);
+            font-size: 14px;
         }
 
         .profile-btn:hover {
             transform: scale(1.05);
             border-color: var(--color-primary-400);
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            background: var(--color-error);
+            border-radius: 50%;
+            border: 2px solid var(--surface-base);
+        }
+
+        .dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 280px;
+            background: var(--surface-modal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            backdrop-filter: blur(20px);
+            z-index: var(--z-index-dropdown);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all var(--motion-standard);
+        }
+
+        .dropdown--show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .profile-section {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .profile-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, var(--color-primary-500), #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .profile-details h3 {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .profile-details p {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: var(--radius-md);
+            font-size: 10px;
+            font-weight: 600;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--color-primary-500);
+            border: 1px solid var(--color-primary-500);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-sm);
+            background: rgba(16, 185, 129, 0.05);
+            padding: var(--spacing-sm);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: var(--font-size-base);
+            font-weight: 700;
+            color: var(--color-success);
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-tertiary);
+        }
+
+        .nav__item {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .nav__item:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-section {
+            padding: var(--spacing-xs);
+        }
+
+        .menu-divider {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: var(--spacing-xs) 0;
+            padding-top: var(--spacing-sm);
+        }
+
+        .text-error {
+            color: var(--color-error);
+        }
+
+        .relative {
+            position: relative;
         }
 
         .notification-dot {
@@ -1281,72 +1412,6 @@
 </head>
 
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header__content">
-            <a href="#" class="logo" onclick="showHome()">
-                <div class="logo__icon">🤖</div>
-                <div class="logo__text">One AI</div>
-            </a>
-            
-            <div class="flex items-center gap-md">
-                <button class="btn btn--primary" onclick="showAIBuilder()">
-                    ✨ <span>AI 엔진 만들기</span>
-                </button>
-                
-                <div class="relative">
-                    <button class="profile-btn" onclick="toggleProfile()">
-                        김
-                        <div class="notification-dot"></div>
-                    </button>
-                    
-                    <div class="dropdown" id="profileDropdown">
-                        <div class="p-lg" style="border-bottom: 1px solid var(--surface-glass-border);">
-                            <div class="flex items-center gap-sm mb-md">
-                                <div class="ai-engine-icon ai-engine-icon--gpt">김</div>
-                                <div>
-                                    <h3 class="text-base font-semibold mb-xs">김개발자</h3>
-                                    <p class="text-sm text-secondary mb-xs profile-info">kim@example.com</p>
-                                    <span class="badge badge--primary">비즈니스 플랜</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-md p-md" style="background: rgba(16, 185, 129, 0.05); border-bottom: 1px solid var(--surface-glass-border);">
-                            <div class="text-center">
-                                <span class="block text-lg font-bold text-success">₩0</span>
-                                <span class="text-xs text-tertiary">이번 달 수익</span>
-                            </div>
-                            <div class="text-center">
-                                <span class="block text-lg font-bold text-success">3</span>
-                                <span class="text-xs text-tertiary">활성 AI 엔진</span>
-                            </div>
-                        </div>
-                        
-                        <div class="p-sm">
-                            <a href="#" class="nav__item" onclick="showMyEngines()">
-                                <span>🤖</span> 내 AI 엔진
-                            </a>
-                            <a href="#" class="nav__item" onclick="showAnalytics()">
-                                <span>📊</span> 수익 대시보드
-                            </a>
-                            <a href="#" class="nav__item" onclick="showMarketplace()">
-                                <span>🏪</span> 마켓플레이스
-                            </a>
-                            <a href="#" class="nav__item" onclick="showSettings()">
-                                <span>⚙️</span> 설정
-                            </a>
-                            <div style="border-top: 1px solid var(--surface-glass-border); margin: var(--spacing-sm) 0; padding-top: var(--spacing-md);">
-                                <a href="#" class="nav__item text-error" onclick="logout()">
-                                    <span>🚪</span> 로그아웃
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
 
     <!-- 홈 페이지 -->
     <div id="homePage" class="page-container">

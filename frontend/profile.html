@@ -4,6 +4,239 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>One AI - 마이페이지</title>
+    <script>
+        // 기존 checkAuth 함수 (호환성을 위해 유지)
+        function checkAuth() {
+            const token = localStorage.getItem('oneai_token');
+            const user = JSON.parse(localStorage.getItem('oneai_user'));
+            
+            if (!token || !user) {
+                window.location.href = '/login.html?redirect=/profile.html';
+                return false;
+            }
+            return true;
+        }
+
+        // 기존 loadUserProfile 함수를 완전히 교체
+        async function loadUserProfile() {
+            try {
+                showLoading();
+                
+                // API를 통해 사용자 정보 가져오기
+                const userResponse = await window.OneAIAPI.getCurrentUser();
+                const user = userResponse.data || userResponse;
+                
+                // 프로필 헤더 정보 업데이트
+                updateProfileHeader(user);
+                
+                // 계정 정보 섹션 업데이트
+                updateAccountInfo(user);
+                
+                // 통계 정보 업데이트 (별도 API 호출)
+                await loadUserStats(user.id);
+                
+                // 최근 활동 로드
+                await loadRecentActivity(user.id);
+                
+                console.log('사용자 프로필 로드 완료:', user);
+                
+            } catch (error) {
+                console.error('사용자 프로필 로드 실패:', error);
+                
+                // 토큰이 만료되었거나 유효하지 않은 경우
+                if (error.status === 401) {
+                    showError('로그인이 만료되었습니다. 다시 로그인해주세요.');
+                    setTimeout(() => {
+                        logout();
+                    }, 2000);
+                } else {
+                    showError('사용자 정보를 불러오는데 실패했습니다.');
+                }
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 프로필 헤더 업데이트
+        function updateProfileHeader(user) {
+            // 사용자 이름 업데이트
+            const nameElement = document.querySelector('.profile-header__name');
+            if (nameElement) {
+                nameElement.textContent = user.username || user.name || '사용자';
+            }
+            
+            // 아바타 업데이트 (이름의 첫 글자 또는 프로필 이미지)
+            const avatarElement = document.querySelector('.profile-header__avatar');
+            if (avatarElement) {
+                if (user.profile_image) {
+                    avatarElement.style.backgroundImage = `url(${user.profile_image})`;
+                    avatarElement.style.backgroundSize = 'cover';
+                    avatarElement.textContent = '';
+                } else {
+                    const firstChar = (user.username || user.name || '사용자').charAt(0).toUpperCase();
+                    avatarElement.textContent = firstChar;
+                }
+            }
+            
+            // 가입일 업데이트
+            const statusElement = document.querySelector('.profile-header__status');
+            if (statusElement && user.created_at) {
+                const joinDate = new Date(user.created_at).toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long'
+                });
+                statusElement.textContent = `One AI Pro 사용자 · 가입일: ${joinDate}`;
+            }
+        }
+
+        // 계정 정보 섹션 업데이트
+        function updateAccountInfo(user) {
+            // 이메일 주소 업데이트
+            const emailElement = document.querySelector('.setting-item:nth-of-type(1) .setting-item__description');
+            if (emailElement && user.email) {
+                emailElement.textContent = user.email;
+            }
+            
+            // 로그인 폼의 기본값도 업데이트 (숨겨진 필드)
+            const emailInput = document.querySelector('#emailForm input[type="email"]:not([readonly])');
+            if (emailInput) {
+                emailInput.placeholder = `새 이메일 (현재: ${user.email})`;
+            }
+        }
+
+        // 사용자 통계 정보 로드
+        async function loadUserStats(userId) {
+            try {
+                // 실제 구현에서는 백엔드 API에서 사용자별 통계를 가져옴
+                const stats = await window.OneAIAPI.getUserStats?.(userId) || generateMockStats();
+                
+                // 프로필 헤더 통계 업데이트
+                const statItems = document.querySelectorAll('.stat-item__number');
+                if (statItems.length >= 4) {
+                    statItems[0].textContent = stats.streakDays || '89';
+                    statItems[1].textContent = (stats.totalConversations || 1247).toLocaleString();
+                    statItems[2].textContent = stats.savedItems || '156';
+                    statItems[3].textContent = stats.satisfaction || '4.9';
+                }
+                
+                // 월별 사용량 통계 업데이트
+                const monthlyStats = document.querySelectorAll('.stat-card__number');
+                if (monthlyStats.length >= 4) {
+                    monthlyStats[0].textContent = stats.monthlyConversations || '342';
+                    monthlyStats[1].textContent = `${stats.totalHours || '89'}h`;
+                    monthlyStats[2].textContent = `₩${Math.floor((stats.savedAmount || 156000) / 1000)}K`;
+                    monthlyStats[3].textContent = stats.favoritePrompts || '12';
+                }
+                
+            } catch (error) {
+                console.warn('사용자 통계 로드 실패:', error);
+                // 통계 로드가 실패해도 기본값 유지
+            }
+        }
+
+        // 최근 활동 로드
+        async function loadRecentActivity(userId) {
+            try {
+                // 실제 구현에서는 백엔드에서 사용자의 최근 활동을 가져옴
+                const activities = await window.OneAIAPI.getRecentActivity?.(userId) || [];
+                
+                if (activities.length > 0) {
+                    updateActivityFeed(activities);
+                }
+                
+            } catch (error) {
+                console.warn('최근 활동 로드 실패:', error);
+                // 활동 로드가 실패해도 기본 활동 유지
+            }
+        }
+
+        // 활동 피드 업데이트
+        function updateActivityFeed(activities) {
+            const activityFeed = document.querySelector('.activity-feed');
+            if (!activityFeed) return;
+            
+            // 기존 활동 목록 클리어
+            activityFeed.innerHTML = '';
+            
+            activities.slice(0, 6).forEach(activity => {
+                const activityItem = createActivityItem(activity);
+                activityFeed.appendChild(activityItem);
+            });
+        }
+
+        // 활동 아이템 생성
+        function createActivityItem(activity) {
+            const li = document.createElement('li');
+            li.className = 'activity-item';
+            
+            const iconClass = getActivityIconClass(activity.type);
+            const timeAgo = getTimeAgo(activity.created_at);
+            
+            li.innerHTML = `
+                <div class="activity-item__icon ${iconClass}">${getActivityIcon(activity.type)}</div>
+                <div class="activity-item__content">
+                    <div class="activity-item__title">${activity.title}</div>
+                    <div class="activity-item__time">${timeAgo}</div>
+                </div>
+            `;
+            
+            return li;
+        }
+
+        // 활동 타입별 아이콘 클래스
+        function getActivityIconClass(type) {
+            const iconClasses = {
+                'ai_conversation': 'activity-item__icon--ai',
+                'sharing_joined': 'activity-item__icon--share',
+                'setting_updated': 'activity-item__icon--setting',
+                'file_uploaded': 'activity-item__icon--ai'
+            };
+            return iconClasses[type] || 'activity-item__icon--ai';
+        }
+
+        // 활동 타입별 아이콘
+        function getActivityIcon(type) {
+            const icons = {
+                'ai_conversation': 'G',
+                'sharing_joined': '🤝',
+                'setting_updated': '⚙️',
+                'file_uploaded': '📁'
+            };
+            return icons[type] || '•';
+        }
+
+        // 시간 경과 표시
+        function getTimeAgo(dateString) {
+            const now = new Date();
+            const date = new Date(dateString);
+            const diffMs = now - date;
+            
+            const minutes = Math.floor(diffMs / 60000);
+            const hours = Math.floor(diffMs / 3600000);
+            const days = Math.floor(diffMs / 86400000);
+            
+            if (minutes < 1) return '방금 전';
+            if (minutes < 60) return `${minutes}분 전`;
+            if (hours < 24) return `${hours}시간 전`;
+            if (days < 7) return `${days}일 전`;
+            
+            return date.toLocaleDateString('ko-KR');
+        }
+
+        // 목 데이터 생성 (개발/테스트용)
+        function generateMockStats() {
+            return {
+                streakDays: Math.floor(Math.random() * 100) + 50,
+                totalConversations: Math.floor(Math.random() * 1000) + 1000,
+                savedItems: Math.floor(Math.random() * 200) + 100,
+                satisfaction: (4 + Math.random()).toFixed(1),
+                monthlyConversations: Math.floor(Math.random() * 200) + 200,
+                totalHours: Math.floor(Math.random() * 50) + 50,
+                savedAmount: Math.floor(Math.random() * 100000) + 100000,
+                favoritePrompts: Math.floor(Math.random() * 20) + 5
+            };
+        }
+    </script>
     <style>
         :root {
             /* Design System v1.1 - Color Tokens */
@@ -966,17 +1199,6 @@
         <div class="spinner"></div>
     </div>
 
-    <!-- Header Component -->
-    <div class="header">
-        <div class="header__logo">
-            <div class="header__logo-icon">1</div>
-            <span>One AI</span>
-        </div>
-        <div class="header__actions">
-            <button class="btn btn--primary" id="authButton" onclick="logout()">로그아웃</button>
-        </div>
-    </div>
-
     <!-- Main Container -->
     <div class="container">
         <!-- Profile Header Component -->
@@ -1384,20 +1606,20 @@
             hideLoading();
         }
 
-        // 페이지 로드 시 초기 상태 설정
+        // 페이지 로드 시 초기화 함수 수정
         document.addEventListener('DOMContentLoaded', function() {
-            // 로딩 스피너 표시
             showLoading();
             
-            // 로그인 상태 확인 후 페이지 접근 제어
             if (!checkAuthAndRedirect()) {
-                return; // 로그인되지 않았으면 여기서 종료 (리다이렉트됨)
+                return;
             }
             
             updateAuthUI();
-            showLoggedInContent();
             
-            // 나머지 초기화 코드들...
+            // 사용자 프로필 로드
+            loadUserProfile();
+            
+            // 나머지 초기화
             initializeAnimations();
         });
 

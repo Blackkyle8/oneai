@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One AI - 비즈니스센터</title>
+    <link rel="stylesheet" href="/assets/styles.css">
+    <script src="/script.js"></script>
+    <script>
+        // 페이지 로드 시 인증 체크
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!OneAI.auth.requireAuth()) {
+                return; // 인증이 필요한 경우 login.html로 리다이렉트됨
+            }
+            // 인증된 사용자 정보 표시
+            if (OneAI.auth.checkAuth()) {
+                initializePage();
+            }
+        });
+
+        function initializePage() {
+            // 페이지 초기화 로직
+            loadBusinessData();
+            setupEventListeners();
+        }
+
+        function loadBusinessData() {
+            // 비즈니스 데이터 로드
+            fetch('/api/business/data', {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('oneai_token')
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        OneAI.auth.logout(); // 인증 만료 시 로그아웃
+                        return;
+                    }
+                    throw new Error('네트워크 응답이 올바르지 않습니다');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayBusinessData(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('데이터를 불러오는데 실패했습니다');
+            });
+        }
+
+        function setupEventListeners() {
+            // 이벤트 리스너 설정
+            document.getElementById('newEngineBtn').addEventListener('click', () => {
+                showAIBuilder();
+            });
+        }
+
+        function showAIBuilder() {
+            window.location.href = '/ai-builder.html';
+        }
+
+        function showError(message) {
+            // 에러 메시지 표시
+            const errorElement = document.createElement('div');
+            errorElement.className = 'error-message';
+            errorElement.textContent = message;
+            document.body.appendChild(errorElement);
+            setTimeout(() => errorElement.remove(), 3000);
+        }
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header__content">
+            <a href="/" class="logo">
+                <div class="logo__icon">🤖</div>
+                <div class="logo__text">One AI</div>
+            </a>
+            
+            <div class="flex items-center gap-md">
+                <button id="newEngineBtn" class="btn btn--primary">
+                    ✨ <span>AI 엔진 만들기</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="business-dashboard">
+                <!-- 비즈니스 대시보드 컨텐츠 -->
+                <div class="section">
+                    <h2>비즈니스 대시보드</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>총 수익</h3>
+                            <div class="stat-value" id="totalRevenue">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>활성 AI 엔진</h3>
+                            <div class="stat-value" id="activeEngines">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>이번 달 성장률</h3>
+                            <div class="stat-value" id="growthRate">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI 엔진 목록 -->
+                <div class="section">
+                    <h2>내 AI 엔진</h2>
+                    <div class="engine-grid" id="engineList">
+                        <!-- AI 엔진 카드들이 여기에 동적으로 추가됩니다 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <p>&copy; 2025 One AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
