@@ -324,7 +324,7 @@
             background: var(--color-surface-base);
             color: var(--text-primary);
             height: 100vh;
-            overflow: auto; /* hidden에서 auto로 변경 */
+            overflow: hidden; /* hidden에서 auto로 변경 */
             -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -367,12 +367,12 @@
         .mobile-logo {
             background: var(--color-primary-500);
             border-radius: 6px;
-            padding: 8px 12px;
+            padding: 9px 15px;
             color: white;
             font-weight: bold;
             font-size: 14px;
             flex-shrink: 0;
-            margin-right: 8px;
+            margin-right: 0px;
             cursor: pointer;
         }
 
@@ -392,8 +392,8 @@
         }
 
         .mobile-ai-icon {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 6px;
             display: flex;
             align-items: center;
@@ -412,8 +412,8 @@
         }
 
         .mobile-add-ai {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 6px;
             border: 1.5px dashed rgba(255, 255, 255, 0.3);
             background: transparent;
@@ -442,8 +442,8 @@
         }
 
         .mobile-hamburger-btn {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 6px;
             display: flex;
             align-items: center;
@@ -534,8 +534,8 @@
         }
 
         .mobile-nav-item {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 6px;
             display: flex;
             align-items: center;
@@ -557,18 +557,24 @@
             color: white;
         }
 
-        .sidebar {
-            width: 56px;
-            background: var(--color-surface-elevated);
-            border-right: 1px solid var(--surface-glass-border);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            z-index: var(--z-sidebar);
-            flex-shrink: 0;
-            padding: 12px 0 16px 0;
-            gap: 8px;
-        }
+.sidebar {
+    width: 56px;
+    background: var(--color-surface-elevated);
+    border-right: 1px solid var(--surface-glass-border);
+    display: flex;
+    flex-direction: column;
+    position: fixed; /* relative에서 fixed로 변경 */
+    top: 0; /* 추가 */
+    left: 0; /* 추가 */
+    bottom: 0; /* 추가 */
+    height: 100vh; /* 전체 높이 고정 */
+    z-index: var(--z-sidebar);
+    flex-shrink: 0;
+    padding: 12px 0 16px 0;
+    gap: 8px;
+    /* 사이드바 자체는 스크롤 금지 */
+    overflow: hidden;
+}
 
         .logo-section {
             display: flex;
@@ -1044,7 +1050,7 @@
             flex-direction: column;
             min-width: 0;
             min-height: 100vh; /* height에서 min-height로 변경 */
-            overflow: auto; /* hidden에서 auto로 변경 */
+            overflow: hidden; /* hidden에서 auto로 변경 */
             -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
             background: var(--color-surface-base);
             position: relative;
@@ -1075,160 +1081,8 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-        }
-
-        /* 헤더 활성 AI 정보 */
-        .active-ai-info {
-            display: none;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 16px;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--color-primary-500);
-            border-radius: 8px;
-        }
-
-        .active-ai-info.visible {
-            display: flex;
-        }
-
-        .active-ai-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .active-ai-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        .ai-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .control-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--surface-glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            font-size: 14px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .control-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--text-primary);
-        }
-
-        /* 웹 컨테이너 시스템 */
-        .web-containers-area {
             position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
             background: var(--color-surface-base);
-        }
-
-        .web-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--color-surface-base);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateX(100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .web-container.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(0);
-            z-index: 10;
-        }
-
-        .web-container.minimized {
-            opacity: 0;
-            visibility: hidden;
-            transform: translateX(-100%);
-            z-index: 1;
-        }
-
-        .default-welcome-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--color-surface-base);
-            opacity: 1;
-            visibility: visible;
-            z-index: 5;
-            transition: all 0.3s ease;
-        }
-
-        .default-welcome-container.hidden {
-            opacity: 0;
-            visibility: hidden;
-            z-index: 1;
-        }
-
-        /* 웹 컨테이너 로딩 상태 */
-        .web-container-loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: var(--text-secondary);
-        }
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--color-surface-elevated);
-            border-top: 3px solid var(--color-primary-500);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .web-container-error {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            background: var(--color-surface-elevated);
-            padding: 40px;
-            border-radius: 12px;
-            border: 1px solid var(--surface-glass-border);
-            max-width: 500px;
         }
 
         .external-module-iframe {
@@ -2195,6 +2049,186 @@
                 --header-height: 50px;
             }
         }
+
+        /* ===== 클릭 차단 문제 해결 ===== */
+
+        /* 1. 웹 컨테이너들이 다른 요소를 가리는 문제 수정 */
+        .web-containers-area {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--color-surface-base);
+            /* z-index 낮추기 */
+            z-index: 1; /* 기존에 높은 값이 있었다면 낮추기 */
+        }
+
+        .web-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--color-surface-base);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1; /* 낮은 z-index */
+            overflow: hidden;
+            /* 비활성 상태에서는 클릭 차단 */
+            pointer-events: none;
+        }
+
+        .web-container.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+            z-index: 10; /* 활성화된 것만 높은 z-index */
+            /* 활성 상태에서만 클릭 허용 */
+            pointer-events: auto;
+        }
+
+        .web-container.minimized {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(-100%);
+            z-index: 1;
+            /* 최소화 상태에서는 클릭 차단 */
+            pointer-events: none;
+        }
+
+        .default-welcome-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--color-surface-base);
+            opacity: 1;
+            visibility: visible;
+            z-index: 5;
+            transition: all 0.3s ease;
+            /* 기본적으로 클릭 허용 */
+            pointer-events: auto;
+        }
+
+        .default-welcome-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1;
+            /* 숨김 상태에서는 클릭 차단 */
+            pointer-events: none;
+        }
+
+        /* 2. AI 서비스 콘텐츠 z-index 수정 */
+        .ai-service-content {
+            position: fixed !important;
+            top: 0 !important;
+            left: 56px !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: calc(100vw - 56px) !important;
+            height: 100vh !important;
+            background: var(--color-surface-base);
+            overflow: hidden !important;
+            /* z-index 적절히 설정 */
+            z-index: 50; /* 헤더보다는 낮게 */
+        }
+
+        /* 3. 헤더 z-index 확실히 높게 */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 56px;
+            right: 0;
+            height: var(--header-height);
+            background: var(--color-surface-elevated);
+            border-bottom: 1px solid var(--surface-glass-border);
+            z-index: 200; /* 확실히 높게 */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            /* 클릭 허용 */
+            pointer-events: auto;
+        }
+
+        .mobile-top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--color-surface-elevated);
+            border-bottom: 1px solid var(--surface-glass-border);
+            z-index: 200; /* 확실히 높게 */
+            padding: 8px 16px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            /* 클릭 허용 */
+            pointer-events: auto;
+        }
+
+        /* 4. 사이드바 z-index */
+        .sidebar {
+            z-index: 100; /* 적절한 높이 */
+            /* 클릭 허용 */
+            pointer-events: auto;
+        }
+
+        /* 5. 모달 z-index */
+        .modal-overlay {
+            z-index: 400; /* 가장 높게 */
+            pointer-events: auto;
+        }
+
+        /* 6. 토스트 z-index */
+        .toast-container {
+            z-index: 500; /* 최상위 */
+            pointer-events: none; /* 토스트는 클릭 차단하지 않음 */
+        }
+
+        .toast {
+            pointer-events: auto; /* 토스트 자체는 클릭 가능 */
+        }
+
+        /* 7. 드롭다운 z-index */
+        .profile-dropdown,
+        .mobile-dropdown-menu {
+            z-index: 300;
+            pointer-events: auto;
+        }
+
+        /* 8. 모바일에서 AI 서비스 콘텐츠 수정 */
+        @media (max-width: 768px) {
+            .ai-service-content {
+                left: 0 !important;
+                top: 60px !important;
+                width: 100vw !important;
+                height: calc(100vh - 60px) !important;
+                z-index: 50; /* 모바일 헤더보다 낮게 */
+            }
+        }
+
+        /* 9. 페이지 콘텐츠 z-index 정리 */
+        .page-content {
+            z-index: 10; /* 기본 콘텐츠 */
+            pointer-events: auto;
+        }
+
+        .page-content:not(.active) {
+            pointer-events: none; /* 비활성 페이지는 클릭 차단 */
+        }
+
+        /* 10. 디버깅용 - 클릭 가능 영역 표시 (임시) */
+        /*
+        .clickable-debug {
+            outline: 2px solid red !important;
+        }
+        .non-clickable-debug {
+            outline: 2px solid blue !important;
+            pointer-events: none !important;
+        }
+        */
     </style>
 </head>
 <body>
@@ -2266,23 +2300,6 @@
                 </div>
                 
                 <div class="header-actions">
-                    <!-- 활성 AI 정보 -->
-                    <div class="active-ai-info" id="activeAIInfo">
-                        <div class="active-ai-icon" id="activeAIIcon"></div>
-                        <span class="active-ai-name" id="activeAIName"></span>
-                        <div class="ai-controls">
-                            <button class="control-btn" onclick="OneAI.refreshCurrentAI()" title="새로고침">
-                                🔄
-                            </button>
-                            <button class="control-btn" onclick="OneAI.openInNewTab()" title="새 창에서 열기">
-                                🔗
-                            </button>
-                            <button class="control-btn" onclick="OneAI.minimizeCurrentAI()" title="최소화">
-                                ➖
-                            </button>
-                        </div>
-                    </div>
-                    
                     <!-- 로그인 전 상태 -->
                     <div class="auth-section" id="authSection">
                         <button class="login-btn" onclick="OneAI.showLoginModal()" type="button">
@@ -2415,32 +2432,28 @@
 
         <!-- Content Area -->
         <main class="content-area" role="main">
-            <!-- 웹 컨테이너 영역 -->
-            <div class="web-containers-area" id="webContainersArea">
-                <!-- 웹 컨테이너들이 동적으로 생성됩니다 -->
-                <div class="default-welcome-container active" id="defaultWelcome">
-                    <!-- AI 서비스 페이지 -->
-                    <div id="aiServicePage" class="page-content">
-                        <div class="ai-service-content">
-                            <div class="ai-iframe-container" id="aiIframeContainer">
-                                <div class="ai-service-fallback" id="aiServiceFallback">
-                                    <div class="fallback-icon">💻</div>
-                                    <h3 class="fallback-title">웹 브라우저 제한 안내</h3>
-                                    <p class="fallback-description">
-                                        웹 브라우저에서는 보안상의 이유로 다른 AI 서비스를 직접 불러올 수 없습니다.<br>
-                                        아래 옵션 중 하나를 선택해주세요.
-                                    </p>
-                                    
-                                    <div class="fallback-info">
-                                        <h3>💡 완전한 AI 통합 경험을 원하신다면?</h3>
-                                        <p>One AI 앱을 다운로드하면 모든 AI를 한 화면에서 원활하게 사용할 수 있습니다!</p>
-                                    </div>
-                                    
-                                    <div class="fallback-actions">
-                                        <button class="btn btn-primary" onclick="OneAI.downloadApp()">앱 다운로드</button>
-                                        <button class="btn btn-primary" onclick="OneAI.openInNewTab()">새 창에서 열기</button>
-                                        <button class="btn" onclick="OneAI.showModule('addai')">다른 AI 둘러보기</button>
-                                        <button class="btn" onclick="OneAI.showModule('community')">커뮤니티 둘러보기</button>
+            <!-- AI 서비스 페이지 -->
+            <div id="aiServicePage" class="page-content">
+                <div class="ai-service-content">
+                    <div class="ai-iframe-container" id="aiIframeContainer">
+                        <div class="ai-service-fallback" id="aiServiceFallback">
+                            <div class="fallback-icon">💻</div>
+                            <h3 class="fallback-title">웹 브라우저 제한 안내</h3>
+                            <p class="fallback-description">
+                                웹 브라우저에서는 보안상의 이유로 다른 AI 서비스를 직접 불러올 수 없습니다.<br>
+                                아래 옵션 중 하나를 선택해주세요.
+                            </p>
+                            
+                            <div class="fallback-info">
+                                <h3>💡 완전한 AI 통합 경험을 원하신다면?</h3>
+                                <p>One AI 앱을 다운로드하면 모든 AI를 한 화면에서 원활하게 사용할 수 있습니다!</p>
+                            </div>
+                            
+                            <div class="fallback-actions">
+                                <button class="btn btn-primary" onclick="OneAI.downloadApp()">앱 다운로드</button>
+                                <button class="btn btn-primary" onclick="OneAI.openInNewTab()">새 창에서 열기</button>
+                                <button class="btn" onclick="OneAI.showModule('addai')">다른 AI 둘러보기</button>
+                                <button class="btn" onclick="OneAI.showModule('community')">커뮤니티 둘러보기</button>
                             </div>
                         </div>
                     </div>
@@ -2449,26 +2462,22 @@
 
             <!-- 홈 페이지 (기본 활성화) -->
             <div id="homePage" class="page-content active">
-                <!-- 웹 컨테이너 영역 -->
-                <div class="web-containers-area" id="webContainersArea">
-                    <!-- 기본 환영 화면 -->
-                    <div class="default-welcome-container active" id="defaultWelcome">
-                        <div class="welcome-content">
-                            <h1 class="welcome-title">One AI에 오신 것을 환영합니다!</h1>
-                            <p class="welcome-subtitle">
-                                모든 AI 서비스를 한 곳에서 관리하고 사용하세요. 
-                                왼쪽 사이드바에서 원하는 AI를 선택하거나 새로운 AI를 추가할 수 있습니다.
+                <div class="welcome-content">
+                    <h1 class="welcome-title">One AI에 오신 것을 환영합니다!</h1>
+                    <p class="welcome-subtitle">
+                        모든 AI 서비스를 한 곳에서 관리하고 사용하세요. 
+                        왼쪽 사이드바에서 원하는 AI를 선택하거나 새로운 AI를 추가할 수 있습니다.
+                    </p>
+                    
+                    <!-- 앱 다운로드 유도 섹션 -->
+                    <div class="app-download-section">
+                        <div class="app-download-card">
+                            <div class="app-download-icon">💻📱</div>
+                            <h3 class="app-download-title">One AI 앱으로 더 편리하게!</h3>
+                            <p class="app-download-description">
+                                웹에서 제한된 기능 대신, One AI 앱을 다운로드하면<br>
+                                모든 AI 서비스를 한 화면에서 완벽하게 사용할 수 있습니다.
                             </p>
-                            
-                            <!-- 앱 다운로드 유도 섹션 -->
-                            <div class="app-download-section">
-                                <div class="app-download-card">
-                                    <div class="app-download-icon">💻📱</div>
-                                    <h3 class="app-download-title">One AI 앱으로 더 편리하게!</h3>
-                                    <p class="app-download-description">
-                                        웹에서 제한된 기능 대신, One AI 앱을 다운로드하면<br>
-                                        모든 AI 서비스를 한 화면에서 완벽하게 사용할 수 있습니다.
-                                    </p>
                             <div class="app-download-actions">
                                 <button class="app-download-btn" onclick="OneAI.downloadApp()">
                                     <span>📥</span>
@@ -2501,9 +2510,6 @@
                             <p class="feature-description">한국어, 영어, 일본어, 중국어를 지원합니다</p>
                         </div>
                     </div>
-                        </div>
-                    </div>
-                    <!-- 웹 컨테이너들이 동적으로 여기에 생성됩니다 -->
                 </div>
             </div>
 
