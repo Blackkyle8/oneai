@@ -240,7 +240,7 @@ async function createTables() {
       CREATE TABLE IF NOT EXISTS payment_history (
         id SERIAL PRIMARY KEY,
         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        sharing_id INTEGER REFERENCES sharings(id) ON DELETE SET NULL,
+        sharing_id VARCHAR(36) REFERENCES sharings(id) ON DELETE SET NULL,
         amount DECIMAL(10,2) NOT NULL,
         currency VARCHAR(10) DEFAULT 'KRW',
         payment_method VARCHAR(50),
