@@ -452,6 +452,8 @@ window.OneAI = window.OneAI || {};
     };
 
     // ===== TOAST NOTIFICATION SYSTEM =====
+    // 중복 제거: index.html에서 통합된 토스트 시스템 사용
+    /*
     const Toast = {
         container: null,
         
@@ -570,6 +572,23 @@ window.OneAI = window.OneAI || {};
             });
             State.toasts = [];
         }
+    };
+    */
+    
+    // 통합된 토스트 시스템 사용 (index.html에서 정의됨)
+    const Toast = {
+        show: (message, type = 'info', duration = CONFIG.ANIMATION.TOAST) => {
+            if (typeof window.showToast === 'function') {
+                return window.showToast(message, type, duration);
+            }
+            console.log(`Toast (${type}): ${message}`);
+        },
+        success: (message, duration) => Toast.show(message, 'success', duration),
+        error: (message, duration) => Toast.show(message, 'error', duration),
+        warning: (message, duration) => Toast.show(message, 'warning', duration),
+        info: (message, duration) => Toast.show(message, 'info', duration),
+        remove: () => {},
+        clear: () => {}
     };
 
     // ===== MODAL MANAGEMENT =====
@@ -1034,10 +1053,6 @@ window.OneAI = window.OneAI || {};
             
             console.log('✅ One AI 시스템 초기화 완료');
             
-            // Show welcome message
-            setTimeout(() => {
-                Toast.success('One AI에 오신 것을 환영합니다! 🎉');
-            }, 1000);
             
         } catch (error) {
             console.error('❌ One AI 초기화 실패:', error);
@@ -1083,7 +1098,8 @@ window.OneAI = window.OneAI || {};
             }
         });
         
-        // Network status
+        // Network status (중복 제거 - HTML에서 통합 관리됨)
+        /*
         window.addEventListener('online', () => {
             Toast.success('인터넷 연결이 복구되었습니다.');
             EventBus.emit('network:online');
@@ -1093,6 +1109,7 @@ window.OneAI = window.OneAI || {};
             Toast.warning('인터넷 연결이 끊어졌습니다.');
             EventBus.emit('network:offline');
         });
+        */
 
         // Authentication state changes
         EventBus.on('auth:login', (data) => {
@@ -1210,12 +1227,15 @@ window.OneAI = window.OneAI || {};
 
 })(window.OneAI);
 
-// ===== AUTO-INITIALIZATION =====
+// ===== AUTO-INITIALIZATION (비활성화) =====
+// HTML에서 통합된 초기화 시스템으로 대체됨
+/*
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', OneAI.init);
 } else {
     OneAI.init();
 }
+*/
 
 // ===== GLOBAL ERROR HANDLING =====
 window.addEventListener('error', (event) => {

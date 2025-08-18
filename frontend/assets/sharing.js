@@ -168,12 +168,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadMySharings();
 });
 
-// 참여 중인 쉐어링 목록 로드
-async function loadMySharings() {
-    try {
-        const response = await fetch('/api/sharing/my', {
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('oneai_token')
 // 쉐어링 목록 로드
 async function loadMySharings() {
     try {
@@ -197,6 +191,11 @@ async function loadMySharings() {
         showError(error.message);
     }
 }
+
+// 쉐어링 목록 표시
+function displayMySharings(sharings) {
+    const container = document.getElementById('my-sharings');
+    if (!container) return;
     if (sharings.length === 0) {
         container.innerHTML = '<p class="empty-state">참여 중인 쉐어링이 없습니다.</p>';
         return;
@@ -232,6 +231,20 @@ function getStatusBadgeClass(status) {
         'ended': 'error'
     };
     return classMap[status] || 'default';
+}
+
+function getStatusText(status) {
+    const textMap = {
+        'recruiting': '모집중',
+        'active': '활성',
+        'paused': '일시정지',
+        'ended': '종료'
+    };
+    return textMap[status] || status;
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('ko-KR').format(amount);
 }
 
 function formatDate(dateString) {

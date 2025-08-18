@@ -583,6 +583,15 @@ router.post('/upload/:category', uploadLimiter, upload.array('files', 10), async
  * 파일 정보 조회
  * GET /api/storage/files/:fileId
  */
+
+// 라우트 정의
+router.get('/files', (req, res) => {
+  res.json({ message: 'Storage files' });
+});
+
+// 반드시 router를 export해야 함!
+module.exports = router;
+
 router.get('/files/:fileId', async (req, res) => {
     try {
         const { fileId } = req.params;

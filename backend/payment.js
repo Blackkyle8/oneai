@@ -480,15 +480,11 @@ async function handleWebhookEvent(event) {
             break;
 
         case 'customer.subscription.updated':
-            // TODO: 구독 업데이트 핸들러 구현 필요
-            // await handleSubscriptionUpdated(event.data.object);
-            console.log('Subscription updated:', event.data.object.id);
+            await handleSubscriptionUpdated(event.data.object);
             break;
 
         case 'customer.subscription.deleted':
-            // TODO: 구독 삭제 핸들러 구현 필요
-            // await handleSubscriptionDeleted(event.data.object);
-            console.log('Subscription deleted:', event.data.object.id);
+            await handleSubscriptionDeleted(event.data.object);
             break;
 
         default:
@@ -501,12 +497,24 @@ async function handleWebhookEvent(event) {
  */
 async function handlePaymentSuccess(paymentIntent) {
     const userId = paymentIntent.metadata.userId;
+    const sharingId = paymentIntent.metadata.sharingId;
     
     // 결제 로그 업데이트
     await updatePaymentLog(paymentIntent.id, {
         status: 'succeeded',
         completedAt: new Date()
     });
+
+    // 쉐어링 그룹 참여자 상태 업데이트
+    if (sharingId) {
+        await updateSharingParticipantStatus(sharingId, userId, 'paid');
+        
+        // 쉐어링 그룹의 모든 참여자가 결제했는지 확인
+        const isGroupComplete = await checkSharingGroupPaymentComplete(sharingId);
+        if (isGroupComplete) {
+            await activateSharingGroup(sharingId);
+        }
+    }
 
     // 사용자 알림
     const user = await getUserById(userId);
@@ -577,17 +585,325 @@ async function handleInvoicePaymentFailed(invoice) {
     // 사용자 알림
     const user = await getUserById(userId);
     if (user) {
-        // TODO: 이메일 발송 함수 구현 필요
-        // await sendSubscriptionPaymentFailedEmail(user.email, subscription, invoice);
-        console.log('Payment failed notification needed for:', user.email);
+        await sendSubscriptionPaymentFailedEmail(user.email, subscription, invoice);
     }
 
     console.log(`구독 결제 실패: ${subscriptionId} (사용자: ${userId})`);
 }
 
 /**
- * 헬퍼 함수들
+ * 구독 업데이트 처리
  */
+async function handleSubscriptionUpdated(subscription) {
+    const userId = subscription.metadata.userId;
+    const subscriptionId = subscription.id;
+
+    try {
+        // 구독 상태 업데이트
+        await updateSubscriptionStatus(subscriptionId, {
+            status: subscription.status,
+            currentPeriodStart: new Date(subscription.current_period_start * 1000),
+            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            cancelAtPeriodEnd: subscription.cancel_at_period_end
+        });
+
+        // 상태에 따른 처리
+        switch (subscription.status) {
+            case 'active':
+                // 구독 활성화 - 쉐어링 그룹 접근 권한 부여
+                if (subscription.metadata.sharingId) {
+                    await updateSharingParticipantStatus(subscription.metadata.sharingId, userId, 'active');
+                }
+                break;
+
+            case 'past_due':
+                // 연체 상태 - 접근 제한
+                if (subscription.metadata.sharingId) {
+                    await updateSharingParticipantStatus(subscription.metadata.sharingId, userId, 'past_due');
+                }
+                break;
+
+            case 'canceled':
+                // 구독 취소 - 접근 권한 제거
+                if (subscription.metadata.sharingId) {
+                    await updateSharingParticipantStatus(subscription.metadata.sharingId, userId, 'canceled');
+                }
+                break;
+        }
+
+        // 구독 로그 저장
+        await savePaymentLog({
+            userId,
+            type: 'subscription_updated',
+            stripeId: subscriptionId,
+            description: `구독 상태 변경: ${subscription.status}`,
+            status: subscription.status
+        });
+
+        console.log(`구독 업데이트: ${subscriptionId} (사용자: ${userId}, 상태: ${subscription.status})`);
+    } catch (error) {
+        console.error('구독 업데이트 처리 오류:', error);
+        throw error;
+    }
+}
+
+/**
+ * 구독 삭제 처리
+ */
+async function handleSubscriptionDeleted(subscription) {
+    const userId = subscription.metadata.userId;
+    const subscriptionId = subscription.id;
+
+    try {
+        // 구독 상태를 삭제됨으로 업데이트
+        await updateSubscriptionStatus(subscriptionId, {
+            status: 'deleted',
+            deletedAt: new Date()
+        });
+
+        // 쉐어링 그룹에서 사용자 제거
+        if (subscription.metadata.sharingId) {
+            await removeSharingParticipant(subscription.metadata.sharingId, userId);
+        }
+
+        // 구독 삭제 로그 저장
+        await savePaymentLog({
+            userId,
+            type: 'subscription_deleted',
+            stripeId: subscriptionId,
+            description: '구독 완전 삭제',
+            status: 'deleted'
+        });
+
+        // 사용자에게 알림
+        const user = await getUserById(userId);
+        if (user) {
+            await sendSubscriptionDeletedEmail(user.email, subscription);
+        }
+
+        console.log(`구독 삭제: ${subscriptionId} (사용자: ${userId})`);
+    } catch (error) {
+        console.error('구독 삭제 처리 오류:', error);
+        throw error;
+    }
+}
+
+/**
+ * 구독 삭제 알림 이메일
+ */
+async function sendSubscriptionDeletedEmail(email, subscription) {
+    const emailTemplate = `
+        <h2>구독이 완전히 종료되었습니다</h2>
+        <p>구독 서비스가 완전히 종료되었습니다.</p>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3>종료 정보</h3>
+            <p><strong>구독 ID:</strong> ${subscription.id}</p>
+            <p><strong>종료 일시:</strong> ${new Date().toLocaleString('ko-KR')}</p>
+        </div>
+        <p>언제든지 다시 구독하실 수 있습니다. One AI 서비스를 이용해 주셔서 감사했습니다.</p>
+    `;
+
+    await sendEmail({
+        to: email,
+        subject: '[One AI] 구독 서비스 종료 안내',
+        html: emailTemplate
+    });
+}
+
+/**
+ * 구독 결제 실패 알림 이메일
+ */
+async function sendSubscriptionPaymentFailedEmail(email, subscription, invoice) {
+    const emailTemplate = `
+        <h2>구독 결제에 실패했습니다</h2>
+        <p>구독 서비스 결제 처리 중 문제가 발생했습니다.</p>
+        <div style="background: #fff5f5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ef4444;">
+            <h3>결제 실패 정보</h3>
+            <p><strong>구독 ID:</strong> ${subscription.id}</p>
+            <p><strong>청구서 ID:</strong> ${invoice.id}</p>
+            <p><strong>결제 시도 일시:</strong> ${new Date(invoice.created * 1000).toLocaleString('ko-KR')}</p>
+            <p><strong>다음 재시도:</strong> ${invoice.next_payment_attempt ? new Date(invoice.next_payment_attempt * 1000).toLocaleString('ko-KR') : '없음'}</p>
+        </div>
+        <p>결제 방법을 확인하고 업데이트해 주세요. 계속 실패하면 구독이 취소될 수 있습니다.</p>
+        <p><a href="${process.env.CLIENT_URL}/payment/methods">결제 방법 관리하기</a></p>
+    `;
+
+    await sendEmail({
+        to: email,
+        subject: '[One AI] 구독 결제 실패 안내',
+        html: emailTemplate
+    });
+}
+
+/**
+ * 쉐어링 전용 결제 인텐트 생성
+ */
+async function createSharingPaymentIntent({ user_id, amount, currency = 'krw', description, metadata = {} }) {
+    try {
+        const user = await getUserById(user_id);
+        if (!user) {
+            throw new Error('사용자를 찾을 수 없습니다.');
+        }
+
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amount,
+            currency: currency,
+            description: description,
+            metadata: {
+                userId: user_id.toString(),
+                ...metadata
+            },
+            automatic_payment_methods: {
+                enabled: true
+            }
+        });
+
+        // 결제 로그 저장
+        await savePaymentLog({
+            userId: user_id,
+            type: 'sharing_payment_intent_created',
+            stripeId: paymentIntent.id,
+            amount,
+            currency,
+            description,
+            metadata,
+            status: paymentIntent.status
+        });
+
+        return {
+            success: true,
+            payment_id: paymentIntent.id,
+            client_secret: paymentIntent.client_secret,
+            status: paymentIntent.status
+        };
+
+    } catch (error) {
+        console.error('쉐어링 결제 인텐트 생성 오류:', error);
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+/**
+ * 기존 processPayment 함수 (하위 호환성을 위해 유지)
+ */
+async function processPayment(params) {
+    console.warn('processPayment 함수는 deprecated됩니다. createSharingPaymentIntent를 사용하세요.');
+    return await createSharingPaymentIntent(params);
+}
+
+/**
+ * 쉐어링 그룹 구독 생성
+ */
+async function createSubscription({ sharing_id, service_type, participants }) {
+    try {
+        console.log(`쉐어링 그룹 구독 생성: ${sharing_id} (서비스: ${service_type})`);
+        
+        // 각 참여자에 대해 개별 구독 생성 (필요에 따라)
+        const subscriptions = [];
+        
+        for (const participant of participants) {
+            try {
+                const user = await getUserById(participant.user_id);
+                if (!user) continue;
+
+                const customer = await findOrCreateCustomer(participant.user_id, user.email);
+                
+                // 쉐어링 전용 가격 생성 (동적으로)
+                const price = await createSharingPrice({
+                    amount: participant.monthly_cost,
+                    currency: 'krw',
+                    service_type,
+                    sharing_id
+                });
+
+                // 구독 생성
+                const subscription = await stripe.subscriptions.create({
+                    customer: customer.id,
+                    items: [{ price: price.id }],
+                    metadata: {
+                        userId: participant.user_id.toString(),
+                        sharingId: sharing_id,
+                        serviceType: service_type,
+                        type: 'ai_sharing'
+                    }
+                });
+
+                // DB에 구독 정보 저장
+                await saveSubscription({
+                    userId: participant.user_id,
+                    stripeSubscriptionId: subscription.id,
+                    stripeCustomerId: customer.id,
+                    priceId: price.id,
+                    sharingId: sharing_id,
+                    status: subscription.status,
+                    currentPeriodStart: new Date(subscription.current_period_start * 1000),
+                    currentPeriodEnd: new Date(subscription.current_period_end * 1000)
+                });
+
+                subscriptions.push(subscription);
+                
+                console.log(`구독 생성 완료: ${subscription.id} (사용자: ${participant.user_id})`);
+                
+            } catch (error) {
+                console.error(`참여자 ${participant.user_id} 구독 생성 실패:`, error);
+                // 개별 실패는 로그만 남기고 계속 진행
+            }
+        }
+
+        return {
+            success: true,
+            subscriptions: subscriptions.map(sub => ({
+                id: sub.id,
+                status: sub.status,
+                user_id: sub.metadata.userId
+            }))
+        };
+
+    } catch (error) {
+        console.error('쉐어링 구독 생성 오류:', error);
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+/**
+ * 쉐어링 전용 가격 생성
+ */
+async function createSharingPrice({ amount, currency, service_type, sharing_id }) {
+    try {
+        const price = await stripe.prices.create({
+            currency: currency,
+            unit_amount: amount,
+            recurring: {
+                interval: 'month'
+            },
+            product_data: {
+                name: `AI 쉐어링 - ${service_type}`,
+                description: `쉐어링 그룹 ${sharing_id}의 월 구독료`,
+                metadata: {
+                    serviceType: service_type,
+                    sharingId: sharing_id,
+                    type: 'ai_sharing'
+                }
+            },
+            metadata: {
+                serviceType: service_type,
+                sharingId: sharing_id,
+                type: 'ai_sharing'
+            }
+        });
+
+        return price;
+    } catch (error) {
+        console.error('쉐어링 가격 생성 오류:', error);
+        throw error;
+    }
+}
 
 // Stripe 고객 조회 또는 생성
 async function findOrCreateCustomer(userId, email) {
@@ -718,7 +1034,17 @@ const {
     saveCustomer,
     findCustomerByUserId,
     getUserById,
-    updateSharingPaymentStatus
+    updateSharingPaymentStatus,
+    updateSharingParticipantStatus,
+    checkSharingGroupPaymentComplete,
+    activateSharingGroup,
+    removeSharingParticipant
 } = require('./database');
 
 module.exports = router;
+
+// 다른 모듈에서 사용할 수 있도록 함수들 export
+module.exports.processPayment = processPayment;
+module.exports.createSharingPaymentIntent = createSharingPaymentIntent;
+module.exports.createSubscription = createSubscription;
+module.exports.createSharingPrice = createSharingPrice;

@@ -4,37 +4,107 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>One AI - 커뮤니티</title>
+    
+    <!-- CSS 먼저 로드 -->
+    <link rel="stylesheet" href="assets/lang.css">
+    
+    <!-- JavaScript 로드 순서 수정 -->
+    <script src="frontend/assets/lang.js"></script>
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+    
+    <!-- 기존 인라인 스타일 그대로 유지 -->
     <style>
+        /* One AI Design System - Essential CSS Variables & Components */
         :root {
-            /* Modern Color System */
+            /* Color System - Dark Theme */
             --color-surface-base: #000000;
+            --color-surface-raised: #0a0a0a;
             --color-surface-elevated: #111111;
-            --color-surface-modal: #222222;
             --color-surface-overlay: #1a1a1a;
+            --color-surface-modal: #222222;
+            --surface-glass: rgba(17, 17, 17, 0.8);
+            --surface-glass-border: rgba(255, 255, 255, 0.1);
+            
+            /* Text Colors */
             --text-primary: #ffffff;
             --text-secondary: #e5e5e5;
             --text-tertiary: #a3a3a3;
             --text-quaternary: #737373;
+            --text-disabled: #525252;
+            
+            /* Brand Colors */
+            --color-primary-200: #a7f3d0;
+            --color-primary-400: #34d399;
             --color-primary-500: #10b981;
             --color-primary-600: #059669;
+            --color-primary-700: #047857;
+            
+            /* Status Colors */
             --color-success: #10b981;
             --color-warning: #f59e0b;
             --color-error: #ef4444;
+            --color-info: #3b82f6;
             
-            /* Typography */
+            /* Typography Tokens */
             --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            --font-size-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem);
-            --font-size-sm: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);
-            --font-size-base: clamp(1rem, 0.9rem + 0.4vw, 1.125rem);
-            --font-size-lg: clamp(1.125rem, 1rem + 0.5vw, 1.25rem);
-            --font-size-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
-            --font-size-2xl: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --font-weight-extrabold: 800;
             
-            /* Spacing */
-            --space-xs: clamp(0.75rem, 0.6rem + 0.6vw, 1.125rem);
-            --space-sm: clamp(1rem, 0.8rem + 0.8vw, 1.5rem);
-            --space-md: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem);
-            --space-lg: clamp(2rem, 1.6rem + 1.6vw, 3rem);
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 22px;
+            --font-size-2xl: 28px;
+            --font-size-3xl: 36px;
+            --font-size-4xl: 48px;
+            
+            /* Spacing Tokens */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            --spacing-3xl: 64px;
+            
+            /* Border Radius Tokens */
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-2xl: 16px;
+            --radius-full: 9999px;
+            
+            /* Z-Index Tokens */
+            --z-index-base: 0;
+            --z-index-sidebar: 10;
+            --z-index-dropdown: 20;
+            --z-index-modal: 40;
+            --z-index-toast: 50;
+            
+            /* Shadow Tokens */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            
+            /* Motion Tokens */
+            --motion-duration-fast: 150ms;
+            --motion-duration-normal: 250ms;
+            --motion-duration-slow: 350ms;
+            --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Legacy Spacing (호환성) */
+            --space-xs: var(--spacing-xs);
+            --space-sm: var(--spacing-sm);
+            --space-md: var(--spacing-md);
+            --space-lg: var(--spacing-lg);
         }
 
         * {
@@ -53,11 +123,64 @@
             max-width: 100vw;
         }
 
-        /* 상단 헤더 - 수정된 부분 */
+        /* ========================================
+           One AI 통일 스크롤바 디자인
+           ======================================== */
+
+        /* Webkit 기반 브라우저 (Chrome, Safari, Edge) */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--color-surface-base);
+            border-radius: var(--radius-sm);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            border-radius: var(--radius-sm);
+            transition: all var(--motion-duration-fast) var(--motion-ease);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--color-primary-400), var(--color-primary-200));
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb:active {
+            background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-500));
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: var(--color-surface-base);
+        }
+
+        /* Firefox 스크롤바 */
+        html {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) var(--color-surface-elevated);
+        }
+
+        /* 모바일에서 스크롤바 숨기기 */
+        @media (max-width: 768px) {
+            ::-webkit-scrollbar {
+                width: 0px;
+                background: transparent;
+            }
+            
+            body {
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        /* 상단 헤더 - 통일 50px */
         .header {
             background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 16px 40px;
+            padding: 0 40px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -67,7 +190,7 @@
             top: 0;
             z-index: 1000;
             backdrop-filter: blur(10px);
-            height: 60px;
+            height: 50px;
             box-sizing: border-box;
             overflow: hidden;
         }
@@ -85,7 +208,7 @@
             font-size: 18px;
             font-weight: 700;
             color: #fff;
-            background: linear-gradient(135deg, #10b981, #34d399);
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -95,11 +218,11 @@
 
         .nav-tabs {
             display: flex;
-            gap: 4px;
             background: rgba(0, 0, 0, 0.3);
             padding: 6px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
         }
 
         .nav-tab {
@@ -123,9 +246,9 @@
         }
 
         .nav-tab.active {
-            background: linear-gradient(135deg, var(--color-primary-500), #34d399);
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
             color: white;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
             transform: translateY(-2px);
         }
 
@@ -136,7 +259,7 @@
             left: -2px;
             right: -2px;
             bottom: -2px;
-            background: linear-gradient(135deg, var(--color-primary-500), #34d399);
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
             border-radius: 10px;
             z-index: -1;
             opacity: 0.5;
@@ -149,8 +272,106 @@
             align-items: center;
         }
 
-        .btn {
+        .profile-section {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .login-btn {
             padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            background: var(--color-primary-500);
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .login-btn:hover {
+            background: var(--color-primary-600);
+            transform: translateY(-1px);
+        }
+
+        .profile-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--color-primary-500);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .profile-btn:hover {
+            background: var(--color-primary-600);
+            transform: scale(1.05);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: var(--color-surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px 0;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .profile-info {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .profile-email {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .profile-menu {
+            padding: 4px 0;
+        }
+
+        .profile-menu-item {
+            display: block;
+            width: 100%;
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .profile-menu-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .btn {
+            padding: 10px 20px;
             border-radius: 6px;
             border: none;
             background: #222;
@@ -174,48 +395,39 @@
             background: var(--color-primary-600);
         }
 
+        /* 뒤로가기 버튼 스타일 */
+        .back-button-container {
+            padding: 0px 0px 0px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .back-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(-2px);
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: var(--space-md);
             width: 100%;
             box-sizing: border-box;
-        }
-
-        /* 통합 스크롤바 스타일 */
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-        }
-
-        *::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        *::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        *::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 3px;
-        }
-
-        *::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        *::-webkit-scrollbar-corner {
-            background: transparent;
-        }
-
-        .trending-list {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-            width: 100%;
         }
 
         /* 페이지 뷰 */
@@ -236,53 +448,7 @@
             display: block;
         }
 
-        /* AI 콘텐츠 탭 스타일 */
-        .community-header {
-            text-align: center;
-            margin-bottom: var(--space-lg);
-            background: linear-gradient(135deg, var(--color-surface-elevated), var(--color-surface-modal));
-            border-radius: 16px;
-            padding: var(--space-lg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .community-title {
-            font-size: var(--font-size-xl);
-            font-weight: 700;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #10b981, #34d399);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .community-subtitle {
-            color: var(--text-secondary);
-            font-size: var(--font-size-base);
-            max-width: 600px;
-            margin: 0 auto var(--space-md);
-        }
-
-        .upload-btn {
-            background: var(--color-primary-500);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: var(--font-size-sm);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .upload-btn:hover {
-            background: var(--color-primary-600);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25);
-        }
+        /* AI 콘텐츠 탭 스타일 - 기존 스타일 제거됨 */
 
         /* 필터 및 검색 */
         .filter-section {
@@ -409,21 +575,34 @@
             font-weight: 500;
         }
 
-        .ai-engine-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: var(--font-size-xs);
-            font-weight: 600;
-            color: white;
-        }
+/* 기존 .ai-engine-badge 스타일을 이것으로 교체 */
+.ai-engine-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: white;
+    display: inline-block;
+}
 
-        .ai-engine-badge.gpt { background: linear-gradient(135deg, #10a37f, #1a7f72); }
-        .ai-engine-badge.midjourney { background: linear-gradient(135deg, #000, #333); }
-        .ai-engine-badge.claude { background: linear-gradient(135deg, #ff6b35, #f7931e); }
-        .ai-engine-badge.gemini { background: linear-gradient(135deg, #4285f4, #ea4335); }
+/* 카드에서만 절대 위치 사용 */
+.content-card .ai-engine-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
+/* 상세페이지 배지는 일반 인라인 블록으로 표시 */
+.content-badges .ai-engine-badge {
+    position: relative;
+    top: auto;
+    right: auto;
+}
+
+.ai-engine-badge.gpt { background: linear-gradient(135deg, #10a37f, #1a7f72); }
+.ai-engine-badge.midjourney { background: linear-gradient(135deg, #000, #333); }
+.ai-engine-badge.claude { background: linear-gradient(135deg, #ff6b35, #f7931e); }
+.ai-engine-badge.gemini { background: linear-gradient(135deg, #4285f4, #ea4335); }
 
         .content-info {
             padding: var(--space-sm);
@@ -527,21 +706,6 @@
             overflow-x: auto;
             padding-bottom: 8px;
             width: 100%;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-        }
-
-        .trending-list::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .trending-list::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .trending-list::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 3px;
         }
 
         .trending-tag {
@@ -560,6 +724,84 @@
             background: var(--color-primary-500);
             color: white;
             border-color: var(--color-primary-500);
+        }
+
+        /* 커뮤니티 헤더 수정 - 좌측정렬 및 버튼 우측정렬 */
+        .community-header {
+            text-align: left; /* 기존 center에서 left로 변경 */
+            margin-bottom: var(--space-lg);
+            background: linear-gradient(135deg, var(--color-surface-elevated), var(--color-surface-modal));
+            border-radius: 16px;
+            padding: var(--space-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 헤더 상단 영역 - 제목과 버튼을 같은 행에 배치 */
+        .community-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            gap: 20px;
+        }
+
+        .community-title {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            margin-bottom: 0; /* 기존 12px에서 0으로 변경 */
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            flex: 1; /* 남은 공간 차지 */
+        }
+
+        .community-subtitle {
+            color: var(--text-secondary);
+            font-size: var(--font-size-base);
+            max-width: none; /* 기존 600px 제한 제거 */
+            margin: 0; /* 기존 0 auto var(--space-md)에서 변경 */
+            text-align: left;
+        }
+
+        .upload-btn {
+            background: var(--color-primary-500);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0; /* 버튼 크기 고정 */
+            white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+        }
+
+        .upload-btn:hover {
+            background: var(--color-primary-600);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25);
+        }
+
+        /* 모바일 반응형 - 768px 이하에서 세로 배치 */
+        @media (max-width: 768px) {
+            .community-header-top {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .upload-btn {
+                align-self: flex-start; /* 좌측 정렬 */
+            }
+            
+            .community-title {
+                font-size: var(--font-size-lg); /* 모바일에서 폰트 크기 조정 */
+            }
         }
 
         /* 커뮤니티 스타일 */
@@ -1372,25 +1614,124 @@
         .sidebar-section {
             animation: fadeIn 0.5s ease-out;
         }
+
+        /* 애니메이션 키프레임 */
+        @keyframes slideIn {
+            from { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+        }
+
+        @keyframes slideOut {
+            from { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+            to { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+        }
+
+        /* 좋아요 버튼 활성화 스타일 */
+        .action-btn.liked {
+            background: #ef4444 !important;
+            border-color: #ef4444 !important;
+            color: white !important;
+        }
+
+        /* 알림 스타일 개선 */
+        .notification {
+            font-family: var(--font-family-primary);
+            font-weight: 500;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* 파일 업로드 호버 효과 */
+        .file-upload:hover {
+            border-color: var(--color-primary-500) !important;
+            background: rgba(59, 130, 246, 0.05) !important;
+        }
     </style>
 </head>
 <body>
 
+
     <div class="container">
         <!-- 메인 목록 페이지 -->
         <div id="mainPage" class="page-view active">
+            <!-- 네비게이션 메뉴만 분리 -->
+<div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('ai-content', event)" data-i18n="nav.aiContent">🎨 AI 콘텐츠</button>
+    <button class="nav-tab" onclick="switchTab('community', event)" data-i18n="nav.community">💬 자유게시판</button>
+    <button class="nav-tab" onclick="switchTab('qna', event)" data-i18n="nav.qna">❓ Q&A</button>
+    <button class="nav-tab" onclick="switchTab('tutorials', event)" data-i18n="nav.tutorials">📚 튜토리얼</button>
+</div>
+
+<script>
+// 탭 전환 함수 (기존 함수를 이것으로 교체)
+function switchTab(tabName, event) {
+    currentTab = tabName;
+    
+    // 상세 페이지에서 탭 전환 시 메인 페이지로 돌아가기
+    if (currentView === 'detail') {
+        goHome();
+    }
+    
+    // 모든 탭 비활성화
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // 클릭한 탭 활성화
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+    
+    // 모든 탭 콘텐츠 비활성화
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // 선택된 탭 콘텐츠 활성화
+    document.getElementById(tabName).classList.add('active');
+}
+
+// 페이지 네비게이션
+function goHome() {
+    currentView = 'main';
+    document.getElementById('mainPage').classList.add('active');
+    document.getElementById('detailPage').classList.remove('active');
+}
+
+function goBack() {
+    if (currentView === 'detail') {
+        goHome();
+    } else {
+        window.history.back();
+    }
+}
+</script>
             <!-- AI 콘텐츠 탭 -->
             <div id="ai-content" class="tab-content active">
-                <!-- 커뮤니티 헤더 -->
+                <!-- AI 콘텐츠 탭 헤더 -->
                 <header class="community-header">
-                    <h1 class="community-title">🎨 AI 콘텐츠 갤러리</h1>
+                    <div class="community-header-top">
+                        <h1 class="community-title">🎨 AI 콘텐츠 갤러리</h1>
+                        <button class="upload-btn" onclick="showUploadModal()">
+                            ⬆️ 콘텐츠 업로드
+                        </button>
+                    </div>
                     <p class="community-subtitle">
                         AI로 만든 창작물을 공유하고, 프롬프트 템플릿을 교환하며, 
                         전 세계 크리에이터들과 함께 성장하세요
                     </p>
-                    <button class="upload-btn" onclick="showUploadModal()">
-                        ⬆️ 콘텐츠 업로드
-                    </button>
                 </header>
 
                 <!-- 트렌딩 섹션 -->
@@ -1449,6 +1790,20 @@
 
             <!-- 자유게시판 탭 -->
             <div id="community" class="tab-content">
+                <!-- 자유게시판 탭 헤더 -->
+                <header class="community-header">
+                    <div class="community-header-top">
+                        <h1 class="community-title">💬 자유게시판</h1>
+                        <button class="upload-btn" onclick="showWriteModal()">
+                            ✍️ 글쓰기
+                        </button>
+                    </div>
+                    <p class="community-subtitle">
+                        AI와 관련된 다양한 이야기를 자유롭게 나누는 공간입니다.
+                        경험담, 팁, 질문 등 무엇이든 환영합니다!
+                    </p>
+                </header>
+
                 <!-- 커뮤니티 통계 -->
                 <div class="community-stats">
                     <div class="stat-card">
@@ -1535,16 +1890,19 @@
 
             <!-- Q&A 탭 -->
             <div id="qna" class="tab-content">
-                <div class="community-header">
-                    <h1 class="community-title">❓ Q&A</h1>
+                <!-- Q&A 탭 헤더 -->
+                <header class="community-header">
+                    <div class="community-header-top">
+                        <h1 class="community-title">❓ Q&A</h1>
+                        <button class="upload-btn" onclick="showWriteModal()">
+                            ❓ 질문하기
+                        </button>
+                    </div>
                     <p class="community-subtitle">
                         AI 관련 질문과 답변을 나누는 공간입니다.
                         궁금한 것이 있다면 언제든 질문해보세요!
                     </p>
-                    <button class="upload-btn" onclick="showWriteModal()">
-                        ❓ 질문하기
-                    </button>
-                </div>
+                </header>
                 
                 <!-- Q&A 콘텐츠 -->
                 <div class="posts-main" id="qnaPosts">
@@ -1554,16 +1912,19 @@
 
             <!-- 튜토리얼 탭 -->
             <div id="tutorials" class="tab-content">
-                <div class="community-header">
-                    <h1 class="community-title">📚 튜토리얼</h1>
+                <!-- 튜토리얼 탭 헤더 -->
+                <header class="community-header">
+                    <div class="community-header-top">
+                        <h1 class="community-title">📚 튜토리얼</h1>
+                        <button class="upload-btn" onclick="showWriteModal()">
+                            📝 튜토리얼 작성
+                        </button>
+                    </div>
                     <p class="community-subtitle">
                         AI 도구 사용법부터 고급 테크닉까지,
                         단계별로 배울 수 있는 튜토리얼 모음
                     </p>
-                    <button class="upload-btn" onclick="showWriteModal()">
-                        📝 튜토리얼 작성
-                    </button>
-                </div>
+                </header>
                 
                 <!-- 튜토리얼 콘텐츠 -->
                 <div class="content-grid" id="tutorialGrid">
@@ -1574,6 +1935,13 @@
 
         <!-- 상세 페이지 -->
         <div id="detailPage" class="page-view">
+            <!-- 뒤로가기 버튼 -->
+            <div class="back-button-container">
+                <button class="back-btn" onclick="goBack()">
+                    ← 뒤로가기
+                </button>
+            </div>
+            
             <div class="detail-layout">
                 <!-- 메인 콘텐츠 -->
                 <main class="main-content" id="detailContent">
@@ -1880,10 +2248,11 @@
             ]
         };
 
-        // 페이지 초기화
+        // 페이지 초기화 함수 수정 (기존 initializePage 함수를 이것으로 교체)
         function initializePage() {
             loadTabContent();
             setupEventListeners();
+            setupAdditionalListeners();
         }
 
         // 탭 콘텐츠 로드
@@ -2080,7 +2449,7 @@
             return card;
         }
 
-        // 이벤트 리스너 설정
+        // 기존 setupEventListeners 함수에 추가
         function setupEventListeners() {
             // 정렬 버튼 이벤트
             document.querySelectorAll('.sort-btn').forEach(btn => {
@@ -2160,55 +2529,45 @@
         }
 
         // 네비게이션 함수들
-        function switchTab(tabName) {
+        function switchTab(tabName, event) {
             currentTab = tabName;
             
             // 상세 페이지에서 탭 전환 시 메인 페이지로 돌아가기
             if (currentView === 'detail') {
-                currentView = 'main';
-                document.getElementById('mainPage').classList.add('active');
-                document.getElementById('detailPage').classList.remove('active');
-                document.getElementById('backBtn').textContent = '← 뒤로';
+                goHome();
             }
             
             // 모든 탭 비활성화
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
             document.querySelectorAll('.nav-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-
-            // 선택된 탭 활성화
+            
+            // 클릭한 탭 활성화
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            // 모든 탭 콘텐츠 비활성화
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 선택된 탭 콘텐츠 활성화
             document.getElementById(tabName).classList.add('active');
-            
-            // 클릭된 탭 버튼 활성화
-            event.target.classList.add('active');
-            
-            // 액션 버튼 업데이트
-            updateActionButton();
-            
-            // 페이지 상단으로 스크롤
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // 페이지 네비게이션
         function goHome() {
             currentView = 'main';
             document.getElementById('mainPage').classList.add('active');
             document.getElementById('detailPage').classList.remove('active');
-            document.getElementById('backBtn').textContent = '← 뒤로';
-            updateActionButton(); // 액션 버튼 복원
         }
 
         function goBack() {
             if (currentView === 'detail') {
                 goHome();
             } else {
-                if (window.history.length > 1) {
-                    window.history.back();
-                } else {
-                    alert('이전 페이지가 없습니다.');
-                }
+                window.history.back();
             }
         }
 
@@ -2219,7 +2578,6 @@
             
             currentDetailItem = item;
             currentView = 'detail';
-            
             showDetailPage(item, 'content');
         }
 
@@ -2235,7 +2593,6 @@
             
             currentDetailItem = item;
             currentView = 'detail';
-            
             showDetailPage(item, 'post');
         }
 
@@ -2245,222 +2602,187 @@
             
             currentDetailItem = item;
             currentView = 'detail';
-            
             showDetailPage(item, 'tutorial');
         }
 
-        function showDetailPage(item, itemType) {
-            document.getElementById('mainPage').classList.remove('active');
-            document.getElementById('detailPage').classList.add('active');
-            document.getElementById('backBtn').textContent = '← 커뮤니티로';
-            
-            // 상세페이지에서는 액션 버튼을 공유하기로 변경
-            const actionBtn = document.getElementById('actionBtn');
-            actionBtn.innerHTML = '📤 공유하기';
-            actionBtn.onclick = shareContent;
-            
-            const detailContent = document.getElementById('detailContent');
-            const detailStats = document.getElementById('detailStats');
-            const actionButtons = document.getElementById('actionButtons');
-            const relatedContent = document.getElementById('relatedContent');
-            
-            if (itemType === 'content') {
-                // AI 콘텐츠 상세 페이지
-                detailContent.innerHTML = `
-                    <div class="content-header">
-                        <h1 class="content-title">${item.title}</h1>
-                        
-                        <div class="content-meta-bar">
-                            <div class="author-info">
-                                <div class="author-avatar" style="width: 48px; height: 48px; font-size: 18px;">${item.authorInitial}</div>
-                                <div class="author-details">
-                                    <div class="author-name">${item.author}</div>
-                                    <div class="publish-date">${item.date} 업로드</div>
-                                </div>
+    // ...existing code...
+// 상세 페이지 표시
+function showDetailPage(item, itemType) {
+    document.getElementById('mainPage').classList.remove('active');
+    document.getElementById('detailPage').classList.add('active');
+    
+    const detailContent = document.getElementById('detailContent');
+    const detailStats = document.getElementById('detailStats');
+    const actionButtons = document.getElementById('actionButtons');
+    const relatedContent = document.getElementById('relatedContent');
+    
+    if (itemType === 'content') {
+        detailContent.innerHTML = `
+            <div class="content-header">
+                <h1 class="content-title">${item.title}</h1>
+                
+                <div class="content-meta-bar">
+                    <div class="author-info">
+                        <div class="author-avatar" style="width: 48px; height: 48px; font-size: 18px;">${item.authorInitial}</div>
+                        <div class="author-details">
+                            <div class="author-name">${item.author}</div>
+                            <div class="publish-date">${item.date} 업로드</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-badges">
+                        <div class="ai-engine-badge ${item.engine}">${getEngineLabel(item.engine)}</div>
+                        <div class="category-badge">${getTypeLabel(item.type)}</div>
+                        <div class="rating-display">
+                            <div class="rating-stars">
+                                ${generateStars(item.rating)}
                             </div>
-                            
-                            <div class="content-badges">
-                                <div class="ai-engine-badge ${item.engine}">${getEngineLabel(item.engine)}</div>
-                                <div class="category-badge">${getTypeLabel(item.type)}</div>
-                                <div class="rating-display">
-                                    <div class="rating-stars">
-                                        ${generateStars(item.rating)}
-                                    </div>
-                                    <span class="rating-score">${item.rating}</span>
-                                </div>
-                            </div>
+                            <span class="rating-score">${item.rating}</span>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="media-preview">
-                        <div class="preview-placeholder">${getTypeIcon(item.type)}</div>
-                        <div class="media-controls">
-                            <button class="media-btn" onclick="viewFullscreen()">
-                                🔍 확대보기
-                            </button>
-                            <button class="media-btn" onclick="downloadImage()">
-                                📥 이미지 저장
-                            </button>
-                            <button class="media-btn" onclick="viewSlideshow()">
-                                🖼️ 슬라이드쇼
-                            </button>
-                        </div>
-                    </div>
+            <div class="media-preview">
+                <div class="preview-placeholder">${getTypeIcon(item.type)}</div>
+                <div class="media-controls">
+                    <button class="media-btn" onclick="viewFullscreen()">🔍 확대보기</button>
+                    <button class="media-btn" onclick="downloadImage()">📥 이미지 저장</button>
+                    <button class="media-btn" onclick="viewSlideshow()">🖼️ 슬라이드쇼</button>
+                </div>
+            </div>
 
-                    <div class="content-description">
-                        <p class="description-text">${item.fullDescription}</p>
-                    </div>
+            <div class="content-description">
+                <p class="description-text">${item.fullDescription || item.description}</p>
+            </div>
 
-                    ${item.prompt ? `
-                    <div class="prompt-section">
-                        <div class="prompt-header">
-                            <h3 class="prompt-title">
-                                🔮 사용된 프롬프트
-                            </h3>
-                            <button class="copy-btn" onclick="copyPrompt()">복사</button>
-                        </div>
-                        <div class="prompt-content" id="promptContent">${item.prompt}</div>
-                    </div>
-                    ` : ''}
+            ${item.prompt ? `
+            <div class="prompt-section">
+                <div class="prompt-header">
+                    <h3 class="prompt-title">🔮 사용된 프롬프트</h3>
+                    <button class="copy-btn" onclick="copyPrompt()">복사</button>
+                </div>
+                <div class="prompt-content" id="promptContent">${item.prompt}</div>
+            </div>
+            ` : ''}
 
-                    <div class="tags-section">
-                        <div class="tags-list">
-                            ${item.tags.map(tag => `<span class="tag" onclick="searchByTag('${tag}')">${tag}</span>`).join('')}
-                        </div>
-                    </div>
-                `;
+            <div class="tags-section">
+                <div class="tags-list">
+                    ${item.tags.map(tag => `<span class="tag" onclick="searchByTag('${tag}')">${tag}</span>`).join('')}
+                </div>
+            </div>
+        `;
+        
+        detailStats.innerHTML = `
+            <div class="stat-item">
+                <span class="stat-number">${formatNumber(item.views)}</span>
+                <span class="stat-label">조회수</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${item.likes}</span>
+                <span class="stat-label">좋아요</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${item.downloads}</span>
+                <span class="stat-label">다운로드</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${item.comments}</span>
+                <span class="stat-label">댓글</span>
+            </div>
+        `;
+        
+        actionButtons.innerHTML = `
+            <button class="action-btn primary" onclick="toggleLike()">
+                <span id="likeIcon">❤️</span>
+                <span id="likeText">좋아요</span>
+            </button>
+            <button class="action-btn" onclick="addToCollection()">📌 컬렉션에 추가</button>
+            <button class="action-btn" onclick="reportContent()">🚨 신고하기</button>
+            <button class="action-btn" onclick="followAuthor()">👤 작성자 팔로우</button>
+        `;
+    } else if (itemType === 'post') {
+        detailContent.innerHTML = `
+            <div class="content-header">
+                <h1 class="content-title">${item.title}</h1>
                 
-                // 통계 섹션
-                detailStats.innerHTML = `
-                    <div class="stat-item">
-                        <span class="stat-number">${formatNumber(item.views)}</span>
-                        <span class="stat-label">조회수</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">${item.likes}</span>
-                        <span class="stat-label">좋아요</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">${item.downloads}</span>
-                        <span class="stat-label">다운로드</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">${item.comments}</span>
-                        <span class="stat-label">댓글</span>
-                    </div>
-                `;
-                
-                // 액션 버튼
-                actionButtons.innerHTML = `
-                    <button class="action-btn primary" onclick="toggleLike()">
-                        <span id="likeIcon">❤️</span>
-                        <span id="likeText">좋아요</span>
-                    </button>
-                    <button class="action-btn" onclick="addToCollection()">
-                        📌 컬렉션에 추가
-                    </button>
-                    <button class="action-btn" onclick="reportContent()">
-                        🚨 신고하기
-                    </button>
-                    <button class="action-btn" onclick="followAuthor()">
-                        👤 작성자 팔로우
-                    </button>
-                `;
-                
-            } else if (itemType === 'post') {
-                // 게시글 상세 페이지
-                detailContent.innerHTML = `
-                    <div class="content-header">
-                        <h1 class="content-title">${item.title}</h1>
-                        
-                        <div class="content-meta-bar">
-                            <div class="author-info">
-                                <div class="author-avatar" style="width: 48px; height: 48px; font-size: 18px;">${item.authorInitial}</div>
-                                <div class="author-details">
-                                    <div class="author-name">${item.author}</div>
-                                    <div class="publish-date">${item.date}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="content-badges">
-                                <div class="post-category ${item.categoryClass}">${item.category}</div>
-                            </div>
+                <div class="content-meta-bar">
+                    <div class="author-info">
+                        <div class="author-avatar" style="width: 48px; height: 48px; font-size: 18px;">${item.authorInitial}</div>
+                        <div class="author-details">
+                            <div class="author-name">${item.author}</div>
+                            <div class="publish-date">${item.date}</div>
                         </div>
                     </div>
+                    
+                    <div class="content-badges">
+                        <div class="post-category ${item.categoryClass}">${item.category}</div>
+                    </div>
+                </div>
+            </div>
 
-                    <div class="content-description">
-                        <p class="description-text">${item.content}</p>
-                    </div>
+            <div class="content-description">
+                <p class="description-text">${item.content}</p>
+            </div>
 
-                    <div class="tags-section">
-                        <div class="tags-list">
-                            ${item.tags.map(tag => `<span class="tag" onclick="searchByTag('${tag}')">${tag}</span>`).join('')}
-                        </div>
-                    </div>
-                `;
-                
-                // 통계 섹션
-                detailStats.innerHTML = `
-                    <div class="stat-item">
-                        <span class="stat-number">${item.views}</span>
-                        <span class="stat-label">조회수</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">${item.likes}</span>
-                        <span class="stat-label">좋아요</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">${item.comments}</span>
-                        <span class="stat-label">댓글</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">0</span>
-                        <span class="stat-label">공유</span>
-                    </div>
-                `;
-                
-                // 액션 버튼
-                actionButtons.innerHTML = `
-                    <button class="action-btn primary" onclick="toggleLike()">
-                        <span id="likeIcon">👍</span>
-                        <span id="likeText">좋아요</span>
-                    </button>
-                    <button class="action-btn" onclick="replyToPost()">
-                        💬 댓글 달기
-                    </button>
-                    <button class="action-btn" onclick="shareContent()">
-                        📤 공유하기
-                    </button>
-                    <button class="action-btn" onclick="followAuthor()">
-                        👤 작성자 팔로우
-                    </button>
-                `;
-            }
-            
-            // 관련 콘텐츠
-            loadRelatedContent(relatedContent);
-            
-            // 상단으로 스크롤
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+            <div class="tags-section">
+                <div class="tags-list">
+                    ${item.tags.map(tag => `<span class="tag" onclick="searchByTag('${tag}')">${tag}</span>`).join('')}
+                </div>
+            </div>
+        `;
+        
+        detailStats.innerHTML = `
+            <div class="stat-item">
+                <span class="stat-number">${item.views}</span>
+                <span class="stat-label">조회수</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${item.likes}</span>
+                <span class="stat-label">좋아요</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${item.comments}</span>
+                <span class="stat-label">댓글</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">0</span>
+                <span class="stat-label">공유</span>
+            </div>
+        `;
+        
+        actionButtons.innerHTML = `
+            <button class="action-btn primary" onclick="toggleLike()">
+                <span id="likeIcon">👍</span>
+                <span id="likeText">좋아요</span>
+            </button>
+            <button class="action-btn" onclick="replyToPost()">💬 댓글 달기</button>
+            <button class="action-btn" onclick="shareContent()">📤 공유하기</button>
+            <button class="action-btn" onclick="followAuthor()">👤 작성자 팔로우</button>
+        `;
+    }
+    
+    loadRelatedContent(relatedContent);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-        function loadRelatedContent(container) {
-            const relatedItems = [
-                { id: 1, title: '도시 야경 컬렉션', author: '이아티스트', views: '1.2k', icon: '🌃' },
-                { id: 2, title: '미래형 자동차 디자인', author: '박디자이너', views: '956', icon: '🚗' },
-                { id: 3, title: '사이버펑크 캐릭터', author: '최크리에이터', views: '2.1k', icon: '🤖' }
-            ];
-            
-            container.innerHTML = relatedItems.map(item => `
-                <li class="related-item" onclick="viewRelated(${item.id})">
-                    <div class="related-thumbnail">${item.icon}</div>
-                    <div class="related-info">
-                        <div class="related-title">${item.title}</div>
-                        <div class="related-meta">by ${item.author} • ${item.views} 조회</div>
-                    </div>
-                </li>
-            `).join('');
-        }
+function loadRelatedContent(container) {
+    const relatedItems = [
+        { id: 1, title: '도시 야경 컬렉션', author: '이아티스트', views: '1.2k', icon: '🌃' },
+        { id: 2, title: '미래형 자동차 디자인', author: '박디자이너', views: '956', icon: '🚗' },
+        { id: 3, title: '사이버펑크 캐릭터', author: '최크리에이터', views: '2.1k', icon: '🤖' }
+    ];
+    
+    container.innerHTML = relatedItems.map(item => `
+        <li class="related-item" onclick="viewRelated(${item.id})">
+            <div class="related-thumbnail">${item.icon}</div>
+            <div class="related-info">
+                <div class="related-title">${item.title}</div>
+                <div class="related-meta">by ${item.author} • ${item.views} 조회</div>
+            </div>
+        </li>
+    `).join('');
+}
 
         // 기타 AI 엔진 선택 시 커스텀 입력 필드 표시/숨김
         function toggleCustomEngine() {
@@ -2468,15 +2790,20 @@
             const customEngineGroup = document.getElementById('customEngineGroup');
             const customEngineName = document.getElementById('customEngineName');
             
-            if (engineSelect.value === 'other') {
-                customEngineGroup.style.display = 'block';
-                customEngineName.required = true;
+            if (engineSelect && engineSelect.value === 'other') {
+                if (customEngineGroup) {
+                    customEngineGroup.style.display = 'block';
+                    if (customEngineName) customEngineName.required = true;
+                }
             } else {
-                customEngineGroup.style.display = 'none';
-                customEngineName.required = false;
-                // 필드 초기화
-                document.getElementById('customEngineName').value = '';
-                document.getElementById('customEngineUrl').value = '';
+                if (customEngineGroup) {
+                    customEngineGroup.style.display = 'none';
+                    if (customEngineName) customEngineName.required = false;
+                    const nameField = document.getElementById('customEngineName');
+                    const urlField = document.getElementById('customEngineUrl');
+                    if (nameField) nameField.value = '';
+                    if (urlField) urlField.value = '';
+                }
             }
         }
         function showActionModal() {
@@ -2513,6 +2840,8 @@
                     actionBtn.onclick = showWriteModal;
             }
         }
+        
+        // 검색 및 필터 함수들
         function searchByTag(tag) {
             const searchInput = document.querySelector('.search-input');
             searchInput.value = tag;
@@ -2536,6 +2865,17 @@
             showNotification(`${sortLabels[type]}으로 정렬됨`);
         }
 
+        function performSearch(query) {
+            if (query.length < 2) return;
+            
+            console.log('검색어:', query);
+            
+            clearTimeout(window.searchTimer);
+            window.searchTimer = setTimeout(() => {
+                showNotification(`"${query}" 검색 중...`);
+            }, 300);
+        }
+
         function copyPrompt() {
             const promptContent = document.getElementById('promptContent').textContent;
             navigator.clipboard.writeText(promptContent).then(function() {
@@ -2551,6 +2891,7 @@
             });
         }
 
+        // 사용자 액션 함수들
         function toggleLike() {
             const likeIcon = document.getElementById('likeIcon');
             const likeText = document.getElementById('likeText');
@@ -2601,8 +2942,8 @@
         }
 
         function reportContent() {
-            if (confirm('이 콘텐츠를 신고하시겠습니까?\n\n신고 사유를 선택할 수 있는 창으로 이동합니다.')) {
-                alert('신고가 접수되었습니다.\n\n관리자가 검토 후 조치하겠습니다.');
+            if (confirm('이 콘텐츠를 신고하시겠습니까?')) {
+                alert('신고가 접수되었습니다.');
             }
         }
 
@@ -2618,14 +2959,28 @@
                     url: window.location.href
                 });
             } else {
-                // 웹 공유 API가 지원되지 않는 경우 URL 복사
                 navigator.clipboard.writeText(window.location.href);
                 showNotification('링크가 클립보드에 복사되었습니다! 🔗');
             }
         }
 
+        function copyPrompt() {
+            const promptContent = document.getElementById('promptContent').textContent;
+            navigator.clipboard.writeText(promptContent).then(function() {
+                const copyBtn = document.querySelector('.copy-btn');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '복사됨!';
+                copyBtn.style.background = '#10b981';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.background = '';
+                }, 2000);
+            });
+        }
+
         function viewFullscreen() {
-            alert('전체화면으로 이미지를 확인합니다.\n\n• 고해상도 이미지 보기\n• 확대/축소 기능\n• 이미지 정보 표시');
+            alert('전체화면으로 이미지를 확인합니다.');
         }
 
         function downloadImage() {
@@ -2633,7 +2988,7 @@
         }
 
         function viewSlideshow() {
-            alert('슬라이드쇼 모드로 전환합니다.\n\n• 자동 재생 기능\n• 이미지별 상세 정보\n• 키보드 네비게이션');
+            alert('슬라이드쇼 모드로 전환합니다.');
         }
 
         function viewRelated(id) {
@@ -2647,15 +3002,12 @@
 
         function hideUploadModal() {
             document.getElementById('uploadModal').classList.remove('show');
-            // 모달 닫을 때 커스텀 필드도 초기화
             toggleCustomEngine();
         }
 
-        // 글쓰기 모달에서 카테고리에 따른 UI 조정
         function showWriteModal() {
             document.getElementById('writeModal').classList.add('show');
             
-            // 현재 탭에 따라 카테고리 미리 선택
             const categorySelect = document.getElementById('writeCategory');
             const modalTitle = document.querySelector('#writeModal .modal-title');
             
@@ -2686,30 +3038,23 @@
             const description = document.getElementById('uploadDescription').value;
             const engine = document.getElementById('uploadEngine').value;
             const customEngineName = document.getElementById('customEngineName').value;
-            const customEngineUrl = document.getElementById('customEngineUrl').value;
             
             if (!title || !description || !engine) {
                 alert('모든 필수 필드를 입력해주세요.');
                 return;
             }
             
-            // 기타 엔진 선택 시 커스텀 이름 필수
             if (engine === 'other' && !customEngineName) {
                 alert('AI 엔진 이름을 입력해주세요.');
                 return;
             }
             
             let engineDisplayName = getEngineLabel(engine);
-            let engineInfo = '';
-            
             if (engine === 'other') {
                 engineDisplayName = customEngineName;
-                if (customEngineUrl) {
-                    engineInfo = ` (${customEngineUrl})`;
-                }
             }
             
-            showNotification(`${engineDisplayName} 콘텐츠가 성공적으로 업로드되었습니다!${engineInfo}`);
+            showNotification(`${engineDisplayName} 콘텐츠가 성공적으로 업로드되었습니다!`);
             hideUploadModal();
             
             // 폼 초기화
@@ -2718,7 +3063,6 @@
             document.getElementById('uploadEngine').value = '';
             document.getElementById('customEngineName').value = '';
             document.getElementById('customEngineUrl').value = '';
-            toggleCustomEngine(); // 커스텀 필드 숨김
         }
 
         function submitPost() {
@@ -2739,6 +3083,50 @@
             document.getElementById('writeTitle').value = '';
             document.getElementById('writeContent').value = '';
             document.getElementById('writeTags').value = '';
+        }
+
+        // 파일 업로드 관련
+        function handleFileUpload(files) {
+            if (files.length === 0) return;
+            
+            const fileList = Array.from(files);
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'text/plain', 'application/pdf'];
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            
+            let validFiles = [];
+            let errorMessages = [];
+            
+            fileList.forEach(file => {
+                if (!validTypes.includes(file.type)) {
+                    errorMessages.push(`${file.name}: 지원하지 않는 파일 형식입니다.`);
+                } else if (file.size > maxSize) {
+                    errorMessages.push(`${file.name}: 파일 크기가 10MB를 초과합니다.`);
+                } else {
+                    validFiles.push(file);
+                }
+            });
+            
+            if (errorMessages.length > 0) {
+                alert('업로드 오류:\n' + errorMessages.join('\n'));
+            }
+            
+            if (validFiles.length > 0) {
+                showNotification(`${validFiles.length}개 파일이 선택되었습니다.`);
+                updateFileUploadDisplay(validFiles);
+            }
+        }
+
+        function updateFileUploadDisplay(files) {
+            const fileUpload = document.querySelector('.file-upload');
+            if (files.length > 0) {
+                fileUpload.innerHTML = `
+                    <div class="file-upload-icon">📁</div>
+                    <p>${files.length}개 파일 선택됨</p>
+                    <div style="margin-top: 8px; font-size: 12px; color: var(--text-tertiary);">
+                        ${files.map(f => f.name).join(', ')}
+                    </div>
+                `;
+            }
         }
 
         // 알림 표시 함수
@@ -2778,10 +3166,123 @@
             }, 3000);
         }
 
-        // 페이지 로드 시 초기화
+        // 추가 이벤트 리스너들
+        function setupAdditionalListeners() {
+            // 파일 업로드 드래그 앤 드롭
+            const fileUpload = document.querySelector('.file-upload');
+            if (fileUpload) {
+                fileUpload.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '#10b981';
+                    this.style.background = 'rgba(16, 185, 129, 0.1)';
+                });
+
+                fileUpload.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '';
+                    this.style.background = '';
+                });
+
+                fileUpload.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '';
+                    this.style.background = '';
+                    
+                    const files = e.dataTransfer.files;
+                    handleFileUpload(files);
+                });
+            }
+
+            // 파일 선택 이벤트
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput) {
+                fileInput.addEventListener('change', function(e) {
+                    handleFileUpload(e.target.files);
+                });
+            }
+
+            // 검색 기능
+            const searchInput = document.querySelector('.search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    performSearch(e.target.value);
+                });
+            }
+        }
+
+        // 전역 함수들
+        function logout() {
+            if (confirm('정말 로그아웃하시겠습니까?')) {
+                localStorage.removeItem('oneai_token');
+                localStorage.removeItem('oneai_user');
+                sessionStorage.removeItem('oneai_token');
+                sessionStorage.removeItem('oneai_user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        function toggleProfile() {
+            const profileMenu = document.querySelector('.profile-menu');
+            if (profileMenu) {
+                profileMenu.classList.toggle('show');
+            }
+        }
+
+        // DOMContentLoaded 이벤트 리스너 수정 (기존 것을 이것으로 교체)
         document.addEventListener('DOMContentLoaded', function() {
             initializePage();
-            updateActionButton(); // 초기 액션 버튼 설정
+            
+            // 키보드 단축키
+            document.addEventListener('keydown', function(e) {
+                // ESC로 모달 닫기
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal.show').forEach(modal => {
+                        modal.classList.remove('show');
+                    });
+                }
+                
+                // Ctrl+K로 검색 포커스
+                if (e.ctrlKey && e.key === 'k') {
+                    e.preventDefault();
+                    const searchInput = document.querySelector('.search-input');
+                    if (searchInput) searchInput.focus();
+                }
+            });
+            
+            // CSS 애니메이션 추가
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                .action-btn.liked {
+                    background: #ef4444 !important;
+                    border-color: #ef4444 !important;
+                    color: white !important;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // OneAI 스크립트 초기화
+            if (window.OneAI) {
+                window.OneAI.initModule();
+            }
+            
+            // 언어 시스템 초기화
+            if (window.OneAILang) {
+                OneAILang.updateDOM();
+                
+                window.addEventListener('storage', function(e) {
+                    if (e.key === 'oneai_language' && e.newValue !== e.oldValue) {
+                        OneAILang.setLanguage(e.newValue);
+                    }
+                });
+            }
         });
     </script>
 </body>

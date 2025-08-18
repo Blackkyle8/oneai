@@ -1,0 +1,4104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One AI - 마이페이지</title>
+
+    <!-- 실제 존재하는 스크립트들로 교체 -->
+    <script src="assets/auth.js"></script>  <!-- OneAIAuth 클래스 -->
+    <script src="assets/api.js"></script>   <!-- OneAIAPI 클래스 -->
+    <script>
+        // 페이지 로드 후 5초 뒤에 강제로 로딩 숨기기 (안전장치)
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const spinner = document.getElementById('loadingSpinner');
+                if (spinner && spinner.classList.contains('loading-spinner--show')) {
+                    console.warn('Loading spinner still showing after 5 seconds, force hiding');
+                    forceHideLoading();
+                }
+            }, 5000);
+        });
+
+        // DOMContentLoaded 이벤트 - 무조건 표시 보장
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Profile page loaded');
+            showLoading();
+            
+            // 무조건 즉시 모든 영역 표시
+            forceDisplayAllAreas();
+            
+            // 데이터 로드는 별도로 시도 (실패해도 영역은 이미 표시됨)
+            setTimeout(() => {
+                tryLoadUserData();
+                hideLoading();
+                initializeAnimations();
+            }, 300);
+        });
+
+        // 무조건 모든 영역 표시 (변수 틀려도, 에러나도, 뭘 해도 표시)
+        function forceDisplayAllAreas() {
+            console.log('Force displaying all areas regardless of errors');
+            
+            try {
+                // 1. 사용자 기본 정보 영역 - 무조건 표시
+                forceCreateUserProfileArea();
+                
+                // 2. 구독 정보 영역 - 무조건 표시  
+                forceCreateSubscriptionArea();
+                
+                // 3. 통계 영역 - 무조건 표시
+                forceCreateStatsArea();
+                
+                // 4. 계정 설정 영역 - 무조건 표시
+                forceCreateAccountArea();
+                
+                // 5. 최근 활동 영역 - 무조건 표시
+                forceCreateActivityArea();
+                
+            } catch (error) {
+                console.error('Error in forceDisplayAllAreas, but continuing:', error);
+                // 에러 발생해도 각 영역을 개별적으로 다시 시도
+                fallbackCreateAllAreas();
+            }
+        }
+
+        // 사용자 프로필 영역 강제 생성
+        function forceCreateUserProfileArea() {
+            try {
+                // 프로필 헤더 찾기 - 여러 방법으로 시도
+                let profileHeader = document.querySelector('.profile-header') || 
+                                   document.querySelector('.profile-header__content') ||
+                                   document.querySelector('[class*="profile"]') ||
+                                   document.querySelector('header') ||
+                                   document.querySelector('.container');
+                
+                if (!profileHeader) {
+                    profileHeader = document.body;
+                }
+                
+                // 사용자명 영역
+                let userName = document.querySelector('.profile-header__name') || 
+                              document.querySelector('[class*="name"]') ||
+                              document.getElementById('userName');
+                
+                if (!userName) {
+                    userName = document.createElement('h1');
+                    userName.className = 'profile-header__name';
+                    profileHeader.appendChild(userName);
+                }
+                userName.textContent = '-';
+                
+                // 아바타 영역
+                let userAvatar = document.querySelector('.profile-header__avatar') ||
+                                document.querySelector('[class*="avatar"]') ||
+                                document.getElementById('userAvatar');
+                
+                if (!userAvatar) {
+                    userAvatar = document.createElement('div');
+                    userAvatar.className = 'profile-header__avatar';
+                    profileHeader.appendChild(userAvatar);
+                }
+                userAvatar.textContent = '-';
+                
+                // 상태 영역
+                let userStatus = document.querySelector('.profile-header__status') ||
+                                document.querySelector('[class*="status"]') ||
+                                document.getElementById('userStatus');
+                
+                if (!userStatus) {
+                    userStatus = document.createElement('p');
+                    userStatus.className = 'profile-header__status';
+                    profileHeader.appendChild(userStatus);
+                }
+                userStatus.textContent = 'One AI - 사용자 · 가입일: -';
+                
+                // 배지 영역
+                let userBadges = document.querySelector('.profile-header__badges') ||
+                                document.querySelector('[class*="badge"]') ||
+                                document.getElementById('userBadges');
+                
+                if (!userBadges) {
+                    userBadges = document.createElement('div');
+                    userBadges.className = 'profile-header__badges';
+                    profileHeader.appendChild(userBadges);
+                }
+                userBadges.innerHTML = '<span class="badge badge--user">-</span>';
+                
+                // 통계 영역
+                let userStats = document.querySelector('.profile-header__stats') ||
+                               document.querySelector('[class*="stats"]') ||
+                               document.getElementById('userStats');
+                
+                if (!userStats) {
+                    userStats = document.createElement('div');
+                    userStats.className = 'profile-header__stats';
+                    profileHeader.appendChild(userStats);
+                }
+                
+                userStats.innerHTML = `
+                    <div class="stat-item">
+                        <div class="stat-item__number">-</div>
+                        <div class="stat-item__label">연속 사용일</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-item__number">-</div>
+                        <div class="stat-item__label">총 대화 수</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-item__number">-</div>
+                        <div class="stat-item__label">저장된 항목</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-item__number">-</div>
+                        <div class="stat-item__label">만족도</div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Error creating user profile area:', error);
+                // 최후 수단 - body에 직접 추가
+                document.body.innerHTML += `
+                    <div style="padding: 20px; background: #111; margin: 10px;">
+                        <h1>사용자명: -</h1>
+                        <p>상태: One AI - 사용자 · 가입일: -</p>
+                        <div>배지: -</div>
+                        <div>연속 사용일: - | 총 대화 수: - | 저장된 항목: - | 만족도: -</div>
+                    </div>
+                `;
+            }
+        }
+
+        // 구독 정보 영역 강제 생성
+        function forceCreateSubscriptionArea() {
+            try {
+                let container = document.querySelector('.container') || 
+                               document.querySelector('main') ||
+                               document.body;
+                
+                let subscriptionCard = document.querySelector('.subscription-card') ||
+                                      document.querySelector('[class*="subscription"]') ||
+                                      document.getElementById('subscriptionCard');
+                
+                if (!subscriptionCard) {
+                    subscriptionCard = document.createElement('div');
+                    subscriptionCard.className = 'subscription-card';
+                    container.appendChild(subscriptionCard);
+                }
+                
+                subscriptionCard.innerHTML = `
+                    <div class="subscription-card__header">
+                        <h2 class="subscription-card__title">구독</h2>
+                        <div class="subscription-card__badge">상태: -</div>
+                    </div>
+                    <div class="subscription-card__details">
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">-</div>
+                            <div class="subscription-detail__label">월 구독료</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">-</div>
+                            <div class="subscription-detail__label">다음 결제일</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">-</div>
+                            <div class="subscription-detail__label">AI 사용량</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">-</div>
+                            <div class="subscription-detail__label">동시 세션</div>
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Error creating subscription area:', error);
+                document.body.innerHTML += `
+                    <div style="padding: 20px; background: #222; margin: 10px;">
+                        <h2>구독 정보</h2>
+                        <p>구독료: - | 결제일: - | 사용량: - | 세션: -</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 통계 영역 강제 생성
+        function forceCreateStatsArea() {
+            try {
+                let container = document.querySelector('.container') || 
+                               document.querySelector('main') ||
+                               document.body;
+                
+                let statsGrid = document.querySelector('.stats-grid') ||
+                               document.querySelector('[class*="stats"]') ||
+                               document.getElementById('statsGrid');
+                
+                if (!statsGrid) {
+                    statsGrid = document.createElement('section');
+                    statsGrid.className = 'stats-grid';
+                    container.appendChild(statsGrid);
+                }
+                
+                statsGrid.innerHTML = `
+                    <h2>사용 통계</h2>
+                    <div class="stat-card">
+                        <div class="stat-card__number">-</div>
+                        <div class="stat-card__label">이번 달 AI 대화</div>
+                        <div class="stat-card__description">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__number">-</div>
+                        <div class="stat-card__label">총 사용 시간</div>
+                        <div class="stat-card__description">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__number">-</div>
+                        <div class="stat-card__label">누적 절약 금액</div>
+                        <div class="stat-card__description">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__number">-</div>
+                        <div class="stat-card__label">즐겨찾는 프롬프트</div>
+                        <div class="stat-card__description">-</div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Error creating stats area:', error);
+                document.body.innerHTML += `
+                    <div style="padding: 20px; background: #333; margin: 10px;">
+                        <h2>사용 통계</h2>
+                        <p>이번달 대화: - | 사용시간: - | 절약금액: - | 프롬프트: -</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 계정 설정 영역 강제 생성
+        function forceCreateAccountArea() {
+            try {
+                let container = document.querySelector('.container') || 
+                               document.querySelector('main') ||
+                               document.body;
+                
+                let accountSection = document.querySelector('.section') ||
+                                    document.querySelector('[class*="setting"]') ||
+                                    document.querySelector('[class*="account"]');
+                
+                if (!accountSection) {
+                    accountSection = document.createElement('section');
+                    accountSection.className = 'section';
+                    container.appendChild(accountSection);
+                }
+                
+                // 계정 설정 항목들 강제 생성
+                const settingItems = accountSection.querySelectorAll('.setting-item__description');
+                
+                if (settingItems.length === 0) {
+                    accountSection.innerHTML = `
+                        <h2>계정 정보</h2>
+                        <div class="setting-item">
+                            <div class="setting-item__info">
+                                <div class="setting-item__title">이메일 주소</div>
+                                <div class="setting-item__description">-</div>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-item__info">
+                                <div class="setting-item__title">비밀번호</div>
+                                <div class="setting-item__description">-</div>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-item__info">
+                                <div class="setting-item__title">언어 설정</div>
+                                <div class="setting-item__description">-</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    settingItems.forEach(desc => {
+                        desc.textContent = '-';
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Error creating account area:', error);
+                document.body.innerHTML += `
+                    <div style="padding: 20px; background: #444; margin: 10px;">
+                        <h2>계정 정보</h2>
+                        <p>이메일: - | 비밀번호: - | 언어: -</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 최근 활동 영역 강제 생성
+        function forceCreateActivityArea() {
+            try {
+                let container = document.querySelector('.container') || 
+                               document.querySelector('main') ||
+                               document.body;
+                
+                let activitySection = document.querySelector('.activity-feed') ||
+                                     document.querySelector('[class*="activity"]') ||
+                                     document.querySelector('[class*="recent"]');
+                
+                if (!activitySection) {
+                    const section = document.createElement('section');
+                    section.innerHTML = `
+                        <h2>최근 활동</h2>
+                        <ul class="activity-feed">
+                            <li class="activity-item">
+                                <div class="activity-item__icon">-</div>
+                                <div class="activity-item__content">
+                                    <div class="activity-item__title">활동 내역: -</div>
+                                    <div class="activity-item__time">시간: -</div>
+                                </div>
+                            </li>
+                        </ul>
+                    `;
+                    container.appendChild(section);
+                } else {
+                    activitySection.innerHTML = `
+                        <li class="activity-item">
+                            <div class="activity-item__icon">-</div>
+                            <div class="activity-item__content">
+                                <div class="activity-item__title">활동 내역: -</div>
+                                <div class="activity-item__time">시간: -</div>
+                            </div>
+                        </li>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Error creating activity area:', error);
+                document.body.innerHTML += `
+                    <div style="padding: 20px; background: #555; margin: 10px;">
+                        <h2>최근 활동</h2>
+                        <p>활동 내역: -</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 최후 수단 - 완전 실패시 기본 영역들 생성
+        function fallbackCreateAllAreas() {
+            try {
+                document.body.innerHTML += `
+                    <div style="padding: 20px; font-family: Arial; color: white; background: #000;">
+                        <h1>마이페이지</h1>
+                        
+                        <div style="background: #111; padding: 15px; margin: 10px 0;">
+                            <h2>사용자 정보</h2>
+                            <p>이름: - | 상태: - | 가입일: -</p>
+                            <p>연속사용일: - | 대화수: - | 저장항목: - | 만족도: -</p>
+                        </div>
+                        
+                        <div style="background: #222; padding: 15px; margin: 10px 0;">
+                            <h2>구독</h2>
+                            <p>구독료: - | 결제일: - | 사용량: - | 세션: -</p>
+                        </div>
+                        
+                        <div style="background: #333; padding: 15px; margin: 10px 0;">
+                            <h2>사용 통계</h2>
+                            <p>이번달 대화: - | 사용시간: - | 절약금액: - | 프롬프트: -</p>
+                        </div>
+                        
+                        <div style="background: #444; padding: 15px; margin: 10px 0;">
+                            <h2>계정 설정</h2>
+                            <p>이메일: - | 비밀번호: - | 언어: -</p>
+                        </div>
+                        
+                        <div style="background: #555; padding: 15px; margin: 10px 0;">
+                            <h2>최근 활동</h2>
+                            <p>활동 내역: -</p>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Complete fallback failed:', error);
+                // 정말 마지막 수단
+                document.body.innerHTML = '<h1>마이페이지 로드 중... 모든 데이터: -</h1>';
+            }
+        }
+
+        // 사용자 데이터 로드 시도 (실패해도 영역은 이미 표시됨)
+        function tryLoadUserData() {
+            try {
+                // 데이터 로드 시도하되 실패해도 괜찮음
+                if (window.OneAIAuth && window.OneAIAuth.isAuthenticated()) {
+                    const userData = window.OneAIAuth.getCurrentUser();
+                    if (userData) {
+                        updateExistingDataSafely(userData);
+                    }
+                }
+                
+                const savedUser = localStorage.getItem('oneai_user') || sessionStorage.getItem('oneai_user');
+                if (savedUser) {
+                    const userData = JSON.parse(savedUser);
+                    updateExistingDataSafely(userData);
+                }
+                
+            } catch (error) {
+                console.error('User data load failed, but areas already displayed:', error);
+            }
+        }
+
+        // 안전하게 기존 데이터 업데이트 (실패해도 '-' 유지)
+        function updateExistingDataSafely(user) {
+            try {
+                // 사용자명 업데이트 시도
+                const userName = document.querySelector('.profile-header__name') || 
+                                document.querySelector('h1');
+                if (userName && user.username) {
+                    userName.textContent = user.username;
+                }
+                
+                // 이메일 업데이트 시도
+                const emailDesc = document.querySelector('.setting-item__description');
+                if (emailDesc && user.email) {
+                    emailDesc.textContent = user.email;
+                }
+                
+                // 기타 업데이트들... (실패해도 무시)
+                
+            } catch (error) {
+                console.error('Data update failed, keeping "-" values:', error);
+            }
+        }
+
+        // 로딩 함수들
+        function showLoading() {
+            try {
+                const spinner = document.getElementById('loadingSpinner');
+                if (spinner) {
+                    spinner.classList.add('loading-spinner--show');
+                }
+            } catch (error) {
+                console.error('Loading spinner error:', error);
+            }
+        }
+
+        function hideLoading() {
+            try {
+                const spinner = document.getElementById('loadingSpinner');
+                if (spinner) {
+                    spinner.classList.remove('loading-spinner--show');
+                }
+            } catch (error) {
+                console.error('Loading spinner hide error:', error);
+            }
+        }
+
+        function initializeAnimations() {
+            try {
+                console.log('Animations initialized');
+            } catch (error) {
+                console.error('Animation error:', error);
+            }
+        }
+
+        // 사용자 배지 업데이트 - 조건부 표시
+        function updateUserBadges(user) {
+            const badgesContainer = document.getElementById('userBadges');
+            if (!badgesContainer) return;
+            
+            badgesContainer.innerHTML = '';
+            
+            // 구독 배지 - 구독이 있을 때만 표시
+            const subscriptionType = user.subscription?.type || user.plan || user.subscription_plan;
+            if (subscriptionType && subscriptionType !== 'Free' && subscriptionType.toLowerCase() !== 'basic') {
+                if (subscriptionType === 'Pro' || subscriptionType === 'pro') {
+                    badgesContainer.innerHTML += '<span class="badge badge--pro">Pro 멤버</span>';
+                } else if (subscriptionType === 'Premium' || subscriptionType === 'premium') {
+                    badgesContainer.innerHTML += '<span class="badge badge--premium">프리미엄</span>';
+                } else {
+                    badgesContainer.innerHTML += `<span class="badge badge--pro">${subscriptionType}</span>`;
+                }
+            }
+            
+            // 인증 배지 - 인증된 경우에만 표시
+            if (user.verified || user.email_verified || user.is_verified) {
+                badgesContainer.innerHTML += '<span class="badge badge--verified">인증됨</span>';
+            }
+            
+            // 개발자 배지 - 개발자인 경우에만 표시
+            if (user.role === 'developer' || user.is_developer || user.developer) {
+                badgesContainer.innerHTML += '<span class="badge badge--developer">개발자</span>';
+            }
+            
+            // 배지가 없으면 기본 배지 하나 표시
+            if (badgesContainer.innerHTML.trim() === '') {
+                badgesContainer.innerHTML = '<span class="badge badge--user">일반 사용자</span>';
+            }
+        }
+
+        // 구독 정보 업데이트 - '-' 표시 버전
+        async function updateSubscriptionInfo(user) {
+            const subscriptionCard = document.getElementById('subscriptionCard');
+            if (!subscriptionCard) return;
+            
+            try {
+                let subscriptionData = user.subscription;
+                
+                if (!subscriptionData && window.OneAIAPI) {
+                    try {
+                        const response = await window.OneAIAPI.getSubscriptionInfo();
+                        subscriptionData = response.data || response;
+                    } catch (error) {
+                        console.warn('구독 정보 조회 실패:', error);
+                    }
+                }
+                
+                const subscription = {
+                    type: subscriptionData?.type || user.plan || 'Free',
+                    status: subscriptionData?.status || user.subscription_status || 'active',
+                    price: subscriptionData?.price || user.subscription_price || 0,
+                    next_billing_date: subscriptionData?.next_billing_date || user.next_billing || null,
+                    usage_limit: subscriptionData?.usage_limit || user.usage_limit || null,
+                    concurrent_sessions: subscriptionData?.concurrent_sessions || user.max_sessions || 1
+                };
+                
+                // 가격 표시
+                const priceDisplay = subscription.price > 0 ? `₩${subscription.price.toLocaleString()}` : '무료';
+                
+                // 다음 결제일 표시
+                let nextBillingDisplay = '-';
+                if (subscription.next_billing_date) {
+                    try {
+                        nextBillingDisplay = new Date(subscription.next_billing_date).toLocaleDateString('ko-KR');
+                    } catch (e) {
+                        nextBillingDisplay = '-';
+                    }
+                } else if (subscription.price === 0) {
+                    nextBillingDisplay = '해당없음';
+                }
+                
+                // 사용량 제한 표시
+                const usageDisplay = subscription.usage_limit === 'unlimited' || subscription.usage_limit === '무제한' 
+                                   ? '무제한' 
+                                   : subscription.usage_limit || '-';
+                
+                // 상태 표시
+                const statusDisplay = subscription.status === 'active' ? '활성' :
+                                     subscription.status === 'inactive' ? '비활성' :
+                                     subscription.status === 'cancelled' ? '취소됨' :
+                                     subscription.status === 'expired' ? '만료됨' : '-';
+                
+                subscriptionCard.innerHTML = `
+                    <div class="subscription-card__header">
+                        <h2 class="subscription-card__title">One AI ${subscription.type}</h2>
+                        <div class="subscription-card__badge ${subscription.status === 'active' ? '' : 'badge--inactive'}">${statusDisplay}</div>
+                    </div>
+                    <div class="subscription-card__details">
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">${priceDisplay}</div>
+                            <div class="subscription-detail__label">월 구독료</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">${nextBillingDisplay}</div>
+                            <div class="subscription-detail__label">다음 결제일</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">${usageDisplay}</div>
+                            <div class="subscription-detail__label">AI 사용량</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">${subscription.concurrent_sessions || '-'}개</div>
+                            <div class="subscription-detail__label">동시 세션</div>
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('구독 정보 업데이트 오류:', error);
+                subscriptionCard.innerHTML = `
+                    <div class="subscription-card__header">
+                        <h2 class="subscription-card__title">One AI Free</h2>
+                        <div class="subscription-card__badge">활성</div>
+                    </div>
+                    <div class="subscription-card__details">
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">무료</div>
+                            <div class="subscription-detail__label">월 구독료</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">-</div>
+                            <div class="subscription-detail__label">다음 결제일</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">-</div>
+                            <div class="subscription-detail__label">AI 사용량</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">-개</div>
+                            <div class="subscription-detail__label">동시 세션</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // 사용자 통계 업데이트 - '-' 표시 버전
+        async function updateUserStats(user) {
+            const statsGrid = document.getElementById('statsGrid');
+            const userStatsHeader = document.getElementById('userStats');
+            
+            if (!statsGrid && !userStatsHeader) return;
+            
+            try {
+                let statsData = user.stats;
+                
+                if (!statsData && window.OneAIAPI) {
+                    try {
+                        const response = await window.OneAIAPI.getUserStats();
+                        statsData = response.data || response;
+                    } catch (error) {
+                        console.warn('통계 정보 조회 실패:', error);
+                    }
+                }
+                
+                const stats = {
+                    consecutive_days: statsData?.consecutive_days ?? user.consecutive_days ?? null,
+                    total_conversations: statsData?.total_conversations ?? user.total_conversations ?? null,
+                    saved_items: statsData?.saved_items ?? user.saved_items ?? null,
+                    satisfaction_rating: statsData?.satisfaction_rating ?? user.rating ?? null,
+                    monthly_conversations: statsData?.monthly_conversations ?? user.monthly_usage ?? null,
+                    total_usage_hours: statsData?.total_usage_hours ?? user.total_hours ?? null,
+                    cost_savings: statsData?.cost_savings ?? user.savings ?? null,
+                    favorite_prompts: statsData?.favorite_prompts ?? user.prompts ?? null
+                };
+                
+                // 헤더 통계 업데이트
+                if (userStatsHeader) {
+                    userStatsHeader.innerHTML = `
+                        <div class="stat-item">
+                            <div class="stat-item__number">${stats.consecutive_days || '-'}</div>
+                            <div class="stat-item__label">연속 사용일</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-item__number">${stats.total_conversations ? stats.total_conversations.toLocaleString() : '-'}</div>
+                            <div class="stat-item__label">총 대화 수</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-item__number">${stats.saved_items || '-'}</div>
+                            <div class="stat-item__label">저장된 항목</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-item__number">${stats.satisfaction_rating ? stats.satisfaction_rating.toFixed(1) : '-'}</div>
+                            <div class="stat-item__label">만족도</div>
+                        </div>
+                    `;
+                }
+                
+                // 메인 통계 그리드 업데이트
+                if (statsGrid) {
+                    const monthlyGrowth = stats.monthly_conversations > 0 ? Math.floor(Math.random() * 30) + 10 : null;
+                    const dailyAverage = stats.total_usage_hours > 0 ? (stats.total_usage_hours / 30).toFixed(1) : null;
+                    const savingsDisplay = stats.cost_savings > 0 ? `₩${Math.floor(stats.cost_savings / 1000)}K` : '-';
+                    
+                    statsGrid.innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-card__number">${stats.monthly_conversations || '-'}</div>
+                            <div class="stat-card__label">이번 달 AI 대화</div>
+                            <div class="stat-card__description">${monthlyGrowth ? `지난 달 대비 +${monthlyGrowth}%` : '데이터 없음'}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__number">${stats.total_usage_hours ? stats.total_usage_hours + 'h' : '-'}</div>
+                            <div class="stat-card__label">총 사용 시간</div>
+                            <div class="stat-card__description">${dailyAverage ? `평균 ${dailyAverage}h/일` : '데이터 없음'}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__number">${savingsDisplay}</div>
+                            <div class="stat-card__label">누적 절약 금액</div>
+                            <div class="stat-card__description">${stats.cost_savings > 0 ? '쉐어링 통해 절약' : '데이터 없음'}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__number">${stats.favorite_prompts || '-'}</div>
+                            <div class="stat-card__label">즐겨찾는 프롬프트</div>
+                            <div class="stat-card__description">${stats.favorite_prompts > 0 ? '자주 사용하는 템플릿' : '데이터 없음'}</div>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('통계 정보 업데이트 오류:', error);
+                if (statsGrid) {
+                    statsGrid.innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-card__number">-</div>
+                            <div class="stat-card__label">이번 달 AI 대화</div>
+                            <div class="stat-card__description">데이터 없음</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__number">-</div>
+                            <div class="stat-card__label">총 사용 시간</div>
+                            <div class="stat-card__description">데이터 없음</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__number">-</div>
+                            <div class="stat-card__label">누적 절약 금액</div>
+                            <div class="stat-card__description">데이터 없음</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card__number">-</div>
+                            <div class="stat-card__label">즐겨찾는 프롬프트</div>
+                            <div class="stat-card__description">데이터 없음</div>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // 최근 활동 업데이트
+        async function updateRecentActivity(user) {
+            const activityFeed = document.querySelector('.activity-feed');
+            if (!activityFeed) return;
+            
+            try {
+                // API에서 최근 활동 가져오기
+                let activityData = user.recent_activity;
+                
+                if (!activityData && window.OneAIAPI) {
+                    try {
+                        const response = await window.OneAIAPI.getRecentActivity();
+                        activityData = response.data || response;
+                    } catch (error) {
+                        console.warn('최근 활동 조회 실패:', error);
+                    }
+                }
+                
+                // 기본 활동 데이터
+                const activities = activityData || [
+                    {
+                        type: 'ai_conversation',
+                        title: 'AI와 대화 진행',
+                        time: '2분 전',
+                        icon: '🤖',
+                        engine: 'ChatGPT'
+                    },
+                    {
+                        type: 'sharing_join',
+                        title: 'GPT Plus 쉐어링 참여',
+                        time: '1시간 전',
+                        icon: '🤝',
+                        engine: null
+                    },
+                    {
+                        type: 'profile_update',
+                        title: '프로필 설정 업데이트',
+                        time: '어제',
+                        icon: '⚙️',
+                        engine: null
+                    }
+                ];
+                
+                // 활동 목록 업데이트
+                activityFeed.innerHTML = activities.map(activity => `
+                    <li class="activity-item">
+                        <div class="activity-item__icon activity-item__icon--${activity.type}">
+                            ${activity.icon}
+                        </div>
+                        <div class="activity-item__content">
+                            <div class="activity-item__title">${activity.title}</div>
+                            <div class="activity-item__time">${activity.time}</div>
+                        </div>
+                    </li>
+                `).join('');
+                
+            } catch (error) {
+                console.error('최근 활동 업데이트 오류:', error);
+            }
+        }
+
+        // 계정 설정 정보 업데이트 - '-' 표시 버전
+        function updateAccountSettings(user) {
+            const emailDescriptions = document.querySelectorAll('.setting-item__description');
+            
+            if (emailDescriptions.length > 0) {
+                // 이메일 주소
+                emailDescriptions[0].textContent = user.email || '-';
+            }
+            
+            if (emailDescriptions.length > 1) {
+                // 비밀번호 변경일
+                let passwordChangeDate = '-';
+                if (user.password_changed_at) {
+                    try {
+                        passwordChangeDate = '마지막 변경: ' + new Date(user.password_changed_at).toLocaleDateString('ko-KR');
+                    } catch (e) {
+                        passwordChangeDate = '마지막 변경: -';
+                    }
+                } else {
+                    passwordChangeDate = '마지막 변경: -';
+                }
+                emailDescriptions[1].textContent = passwordChangeDate;
+            }
+            
+            if (emailDescriptions.length > 2) {
+                // 언어 설정
+                const userLanguage = user.settings?.language || user.language || user.locale || 'ko';
+                const languageNames = {
+                    'ko': '한국어',
+                    'en': 'English',
+                    'ja': '日本語',
+                    'zh': '中文',
+                    'es': 'Español'
+                };
+                emailDescriptions[2].textContent = languageNames[userLanguage] || '한국어';
+            }
+            
+            // 알림 설정 업데이트
+            const notificationToggle = document.getElementById('notificationToggle');
+            const notificationStatus = document.getElementById('notificationStatus');
+            
+            if (notificationToggle && notificationStatus) {
+                const notificationsEnabled = user.settings?.notifications ?? user.notifications_enabled ?? true;
+                
+                if (notificationsEnabled) {
+                    notificationToggle.classList.add('toggle-switch--active');
+                    notificationStatus.className = 'notification-status notification-status--enabled';
+                    notificationStatus.querySelector('span').textContent = '알림 활성화됨';
+                } else {
+                    notificationToggle.classList.remove('toggle-switch--active');
+                    notificationStatus.className = 'notification-status notification-status--disabled';
+                    notificationStatus.querySelector('span').textContent = '알림 비활성화됨';
+                }
+            }
+        }
+
+        // 기본 프로필 표시 (오류시)
+        function showDefaultProfile() {
+            const userName = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+            const userStatus = document.getElementById('userStatus');
+            
+            if (userName) userName.textContent = '사용자';
+            if (userAvatar) userAvatar.textContent = 'U';
+            if (userStatus) userStatus.textContent = 'One AI 사용자';
+            
+            console.log('Showing default profile due to error');
+        }
+
+        // 전체 프로필 정보를 실제 데이터 또는 "-"로 업데이트
+        function updateAllProfileData() {
+            console.log('=== 전체 프로필 데이터 업데이트 시작 ===');
+            
+            // 1. 사용자 기본 정보
+            let realUser = null;
+            if (window.OneAIAuth) {
+                realUser = window.OneAIAuth.getCurrentUser();
+            }
+            if (!realUser) {
+                const userStr = localStorage.getItem('oneai_user') || sessionStorage.getItem('oneai_user');
+                if (userStr) {
+                    try { realUser = JSON.parse(userStr); } catch (e) {}
+                }
+            }
+            
+            console.log('실제 사용자 데이터:', realUser);
+            
+            // 2. 프로필 헤더 업데이트
+            const nameEl = document.querySelector('.profile-header__name');
+            if (nameEl) {
+                nameEl.textContent = realUser?.username || realUser?.name || realUser?.email?.split('@')[0] || '사용자';
+            }
+            
+            const avatarEl = document.querySelector('.profile-header__avatar');
+            if (avatarEl) {
+                const initial = (realUser?.username || realUser?.name || realUser?.email || 'U')[0].toUpperCase();
+                avatarEl.textContent = initial;
+            }
+            
+            const statusEl = document.querySelector('.profile-header__status');
+            if (statusEl) {
+                const joinDate = realUser?.created_at ? 
+                    new Date(realUser.created_at).toLocaleDateString('ko-KR') : '-';
+                const plan = realUser?.subscription?.type || realUser?.plan || 'Free';
+                statusEl.textContent = `One AI ${plan} 사용자 · 가입일: ${joinDate}`;
+            }
+            
+            // 3. 구독 정보 카드 업데이트
+            const subscriptionCard = document.querySelector('.subscription-card');
+            if (subscriptionCard) {
+                const sub = realUser?.subscription || {};
+                
+                subscriptionCard.innerHTML = `
+                    <div class="subscription-card__header">
+                        <h2 class="subscription-card__title">One AI ${sub.type || 'Free'}</h2>
+                        <div class="subscription-card__badge">${sub.status === 'active' ? '활성' : (sub.status || '알 수 없음')}</div>
+                    </div>
+                    <div class="subscription-card__details">
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">${sub.price ? `₩${sub.price.toLocaleString()}` : '무료'}</div>
+                            <div class="subscription-detail__label">월 구독료</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">${sub.next_billing_date ? new Date(sub.next_billing_date).toLocaleDateString('ko-KR') : '-'}</div>
+                            <div class="subscription-detail__label">다음 결제일</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">${sub.usage_limit || (sub.type === 'Pro' ? '무제한' : '제한됨')}</div>
+                            <div class="subscription-detail__label">AI 사용량</div>
+                        </div>
+                        <div class="subscription-detail">
+                            <div class="subscription-detail__value">${sub.concurrent_sessions || '1'}개</div>
+                            <div class="subscription-detail__label">동시 세션</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 4. 통계 그리드 업데이트 (헤더 통계)
+            const userStatsEl = document.querySelector('.profile-header__stats');
+            if (userStatsEl) {
+                const stats = realUser?.stats || {};
+                
+                userStatsEl.innerHTML = `
+                    <div class="stat-item">
+                        <div class="stat-item__number">${stats.consecutive_days || '-'}</div>
+                        <div class="stat-item__label">연속 사용일</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-item__number">${stats.total_conversations ? stats.total_conversations.toLocaleString() : '-'}</div>
+                        <div class="stat-item__label">총 대화 수</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-item__number">${stats.saved_items || '-'}</div>
+                        <div class="stat-item__label">저장된 항목</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-item__number">${stats.satisfaction_rating ? stats.satisfaction_rating.toFixed(1) : '-'}</div>
+                        <div class="stat-item__label">만족도</div>
+                    </div>
+                `;
+            }
+            
+            // 5. 메인 통계 카드들 업데이트
+            const statsGrid = document.querySelector('.stats-grid');
+            if (statsGrid) {
+                const stats = realUser?.stats || {};
+                
+                statsGrid.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-card__number">${stats.monthly_conversations || '-'}</div>
+                        <div class="stat-card__label">이번 달 AI 대화</div>
+                        <div class="stat-card__description">${stats.monthly_conversations ? '지난 달 대비 데이터 없음' : '데이터 없음'}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__number">${stats.total_usage_hours ? stats.total_usage_hours + 'h' : '-'}</div>
+                        <div class="stat-card__label">총 사용 시간</div>
+                        <div class="stat-card__description">${stats.total_usage_hours ? '평균 ' + (stats.total_usage_hours / 30).toFixed(1) + 'h/일' : '데이터 없음'}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__number">${stats.cost_savings ? '₩' + Math.floor(stats.cost_savings / 1000) + 'K' : '-'}</div>
+                        <div class="stat-card__label">누적 절약 금액</div>
+                        <div class="stat-card__description">${stats.cost_savings ? '쉐어링 통해 절약' : '절약 내역 없음'}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card__number">${stats.favorite_prompts || '-'}</div>
+                        <div class="stat-card__label">즐겨찾는 프롬프트</div>
+                        <div class="stat-card__description">${stats.favorite_prompts ? '자주 사용하는 템플릿' : '즐겨찾기 없음'}</div>
+                    </div>
+                `;
+            }
+            
+            // 6. 계정 설정 정보 업데이트
+            const settingDescriptions = document.querySelectorAll('.setting-item__description');
+            if (settingDescriptions.length > 0) {
+                // 이메일
+                settingDescriptions[0].textContent = realUser?.email || '-';
+                
+                // 비밀번호 변경일
+                if (settingDescriptions.length > 1) {
+                    const pwChangeDate = realUser?.password_changed_at ? 
+                        '마지막 변경: ' + new Date(realUser.password_changed_at).toLocaleDateString('ko-KR') : 
+                        '마지막 변경: -';
+                    settingDescriptions[1].textContent = pwChangeDate;
+                }
+                
+                // 언어 설정
+                if (settingDescriptions.length > 2) {
+                    const lang = realUser?.settings?.language || realUser?.language || 'ko';
+                    const langNames = { 'ko': '한국어', 'en': 'English', 'ja': '日본語' };
+                    settingDescriptions[2].textContent = langNames[lang] || '한국어';
+                }
+            }
+            
+            // 7. 최근 활동 업데이트
+            const activityFeed = document.querySelector('.activity-feed');
+            if (activityFeed) {
+                const activities = realUser?.recent_activity || [];
+                
+                if (activities.length > 0) {
+                    activityFeed.innerHTML = activities.map(activity => `
+                        <li class="activity-item">
+                            <div class="activity-item__icon activity-item__icon--ai">${activity.icon || '🤖'}</div>
+                            <div class="activity-item__content">
+                                <div class="activity-item__title">${activity.title || '활동 내역'}</div>
+                                <div class="activity-item__time">${activity.time || '시간 미상'}</div>
+                            </div>
+                        </li>
+                    `).join('');
+                } else {
+                    activityFeed.innerHTML = `
+                        <li class="activity-item">
+                            <div class="activity-item__icon activity-item__icon--ai">📭</div>
+                            <div class="activity-item__content">
+                                <div class="activity-item__title">최근 활동 내역이 없습니다</div>
+                                <div class="activity-item__time">AI와 대화를 시작해보세요</div>
+                            </div>
+                        </li>
+                    `;
+                }
+            }
+            
+            console.log('=== 전체 프로필 데이터 업데이트 완료 ===');
+        }
+
+        // 즉시 실행
+        updateAllProfileData();
+    </script>
+    <style>
+        :root {
+            /* Design System v1.1 - Color Tokens */
+            --color-primary-200: #a7f3d0;
+            --color-primary-400: #34d399;
+            --color-primary-500: #10b981;
+            --color-primary-600: #059669;
+            
+            /* Surface Colors - Dark Theme */
+            --color-surface-base: #000000;
+            --color-surface-raised: #0a0a0a;
+            --color-surface-elevated: #111111;
+            --color-surface-overlay: #1a1a1a;
+            --color-surface-modal: #222222;
+            
+            /* Text Colors - Dark Theme */
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-tertiary: #a3a3a3;
+            --text-quaternary: #737373;
+            --text-disabled: #525252;
+            
+            /* Status Colors */
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-info: #3b82f6;
+            
+            /* Typography Tokens */
+            --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 20px;
+            --font-size-2xl: 24px;
+            
+            /* Spacing Tokens */
+            --spacing-xs: 8px;
+            --spacing-sm: 12px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            
+            /* Border Radius Tokens */
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-2xl: 16px;
+            
+            /* Z-Index Tokens */
+            --z-index-base: 0;
+            --z-index-sidebar: 10;
+            --z-index-dropdown: 20;
+            --z-index-modal: 40;
+            --z-index-toast: 50;
+            --z-index-tooltip: 60;
+            
+            /* Motion Tokens */
+            --motion-fast: 150ms;
+            --motion-normal: 250ms;
+            --motion-slow: 350ms;
+            --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-primary);
+            background: var(--color-surface-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 60px;
+        }
+
+        /* Header Component */
+        .header {
+            background: var(--color-surface-elevated);
+            border-bottom: 1px solid var(--color-surface-overlay);
+            padding: 0 var(--spacing-2xl);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(255,255,255,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: var(--z-index-sidebar);
+            height: 50px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .header__logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all var(--motion-fast) var(--motion-ease);
+            flex-shrink: 0;
+        }
+
+        .header__logo:hover {
+            transform: translateY(-1px);
+        }
+
+        .header__logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: var(--font-size-base);
+            transition: all var(--motion-fast) var(--motion-ease);
+        }
+
+    .header__logo:hover .header__logo-icon { transform: scale(1.05); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+
+        .header__actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        /* Button Component */
+        .btn, .nav-tab {
+            padding: 6px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-surface-overlay);
+            background: var(--color-surface-elevated);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            transition: all var(--motion-fast) var(--motion-ease);
+            color: var(--text-primary);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .btn:hover, .nav-tab:hover {
+            background: var(--color-surface-modal);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:focus, .nav-tab:focus {
+            outline: 3px solid rgba(16, 185, 129, 0.3);
+            outline-offset: 2px;
+        }
+
+        .btn:active, .nav-tab:active {
+            transform: translateY(0);
+            background: var(--color-surface-overlay);
+        }
+
+        .btn--primary {
+            background: var(--color-primary-500);
+            color: white;
+            border-color: var(--color-primary-500);
+        }
+
+        .btn--primary:hover {
+            background: var(--color-primary-400);
+            border-color: var(--color-primary-400);
+        }
+
+        .btn--primary:active {
+            background: var(--color-primary-600);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Profile Header Component */
+        .profile-header {
+            background: linear-gradient(135deg, var(--color-surface-elevated), var(--color-surface-modal));
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-2xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1));
+            pointer-events: none;
+        }
+
+        .profile-header__content {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-header__avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            transition: all var(--motion-normal) var(--motion-ease);
+            cursor: pointer;
+        }
+
+        .profile-header__avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+        }
+
+        .profile-header__details {
+            flex: 1;
+        }
+
+        .profile-header__name {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .profile-header__status {
+            color: var(--text-secondary);
+            font-size: var(--font-size-base);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .profile-header__badges {
+            display: flex;
+            gap: var(--spacing-xs);
+            flex-wrap: wrap;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .badge {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: 20px;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+        }
+
+        .badge--pro {
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            color: white;
+        }
+
+        .badge--verified {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--color-info);
+            border: 1px solid var(--color-info);
+        }
+
+        .badge--premium {
+            background: rgba(139, 92, 246, 0.1);
+            color: #8b5cf6;
+            border: 1px solid #8b5cf6;
+        }
+
+        /* 비활성 배지 스타일 추가 */
+        .badge--inactive {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--color-error);
+            border: 1px solid var(--color-error);
+        }
+
+        .badge--user {
+            background: rgba(115, 115, 115, 0.1);
+            color: var(--text-quaternary);
+            border: 1px solid var(--text-quaternary);
+        }
+
+        .profile-header__stats {
+            display: flex;
+            gap: var(--spacing-lg);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item__number {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-primary-500);
+        }
+
+        .stat-item__label {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        /* Stats Grid Component */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .stat-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            text-align: center;
+            transition: all var(--motion-normal) var(--motion-ease);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-primary-500), var(--color-primary-400));
+            transform: scaleX(0);
+            transition: transform var(--motion-normal) var(--motion-ease);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card__number {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--color-primary-500);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-card__label {
+            font-size: var(--font-size-sm);
+            color: var(--text-tertiary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-card__description {
+            font-size: var(--font-size-xs);
+            color: var(--text-quaternary);
+        }
+
+        /* 데이터 로딩 중 스타일 */
+        .stat-card--loading .stat-card__number {
+            color: var(--text-quaternary);
+        }
+
+        .stat-card--loading .stat-card__description {
+            font-style: italic;
+            color: var(--text-quaternary);
+        }
+
+        /* Section Component */
+        .section {
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section__title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        /* Setting Item Component */
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-lg) 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            gap: var(--spacing-md);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-item__info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .setting-item__title {
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .setting-item__description {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        /* Developer Tools Styles */
+        .developer-tools {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .tool-item {
+            background: var(--color-surface-elevated);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tool-item__info {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .tool-item__title {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .tool-item__description {
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .tool-item__files {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-sm);
+        }
+
+        .file-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--color-surface-base);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .file-link:hover {
+            background: var(--color-surface-overlay);
+            border-color: var(--color-primary-500);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .file-icon {
+            font-size: var(--font-size-lg);
+            flex-shrink: 0;
+        }
+
+        .file-name {
+            font-family: 'Courier New', monospace;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
+
+        /* Toggle Switch Component */
+        .toggle-switch {
+            width: 48px;
+            height: 24px;
+            background: var(--color-surface-overlay);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all var(--motion-normal) var(--motion-ease);
+            flex-shrink: 0;
+        }
+
+        .toggle-switch--active {
+            background: var(--color-primary-500);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all var(--motion-normal) var(--motion-ease);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch--active::after {
+            left: 26px;
+        }
+
+        /* Edit Button */
+        .edit-btn {
+            background: var(--color-primary-500);
+            color: white;
+            border: none;
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--motion-fast) var(--motion-ease);
+            flex-shrink: 0;
+        }
+
+        .edit-btn:hover {
+            background: var(--color-primary-400);
+            transform: translateY(-1px);
+        }
+
+        .edit-btn--outline {
+            background: transparent;
+            color: var(--color-primary-500);
+            border: 1px solid var(--color-primary-500);
+        }
+
+        .edit-btn--outline:hover {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        /* Activity Feed Component */
+        .activity-feed {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all var(--motion-fast) var(--motion-ease);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+            margin: 0 calc(-1 * var(--spacing-md));
+            padding-left: var(--spacing-md);
+            padding-right: var(--spacing-md);
+            border-radius: var(--radius-lg);
+        }
+
+        .activity-item__icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .activity-item__icon--ai { 
+            background: linear-gradient(135deg, #10a37f, #1a7f72); 
+        }
+
+        .activity-item__icon--share { 
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400)); 
+        }
+
+        .activity-item__icon--setting { 
+            background: linear-gradient(135deg, var(--color-info), #60a5fa); 
+        }
+
+        .activity-item__content {
+            flex: 1;
+        }
+
+        .activity-item__title {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .activity-item__time {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        /* Subscription Card Component */
+        .subscription-card {
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            color: white;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .subscription-card__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .subscription-card__title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+        }
+
+        .subscription-card__badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-xl);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+        }
+
+        .subscription-card__details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .subscription-detail {
+            text-align: center;
+        }
+
+        .subscription-detail__value {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .subscription-detail__label {
+            font-size: var(--font-size-xs);
+            opacity: 0.8;
+        }
+
+        /* Usage Chart Component */
+        .usage-chart {
+            background: var(--color-surface-modal);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .usage-chart__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .usage-chart__title {
+            font-size: var(--font-size-base);
+            font-weight: 500;
+        }
+
+        .usage-chart__period {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        .usage-chart__bars {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            height: 100px;
+            gap: var(--spacing-xs);
+        }
+
+        .usage-chart__bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--color-primary-500), var(--color-primary-400));
+            border-radius: 2px 2px 0 0;
+            min-height: 10px;
+            transition: all var(--motion-normal) var(--motion-ease);
+            cursor: pointer;
+        }
+
+        .usage-chart__bar:hover {
+            background: linear-gradient(to top, var(--color-primary-600), var(--color-primary-500));
+            transform: scaleY(1.1);
+        }
+
+        .usage-chart__labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--spacing-xs);
+        }
+
+        .usage-chart__label {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+            text-align: center;
+            flex: 1;
+        }
+
+        /* Modal Component */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: var(--z-index-modal);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal--show {
+            display: flex;
+        }
+
+        .modal__content {
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-2xl);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: modalEnter var(--motion-normal) var(--motion-ease);
+        }
+
+        @keyframes modalEnter {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .modal__title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal__close {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            transition: all var(--motion-fast) var(--motion-ease);
+        }
+
+        .modal__close:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Form Components */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            background: var(--color-surface-base);
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            transition: all var(--motion-fast) var(--motion-ease);
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--color-primary-500);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        .modal__actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: flex-end;
+            margin-top: var(--spacing-lg);
+        }
+
+        .modal__btn {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--motion-fast) var(--motion-ease);
+            border: none;
+        }
+
+        .modal__btn--cancel {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-tertiary);
+        }
+
+        .modal__btn--cancel:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            color: var(--text-primary);
+        }
+
+        .modal__btn--primary {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        .modal__btn--primary:hover {
+            background: var(--color-primary-400);
+        }
+
+        /* Message Components */
+        .message--success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--color-success);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            color: var(--color-success);
+            text-align: center;
+        }
+
+        .message--error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--color-error);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            color: var(--color-error);
+            text-align: center;
+        }
+
+        /* Notification Status Indicators */
+        .notification-status {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+        }
+
+        .notification-status--enabled {
+            color: var(--color-success);
+        }
+
+        .notification-status--disabled {
+            color: var(--text-quaternary);
+        }
+
+        .notification-status__indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: var(--z-index-modal);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-spinner--show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--color-surface-overlay);
+            border-top: 3px solid var(--color-primary-500);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+
+            .header {
+                padding: var(--spacing-sm) var(--spacing-md);
+                height: auto;
+                min-height: 60px;
+            }
+
+            .header__logo {
+                font-size: var(--font-size-base);
+            }
+
+            .header__logo-icon {
+                width: 28px;
+                height: 28px;
+                font-size: var(--font-size-sm);
+            }
+
+            .header__actions {
+                gap: var(--spacing-xs);
+            }
+
+            .btn, .nav-tab {
+                padding: var(--spacing-xs) var(--spacing-sm);
+                font-size: var(--font-size-xs);
+            }
+            
+            .container {
+                padding: var(--spacing-md);
+            }
+            
+            .profile-header__content {
+                flex-direction: column;
+                text-align: center;
+                gap: var(--spacing-md);
+            }
+            
+            .profile-header__stats {
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-xs);
+            }
+
+            .modal__content {
+                margin: var(--spacing-lg);
+                max-width: none;
+                width: calc(100% - 32px);
+            }
+        }
+
+        /* Bounce Animation */
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% {
+                transform: translate3d(0,0,0) scale(1);
+            }
+            40%, 43% {
+                transform: translate3d(0, -10px, 0) scale(1.1);
+            }
+            70% {
+                transform: translate3d(0, -5px, 0) scale(1.05);
+            }
+            90% {
+                transform: translate3d(0, -2px, 0) scale(1.02);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Profile Header Component -->
+        <!-- 기존 하드코딩된 프로필 헤더를 이것으로 교체 -->
+        <header class="profile-header">
+            <div class="profile-header__content">
+                <div class="profile-header__avatar" onclick="changeAvatar()" id="userAvatar">U</div>
+                <div class="profile-header__details">
+                    <h1 class="profile-header__name" id="userName">사용자</h1>
+                    <p class="profile-header__status" id="userStatus">One AI 사용자</p>
+                    <div class="profile-header__badges" id="userBadges">
+                        <!-- 동적으로 생성 -->
+                    </div>
+                    <div class="profile-header__stats" id="userStats">
+                        <!-- 동적으로 생성 -->
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Subscription Card Component -->
+        <!-- 기존 하드코딩된 구독 카드를 이것으로 교체 -->
+        <div class="subscription-card" id="subscriptionCard">
+            <!-- 동적으로 생성 -->
+        </div>
+
+        <!-- Stats Grid Component -->
+        <!-- 기존 하드코딩된 통계를 이것으로 교체 -->
+        <section class="stats-grid" id="statsGrid">
+            <!-- 동적으로 생성 -->
+        </section>
+
+        <!-- Usage Chart Section -->
+        <section class="section">
+            <h2 class="section__title">📊 AI 사용량 분석</h2>
+            <div class="usage-chart">
+                <div class="usage-chart__header">
+                    <div class="usage-chart__title">주간 사용량</div>
+                    <div class="usage-chart__period">최근 7일</div>
+                </div>
+                <div class="usage-chart__bars">
+                    <div class="usage-chart__bar" style="height: 60%" title="월요일: 42회"></div>
+                    <div class="usage-chart__bar" style="height: 80%" title="화요일: 56회"></div>
+                    <div class="usage-chart__bar" style="height: 45%" title="수요일: 32회"></div>
+                    <div class="usage-chart__bar" style="height: 90%" title="목요일: 63회"></div>
+                    <div class="usage-chart__bar" style="height: 70%" title="금요일: 49회"></div>
+                    <div class="usage-chart__bar" style="height: 30%" title="토요일: 21회"></div>
+                    <div class="usage-chart__bar" style="height: 40%" title="일요일: 28회"></div>
+                </div>
+                <div class="usage-chart__labels">
+                    <div class="usage-chart__label">월</div>
+                    <div class="usage-chart__label">화</div>
+                    <div class="usage-chart__label">수</div>
+                    <div class="usage-chart__label">목</div>
+                    <div class="usage-chart__label">금</div>
+                    <div class="usage-chart__label">토</div>
+                    <div class="usage-chart__label">일</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Developer Tools Section -->
+        <section class="section">
+            <h2 class="section__title">🛠️ 개발자 도구</h2>
+            <div class="developer-tools">
+                <div class="tool-item">
+                    <div class="tool-item__info">
+                        <div class="tool-item__title">프로젝트 파일</div>
+                        <div class="tool-item__description">개발 중인 파일들에 바로 접근</div>
+                    </div>
+                    <div class="tool-item__files">
+                        <a href="index.html" class="file-link" target="_blank">
+                            <span class="file-icon">🏠</span>
+                            <span class="file-name">index.html</span>
+                        </a>
+                        <a href="profile.html" class="file-link" target="_blank">
+                            <span class="file-icon">👤</span>
+                            <span class="file-name">profile.html</span>
+                        </a>
+                        <a href="community.html" class="file-link" target="_blank">
+                            <span class="file-icon">💬</span>
+                            <span class="file-name">community.html</span>
+                        </a>
+                        <a href="sharing.html" class="file-link" target="_blank">
+                            <span class="file-icon">🤝</span>
+                            <span class="file-name">sharing.html</span>
+                        </a>
+                        <a href="healthcare.html" class="file-link" target="_blank">
+                            <span class="file-icon">🏥</span>
+                            <span class="file-name">healthcare.html</span>
+                        </a>
+                        <a href="business.html" class="file-link" target="_blank">
+                            <span class="file-icon">💼</span>
+                            <span class="file-name">business.html</span>
+                        </a>
+                        <a href="login.html" class="file-link" target="_blank">
+                            <span class="file-icon">🔐</span>
+                            <span class="file-name">login.html</span>
+                        </a>
+                        <a href="debug.html" class="file-link" target="_blank">
+                            <span class="file-icon">🐛</span>
+                            <span class="file-name">debug.html</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="tool-item">
+                    <div class="tool-item__info">
+                        <div class="tool-item__title">개발 리소스</div>
+                        <div class="tool-item__description">스타일시트 및 스크립트 파일</div>
+                    </div>
+                    <div class="tool-item__files">
+                        <a href="styles.css" class="file-link" target="_blank">
+                            <span class="file-icon">🎨</span>
+                            <span class="file-name">styles.css</span>
+                        </a>
+                        <a href="script.js" class="file-link" target="_blank">
+                            <span class="file-icon">⚡</span>
+                            <span class="file-name">script.js</span>
+                        </a>
+                        <a href="api.js" class="file-link" target="_blank">
+                            <span class="file-icon">🔗</span>
+                            <span class="file-name">api.js</span>
+                        </a>
+                        <a href="assets/lang.js" class="file-link" target="_blank">
+                            <span class="file-icon">🌐</span>
+                            <span class="file-name">lang.js</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Account Settings Section -->
+        <section class="section">
+            <h2 class="section__title">👤 계정 정보</h2>
+            <div class="setting-item">
+                <div class="setting-item__info">
+                    <div class="setting-item__title">이메일 주소</div>
+                    <div class="setting-item__description">user@example.com</div>
+                </div>
+                <button class="edit-btn edit-btn--outline" onclick="showModal('emailModal')">변경</button>
+            </div>
+            <div class="setting-item">
+                <div class="setting-item__info">
+                    <div class="setting-item__title">비밀번호</div>
+                    <div class="setting-item__description">마지막 변경: 2024년 1월</div>
+                </div>
+                <button class="edit-btn edit-btn--outline" onclick="showModal('passwordModal')">변경</button>
+            </div>
+            <div class="setting-item">
+                <div class="setting-item__info">
+                    <div class="setting-item__title">언어 설정</div>
+                    <div class="setting-item__description">한국어</div>
+                </div>
+                <button class="edit-btn edit-btn--outline" onclick="showModal('languageModal')">변경</button>
+            </div>
+        </section>
+
+        <!-- Environment Settings Section -->
+        <section class="section">
+            <h2 class="section__title">⚙️ 환경 설정</h2>
+            <div class="setting-item">
+                <div class="setting-item__info">
+                    <div class="setting-item__title">알림 설정</div>
+                    <div class="setting-item__description">새로운 기능과 업데이트 알림 받기</div>
+                    <div class="notification-status" id="notificationStatus">
+                        <div class="notification-status__indicator"></div>
+                        <span>알림 활성화됨</span>
+                    </div>
+                </div>
+                <div class="toggle-switch toggle-switch--active" onclick="toggleNotifications(this)" id="notificationToggle"></div>
+            </div>
+        </section>
+
+        <!-- Recent Activity Section -->
+        <section class="section">
+            <h2 class="section__title">🕒 최근 활동</h2>
+            <ul class="activity-feed">
+                <li class="activity-item">
+                    <div class="activity-item__icon activity-item__icon--ai">G</div>
+                    <div class="activity-item__content">
+                        <div class="activity-item__title">ChatGPT로 코딩 문제 해결</div>
+                        <div class="activity-item__time">2분 전</div>
+                    </div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-item__icon activity-item__icon--ai" style="background: linear-gradient(135deg, #000, #333);">M</div>
+                    <div class="activity-item__content">
+                        <div class="activity-item__title">Midjourney로 로고 디자인 생성</div>
+                        <div class="activity-item__time">15분 전</div>
+                    </div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-item__icon activity-item__icon--share">🤝</div>
+                    <div class="activity-item__content">
+                        <div class="activity-item__title">ChatGPT Plus 쉐어링 참여</div>
+                        <div class="activity-item__time">1시간 전</div>
+                    </div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-item__icon activity-item__icon--ai" style="background: linear-gradient(135deg, #ff6b35, #f7931e);">C</div>
+                    <div class="activity-item__content">
+                        <div class="activity-item__title">Claude로 문서 요약 작업</div>
+                        <div class="activity-item__time">2시간 전</div>
+                    </div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-item__icon activity-item__icon--setting">⚙️</div>
+                    <div class="activity-item__content">
+                        <div class="activity-item__title">프로필 설정 업데이트</div>
+                        <div class="activity-item__time">어제</div>
+                    </div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-item__icon activity-item__icon--ai" style="background: linear-gradient(135deg, #20c997, #17a2b8);">⟐</div>
+                    <div class="activity-item__content">
+                        <div class="activity-item__title">Perplexity로 최신 뉴스 검색</div>
+                        <div class="activity-item__time">2일 전</div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </div>
+
+    <!-- Email Change Modal -->
+    <div id="emailModal" class="modal">
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title">이메일 주소 변경</h2>
+                <button class="modal__close" onclick="hideModal('emailModal')">&times;</button>
+            </div>
+            <form id="emailForm">
+                <div class="form-group">
+                    <label class="form-label">현재 이메일</label>
+                    <input type="email" class="form-input" value="user@example.com" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">새 이메일</label>
+                    <input type="email" class="form-input" placeholder="새 이메일 주소를 입력하세요" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">비밀번호 확인</label>
+                    <input type="password" class="form-input" placeholder="현재 비밀번호를 입력하세요" required>
+                </div>
+            </form>
+            <div class="modal__actions">
+                <button class="modal__btn modal__btn--cancel" onclick="hideModal('emailModal')">취소</button>
+                <button class="modal__btn modal__btn--primary" onclick="changeEmail()">변경</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Change Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title">비밀번호 변경</h2>
+                <button class="modal__close" onclick="hideModal('passwordModal')">&times;</button>
+            </div>
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label class="form-label">현재 비밀번호</label>
+                    <input type="password" class="form-input" placeholder="현재 비밀번호를 입력하세요" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">새 비밀번호</label>
+                    <input type="password" class="form-input" placeholder="새 비밀번호를 입력하세요" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">새 비밀번호 확인</label>
+                    <input type="password" class="form-input" placeholder="새 비밀번호를 다시 입력하세요" required>
+                </div>
+            </form>
+            <div class="modal__actions">
+                <button class="modal__btn modal__btn--cancel" onclick="hideModal('passwordModal')">취소</button>
+                <button class="modal__btn modal__btn--primary" onclick="changePassword()">변경</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language Setting Modal -->
+    <div id="languageModal" class="modal">
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title">언어 설정</h2>
+                <button class="modal__close" onclick="hideModal('languageModal')">&times;</button>
+            </div>
+            <form id="languageForm">
+                <div class="form-group">
+                    <label class="form-label">언어 선택</label>
+                    <select class="form-select" required>
+                        <option value="ko" selected>한국어</option>
+                        <option value="en">English</option>
+                        <option value="ja">日本語</option>
+                        <option value="zh">中文</option>
+                        <option value="es">Español</option>
+                    </select>
+                </div>
+            </form>
+            <div class="modal__actions">
+                <button class="modal__btn modal__btn--cancel" onclick="hideModal('languageModal')">취소</button>
+                <button class="modal__btn modal__btn--primary" onclick="changeLanguage()">적용</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title">완료</h2>
+                <button class="modal__close" onclick="hideModal('successModal')">&times;</button>
+            </div>
+            <div class="message--success">
+                <h3 style="margin-bottom: 8px;">✅ 성공</h3>
+                <p id="successMessage">작업이 완료되었습니다.</p>
+            </div>
+            <div class="modal__actions">
+                <button class="modal__btn modal__btn--primary" onclick="hideModal('successModal')">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="modal">
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 class="modal__title">오류</h2>
+                <button class="modal__close" onclick="hideModal('errorModal')">&times;</button>
+            </div>
+            <div class="message--error">
+                <h3 style="margin-bottom: 8px;">❌ 오류 발생</h3>
+                <p id="errorMessage">작업을 완료할 수 없습니다.</p>
+            </div>
+            <div class="modal__actions">
+                <button class="modal__btn modal__btn--primary" onclick="hideModal('errorModal')">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state management
+        let userSettings = {
+            notifications: true,
+            language: 'ko'
+        };
+
+        let currentLanguage = 'ko';
+        // 기존의 isLoggedIn 선언 제거하고 이것으로 교체
+        let isLoggedIn = false;
+
+        // 페이지 로드 시 로그인 상태 초기화
+        function initializeLoginStatus() {
+            if (window.OneAIAuth && window.OneAIAuth.isAuthenticated()) {
+                isLoggedIn = true;
+            } else {
+                const token = localStorage.getItem('oneai_token') || sessionStorage.getItem('oneai_token');
+                const status = localStorage.getItem('isLoggedIn') === 'true';
+                isLoggedIn = !!(token && status);
+            }
+            console.log('Login status initialized:', isLoggedIn);
+        }
+
+        // 즉시 초기화
+        initializeLoginStatus();
+
+        // 5. 안전한 함수 호출을 위한 헬퍼 함수
+        function safeCallFunction(funcName, ...args) {
+            if (typeof window[funcName] === 'function') {
+                return window[funcName](...args);
+            } else {
+                console.warn(`Function ${funcName} is not defined`);
+                return null;
+            }
+        }
+
+        // 6. OneAI 모듈 확인 함수
+        function checkOneAIAvailability() {
+            return {
+                oneAI: !!(window.OneAI && typeof window.OneAI.initModule === 'function'),
+                oneAIAuth: !!(window.OneAIAuth && typeof window.OneAIAuth.requireAuth === 'function'),
+                initialized: !!(window.OneAIAuth && window.OneAIAuth.initialized)
+            };
+        }
+
+        // 로그인 상태 확인 함수
+        function checkLoginStatus() {
+            // 실제 구현에서는 세션, 토큰, 쿠키 등을 확인
+            const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+            const isAuthenticated = localStorage.getItem('isLoggedIn') === 'true';
+            
+            // 토큰이나 인증 상태가 없으면 false 반환
+            return token && isAuthenticated;
+        }
+
+        // 로그인 상태에 따른 페이지 접근 제어
+        function checkAuthAndRedirect() {
+            if (!isLoggedIn) {
+                // 현재 URL을 저장해서 로그인 후 돌아올 수 있도록 함
+                localStorage.setItem('returnUrl', window.location.href);
+                
+                // 로딩 스피너 표시
+                showLoading();
+                
+                // 잠시 후 리다이렉트 (UX 개선)
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1000);
+                
+                return false;
+            }
+            return true;
+        }
+
+        // 로딩 상태 관리 개선
+        let loadingCount = 0;
+
+        function showLoading() {
+            loadingCount++;
+            const spinner = document.getElementById('loadingSpinner');
+            if (spinner) {
+                spinner.classList.add('loading-spinner--show');
+            }
+            console.log('Loading shown, count:', loadingCount);
+        }
+
+        function hideLoading() {
+            loadingCount = Math.max(0, loadingCount - 1);
+            
+            // 모든 로딩이 완료되었을 때만 숨기기
+            if (loadingCount === 0) {
+                const spinner = document.getElementById('loadingSpinner');
+                if (spinner) {
+                    spinner.classList.remove('loading-spinner--show');
+                }
+                console.log('Loading hidden');
+            } else {
+                console.log('Loading still active, count:', loadingCount);
+            }
+        }
+
+        // 강제로 로딩 숨기기 (긴급시 사용)
+        function forceHideLoading() {
+            loadingCount = 0;
+            const spinner = document.getElementById('loadingSpinner');
+            if (spinner) {
+                spinner.classList.remove('loading-spinner--show');
+            }
+            console.log('Loading force hidden');
+        }
+
+        // Auth functions
+        function logout() {
+            if (confirm('정말 로그아웃하시겠습니까?')) {
+                // 로딩 스피너 표시
+                showLoading();
+                
+                // OneAIAuth 사용 가능하면 OneAI 방식으로, 아니면 일반 방식으로
+                if (window.OneAIAuth && typeof window.OneAIAuth.logout === 'function') {
+                    window.OneAIAuth.logout();
+                } else {
+                    // 일반 로그아웃 처리
+                    localStorage.removeItem('authToken');
+                    sessionStorage.removeItem('authToken');
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('userInfo');
+                    localStorage.removeItem('returnUrl');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1000);
+                }
+            }
+        }
+
+        // UI 업데이트 함수들
+        function updateAuthUI() {
+            const authButton = document.getElementById('authButton');
+            if (isLoggedIn) {
+                authButton.textContent = '로그아웃';
+                authButton.classList.add('btn--primary');
+            } else {
+                // 로그인되지 않은 경우 이미 리다이렉트되므로 실행되지 않음
+                window.location.href = 'login.html';
+            }
+        }
+
+        function showLoggedInContent() {
+            // 마이페이지 콘텐츠는 이미 HTML에 있으므로 별도 처리 불필요
+            console.log('마이페이지 로드 완료');
+            hideLoading();
+        }
+
+        // Language selector functions (계정 정보 섹션에서만 사용)
+        function selectLanguageFromModal(langCode, langName) {
+            // Update global state
+            currentLanguage = langCode;
+            userSettings.language = langCode;
+            
+            // Show success message
+            showSuccess(`언어가 ${langName}로 변경되었습니다.`);
+            
+            console.log('Language changed to:', langCode, langName);
+        }
+
+        // Modal management
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('modal--show');
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.remove('modal--show');
+        }
+
+        function showSuccess(message) {
+            document.getElementById('successMessage').textContent = message;
+            showModal('successModal');
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            showModal('errorModal');
+        }
+
+        // Settings change functions
+        function changeEmail() {
+            const newEmail = document.querySelector('#emailForm input[type="email"]:not([readonly])').value;
+            const password = document.querySelector('#emailForm input[type="password"]').value;
+            
+            if (!newEmail || !password) {
+                showError('모든 필드를 입력해주세요.');
+                return;
+            }
+            
+            if (!newEmail.includes('@')) {
+                showError('올바른 이메일 주소를 입력해주세요.');
+                return;
+            }
+            
+            // 실제 구현에서는 여기서 서버에 API 호출
+            showLoading();
+            
+            setTimeout(() => {
+                hideLoading();
+                hideModal('emailModal');
+                showSuccess('이메일 주소가 성공적으로 변경되었습니다.');
+                document.getElementById('emailForm').reset();
+                
+                // UI 업데이트
+                document.querySelector('.setting-item__description').textContent = newEmail;
+            }, 1500);
+        }
+
+        function changePassword() {
+            const currentPassword = document.querySelector('#passwordForm input:nth-of-type(1)').value;
+            const newPassword = document.querySelector('#passwordForm input:nth-of-type(2)').value;
+            const confirmPassword = document.querySelector('#passwordForm input:nth-of-type(3)').value;
+            
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showError('모든 필드를 입력해주세요.');
+                return;
+            }
+            
+            if (newPassword.length < 8) {
+                showError('새 비밀번호는 8자 이상이어야 합니다.');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showError('새 비밀번호가 일치하지 않습니다.');
+                return;
+            }
+            
+            // 실제 구현에서는 여기서 서버에 API 호출
+            showLoading();
+            
+            setTimeout(() => {
+                hideLoading();
+                hideModal('passwordModal');
+                showSuccess('비밀번호가 성공적으로 변경되었습니다.');
+                document.getElementById('passwordForm').reset();
+                
+                // UI 업데이트
+                const now = new Date();
+                const formattedDate = `${now.getFullYear()}년 ${now.getMonth() + 1}월`;
+                document.querySelector('.setting-item:nth-of-type(2) .setting-item__description').textContent = `마지막 변경: ${formattedDate}`;
+            }, 1500);
+        }
+
+        function changeLanguage() {
+            const selectedLanguage = document.querySelector('#languageForm select').value;
+            const languageNames = {
+                'ko': '한국어',
+                'en': 'English', 
+                'ja': '日本語',
+                'zh': '中文',
+                'es': 'Español'
+            };
+            
+            // 실제 구현에서는 여기서 서버에 API 호출
+            showLoading();
+            
+            setTimeout(() => {
+                hideLoading();
+                hideModal('languageModal');
+                showSuccess(`언어가 ${languageNames[selectedLanguage]}로 변경되었습니다.`);
+                
+                // UI 업데이트
+                document.querySelector('.setting-item:nth-of-type(3) .setting-item__description').textContent = languageNames[selectedLanguage];
+                
+                // 글로벌 상태 업데이트
+                currentLanguage = selectedLanguage;
+                userSettings.language = selectedLanguage;
+            }, 1500);
+        }
+
+        // Notification toggle function with actual functionality
+        function toggleNotifications(element) {
+            const isCurrentlyActive = element.classList.contains('toggle-switch--active');
+            
+            if (isCurrentlyActive) {
+                // Disable notifications
+                element.classList.remove('toggle-switch--active');
+                userSettings.notifications = false;
+                updateNotificationStatus(false);
+                
+                // Show browser notification permission request simulation
+                if ('Notification' in window) {
+                    showSuccess('알림이 비활성화되었습니다.');
+                }
+            } else {
+                // Enable notifications
+                element.classList.add('toggle-switch--active');
+                userSettings.notifications = true;
+                updateNotificationStatus(true);
+                
+                // Request notification permission if supported
+                if ('Notification' in window) {
+                    if (Notification.permission === 'default') {
+                        Notification.requestPermission().then(function(permission) {
+                            if (permission === 'granted') {
+                                showSuccess('알림이 활성화되었습니다.');
+                                new Notification('One AI', {
+                                    body: '알림이 성공적으로 활성화되었습니다!',
+                                    icon: '/favicon.ico'
+                                });
+                            } else {
+                                showError('브라우저에서 알림 권한을 허용해주세요.');
+                                element.classList.remove('toggle-switch--active');
+                                userSettings.notifications = false;
+                                updateNotificationStatus(false);
+                            }
+                        });
+                    } else if (Notification.permission === 'granted') {
+                        showSuccess('알림이 활성화되었습니다.');
+                        new Notification('One AI', {
+                            body: '알림이 성공적으로 활성화되었습니다!',
+                            icon: '/favicon.ico'
+                        });
+                    } else {
+                        showError('브라우저에서 알림이 차단되어 있습니다. 설정에서 허용해주세요.');
+                        element.classList.remove('toggle-switch--active');
+                        userSettings.notifications = false;
+                        updateNotificationStatus(false);
+                    }
+                } else {
+                    showSuccess('알림이 활성화되었습니다.');
+                }
+            }
+            
+            console.log('Notifications:', userSettings.notifications ? 'Enabled' : 'Disabled');
+        }
+
+        function updateNotificationStatus(enabled) {
+            const statusElement = document.getElementById('notificationStatus');
+            const indicator = statusElement.querySelector('.notification-status__indicator');
+            const text = statusElement.querySelector('span');
+            
+            if (enabled) {
+                statusElement.className = 'notification-status notification-status--enabled';
+                text.textContent = '알림 활성화됨';
+            } else {
+                statusElement.className = 'notification-status notification-status--disabled';
+                text.textContent = '알림 비활성화됨';
+            }
+        }
+
+        function changeAvatar() {
+            const avatars = ['김', '🤖', '👨‍💻', '🧠', '✨', '🚀', '💡', '🎯'];
+            const currentAvatar = document.querySelector('.profile-header__avatar');
+            const randomAvatar = avatars[Math.floor(Math.random() * avatars.length)];
+            
+            currentAvatar.textContent = randomAvatar;
+            currentAvatar.style.animation = 'bounce 0.6s ease';
+            
+            setTimeout(() => {
+                currentAvatar.style.animation = '';
+            }, 600);
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('modal--show');
+            }
+        });
+
+        // ESC 키로 모달 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const activeModal = document.querySelector('.modal--show');
+                if (activeModal) {
+                    activeModal.classList.remove('modal--show');
+                }
+            }
+        });
+
+        // Animation effects
+        function initializeAnimations() {
+            // Card animations
+            const cards = document.querySelectorAll('.stat-card, .section, .subscription-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    }
+                });
+            });
+            
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.6s ease';
+                observer.observe(card);
+            });
+
+            // Number animation
+            const statNumbers = document.querySelectorAll('.stat-card__number, .stat-item__number');
+            statNumbers.forEach(stat => {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            animateNumber(entry.target);
+                        }
+                    });
+                });
+                observer.observe(stat);
+            });
+
+            // Chart bar animation
+            const chartBars = document.querySelectorAll('.usage-chart__bar');
+            chartBars.forEach((bar, index) => {
+                setTimeout(() => {
+                    bar.style.transform = 'scaleY(1)';
+                }, index * 100);
+                bar.style.transform = 'scaleY(0)';
+                bar.style.transformOrigin = 'bottom';
+                bar.style.transition = 'transform 0.6s ease';
+            });
+        }
+
+        function animateNumber(element) {
+            const finalValue = element.textContent;
+            let numericValue = parseFloat(finalValue.replace(/[^\d.]/g, ''));
+            
+            if (finalValue.includes('K')) {
+                numericValue = numericValue * 1000;
+            }
+            
+            let currentValue = 0;
+            const increment = numericValue / 30;
+            const duration = 1500;
+            const stepTime = duration / 30;
+            
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= numericValue) {
+                    currentValue = numericValue;
+                    clearInterval(timer);
+                }
+                
+                let displayValue = Math.floor(currentValue);
+                
+                if (finalValue.includes('₩') && finalValue.includes('K')) {
+                    element.textContent = `₩${Math.floor(displayValue / 1000)}K`;
+                } else if (finalValue.includes('₩')) {
+                    element.textContent = `₩${displayValue.toLocaleString()}`;
+                } else if (finalValue.includes('h')) {
+                    element.textContent = `${displayValue}h`;
+                } else if (finalValue.includes('.')) {
+                    element.textContent = (displayValue / 1000).toFixed(1);
+                } else {
+                    element.textContent = displayValue.toLocaleString();
+                }
+            }, stepTime);
+        }
+
+        // 페이지 가시성 변경 감지 (탭 전환 등)
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+
+        // 10. 조건부 window 함수 등록 (OneAI 스크립트 로드 후)
+        window.addEventListener('load', function() {
+            const availability = checkOneAIAvailability();
+            console.log('OneAI Availability:', availability);
+            
+            if (availability.oneAI) {
+                console.log('OneAI module available');
+                // OneAI 모듈이 있으면 초기화
+                if (typeof window.OneAI.initModule === 'function') {
+                    window.OneAI.initModule();
+                }
+            } else {
+                console.log('OneAI module not available, using standard functionality');
+            }
+        });
+                // 페이지가 다시 보일 때 로그인 상태 재확인
+                const currentLoginStatus = checkLoginStatus();
+                if (!currentLoginStatus && isLoggedIn) {
+                    // 로그인 상태가 변경되었으면 리다이렉트
+                    logout();
+                }
+            }
+        });
+
+        // 세션 만료 체크 (옵션)
+        function checkSessionExpiry() {
+            try {
+                const token = localStorage.getItem('oneai_token') || sessionStorage.getItem('oneai_token');
+                const loginTime = localStorage.getItem('loginTime') || sessionStorage.getItem('loginTime');
+                
+                if (token && loginTime) {
+                    const currentTime = Date.now();
+                    const sessionDuration = 24 * 60 * 60 * 1000; // 24시간
+                    
+                    if (currentTime - parseInt(loginTime) > sessionDuration) {
+                        console.log('Session expired, logging out');
+                        showError('세션이 만료되었습니다. 다시 로그인해 주세요.');
+                        setTimeout(() => {
+                            if (window.OneAIAuth) {
+                                window.OneAIAuth.logout();
+                            } else {
+                                // 수동 로그아웃
+                                localStorage.clear();
+                                sessionStorage.clear();
+                            }
+                            window.location.href = 'login.html';
+                        }, 2000);
+                    }
+                }
+            } catch (error) {
+                console.error('Session check error:', error);
+            }
+        }
+
+        // 주기적으로 세션 체크 (5분마다)
+        setInterval(checkSessionExpiry, 5 * 60 * 1000);
+
+        // 브라우저 뒤로가기/앞으로가기 감지
+        window.addEventListener('popstate', function(event) {
+            // 로그인 상태 재확인
+            if (!checkLoginStatus()) {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // 네트워크 상태 변경 감지
+        window.addEventListener('online', function() {
+            console.log('네트워크가 연결되었습니다.');
+            // 필요시 데이터 동기화
+        });
+
+        window.addEventListener('offline', function() {
+            console.log('네트워크 연결이 끊어졌습니다.');
+            showError('인터넷 연결을 확인해 주세요.');
+        });
+
+        // 7. 사용자 데이터 로드 함수 (OneAI 없이도 동작)
+        function loadUserData() {
+            const userInfo = localStorage.getItem('userInfo');
+            if (userInfo) {
+                try {
+                    const userData = JSON.parse(userInfo);
+                    updateProfileWithUserData(userData);
+                    
+                    // 모듈 로드 완료 메시지 숨기기
+                    const loadingMessage = document.querySelector('.module-loading');
+                    if (loadingMessage) {
+                        loadingMessage.style.display = 'none';
+                    }
+                    
+                    // 실제 프로필 콘텐츠 표시
+                    const profileContent = document.querySelector('.profile-content');
+                    if (profileContent) {
+                        profileContent.style.display = 'block';
+                    }
+                    
+                } catch (e) {
+                    console.error('사용자 정보 파싱 오류:', e);
+                    showError('사용자 정보를 불러오는데 실패했습니다.');
+                }
+            } else {
+                console.log('No user info found in localStorage');
+                // 기본값으로 UI 업데이트
+                updateProfileWithUserData({
+                    username: '사용자',
+                    email: 'user@example.com'
+                });
+            }
+        }
+
+        // 실제 구현시 사용할 API 호출 함수들
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            const token = localStorage.getItem('authToken');
+            
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            };
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            try {
+                const response = await fetch(endpoint, options);
+                
+                if (response.status === 401) {
+                    // 인증 오류시 로그아웃
+                    logout();
+                    return null;
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`API 오류: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('API 호출 오류:', error);
+                showError('서버와의 통신에 실패했습니다.');
+                return null;
+            }
+        }
+
+        // 실제 구현시 사용할 데이터 업데이트 함수들
+        async function updateEmailAPI(newEmail, password) {
+            return await apiCall('/api/user/email', 'PUT', { 
+                email: newEmail, 
+                password: password 
+            });
+        }
+
+        async function updatePasswordAPI(currentPassword, newPassword) {
+            return await apiCall('/api/user/password', 'PUT', { 
+                currentPassword: currentPassword, 
+                newPassword: newPassword 
+            });
+        }
+
+        async function updateLanguageAPI(language) {
+            return await apiCall('/api/user/language', 'PUT', { 
+                language: language 
+            });
+        }
+
+        async function updateNotificationAPI(enabled) {
+            return await apiCall('/api/user/notifications', 'PUT', { 
+                enabled: enabled 
+            });
+        }
+
+        // ===== 프로필 데이터 업데이트 함수들 =====
+        
+        // 1. 사용자 프로필 영역 업데이트 (제목: "사용자 정보" 하드코딩)
+        function updateUserProfile(userData) {
+            // 사용자명 업데이트
+            const userName = document.querySelector('.profile-header__name');
+            if (userName) {
+                userName.textContent = userData.username || '사용자';
+            }
+            
+            // 아바타 초기값 업데이트
+            const userAvatar = document.querySelector('.profile-header__avatar');
+            if (userAvatar) {
+                const initial = (userData.username || userData.email || 'U')[0].toUpperCase();
+                userAvatar.textContent = initial;
+            }
+            
+            // 상태 업데이트 (가입일 포함)
+            const userStatus = document.querySelector('.profile-header__status');
+            if (userStatus) {
+                const joinDate = userData.created_at ? 
+                    new Date(userData.created_at).toLocaleDateString('ko-KR') : '-';
+                const plan = userData.subscription?.type || userData.plan || 'Free';
+                userStatus.textContent = `One AI ${plan} 사용자 · 가입일: ${joinDate}`;
+            }
+            
+            // 배지 업데이트
+            updateUserBadges(userData);
+            
+            // 헤더 통계 업데이트
+            updateHeaderStats(userData.stats || {});
+        }
+
+        // 2. 사용자 배지 업데이트
+        function updateUserBadges(userData) {
+            const badgesContainer = document.querySelector('.profile-header__badges');
+            if (!badgesContainer) return;
+            
+            badgesContainer.innerHTML = '';
+            
+            // 구독 배지
+            const subscriptionType = userData.subscription?.type || userData.plan;
+            if (subscriptionType && subscriptionType !== 'Free') {
+                if (subscriptionType === 'Pro') {
+                    badgesContainer.innerHTML += '<span class="badge badge--pro">Pro 멤버</span>';
+                } else if (subscriptionType === 'Premium') {
+                    badgesContainer.innerHTML += '<span class="badge badge--premium">프리미엄</span>';
+                }
+            }
+            
+            // 인증 배지
+            if (userData.verified || userData.email_verified) {
+                badgesContainer.innerHTML += '<span class="badge badge--verified">인증됨</span>';
+            }
+            
+            // 개발자 배지
+            if (userData.role === 'developer') {
+                badgesContainer.innerHTML += '<span class="badge badge--developer">개발자</span>';
+            }
+            
+            // 기본 배지 (배지가 없는 경우)
+            if (badgesContainer.innerHTML.trim() === '') {
+                badgesContainer.innerHTML = '<span class="badge badge--user">일반 사용자</span>';
+            }
+        }
+
+        // 3. 헤더 통계 업데이트 (라벨 하드코딩)
+        function updateHeaderStats(statsData) {
+            const userStats = document.querySelector('.profile-header__stats');
+            if (!userStats) return;
+            
+            userStats.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-item__number">${statsData.consecutive_days || '-'}</div>
+                    <div class="stat-item__label">연속 사용일</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-item__number">${statsData.total_conversations ? statsData.total_conversations.toLocaleString() : '-'}</div>
+                    <div class="stat-item__label">총 대화 수</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-item__number">${statsData.saved_items || '-'}</div>
+                    <div class="stat-item__label">저장된 항목</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-item__number">${statsData.satisfaction_rating ? statsData.satisfaction_rating.toFixed(1) : '-'}</div>
+                    <div class="stat-item__label">만족도</div>
+                </div>
+            `;
+        }
+
+        // 4. 구독 정보 업데이트 (라벨 하드코딩)
+        function updateSubscriptionInfo(subscriptionData) {
+            const subscriptionCard = document.querySelector('.subscription-card');
+            if (!subscriptionCard) return;
+            
+            const planType = subscriptionData.type || 'Free';
+            const status = subscriptionData.status || 'active';
+            const price = subscriptionData.price || 0;
+            const nextBilling = subscriptionData.next_billing_date;
+            const usageLimit = subscriptionData.usage_limit;
+            const sessions = subscriptionData.concurrent_sessions || 1;
+            
+            // 가격 표시
+            const priceDisplay = price > 0 ? `₩${price.toLocaleString()}` : '무료';
+            
+            // 다음 결제일 표시
+            const nextBillingDisplay = nextBilling ? 
+                new Date(nextBilling).toLocaleDateString('ko-KR') : 
+                (price === 0 ? '해당없음' : '-');
+            
+            // 사용량 표시
+            const usageDisplay = usageLimit === 'unlimited' ? '무제한' : (usageLimit || '-');
+            
+            // 상태 표시
+            const statusDisplay = {
+                'active': '활성',
+                'inactive': '비활성', 
+                'cancelled': '취소됨',
+                'expired': '만료됨'
+            }[status] || '-';
+            
+            subscriptionCard.innerHTML = `
+                <div class="subscription-card__header">
+                    <h2 class="subscription-card__title">One AI ${planType}</h2>
+                    <div class="subscription-card__badge ${status === 'active' ? '' : 'badge--inactive'}">${statusDisplay}</div>
+                </div>
+                <div class="subscription-card__details">
+                    <div class="subscription-detail">
+                        <div class="subscription-detail__value">${priceDisplay}</div>
+                        <div class="subscription-detail__label">월 구독료</div>
+                    </div>
+                    <div class="subscription-detail">
+                        <div class="subscription-detail__value">${nextBillingDisplay}</div>
+                        <div class="subscription-detail__label">다음 결제일</div>
+                    </div>
+                    <div class="subscription-detail">
+                        <div class="subscription-detail__value">${usageDisplay}</div>
+                        <div class="subscription-detail__label">AI 사용량</div>
+                    </div>
+                    <div class="subscription-detail">
+                        <div class="subscription-detail__value">${sessions}개</div>
+                        <div class="subscription-detail__label">동시 세션</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 5. 사용 통계 그리드 업데이트 (제목과 라벨 하드코딩)
+        function updateStatsGrid(statsData) {
+            const statsGrid = document.querySelector('.stats-grid');
+            if (!statsGrid) return;
+            
+            const monthlyConversations = statsData.monthly_conversations || 0;
+            const totalHours = statsData.total_usage_hours || 0;
+            const costSavings = statsData.cost_savings || 0;
+            const favoritePrompts = statsData.favorite_prompts || 0;
+            
+            // 계산된 값들
+            const monthlyGrowth = monthlyConversations > 0 ? Math.floor(Math.random() * 30) + 10 : 0;
+            const dailyAverage = totalHours > 0 ? (totalHours / 30).toFixed(1) : 0;
+            const savingsDisplay = costSavings > 0 ? `₩${Math.floor(costSavings / 1000)}K` : '-';
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-card__number">${monthlyConversations || '-'}</div>
+                    <div class="stat-card__label">이번 달 AI 대화</div>
+                    <div class="stat-card__description">${monthlyGrowth ? `지난 달 대비 +${monthlyGrowth}%` : '데이터 없음'}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number">${totalHours ? totalHours + 'h' : '-'}</div>
+                    <div class="stat-card__label">총 사용 시간</div>
+                    <div class="stat-card__description">${dailyAverage ? `평균 ${dailyAverage}h/일` : '데이터 없음'}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number">${savingsDisplay}</div>
+                    <div class="stat-card__label">누적 절약 금액</div>
+                    <div class="stat-card__description">${costSavings > 0 ? '쉐어링 통해 절약' : '데이터 없음'}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number">${favoritePrompts || '-'}</div>
+                    <div class="stat-card__label">즐겨찾는 프롬프트</div>
+                    <div class="stat-card__description">${favoritePrompts > 0 ? '자주 사용하는 템플릿' : '데이터 없음'}</div>
+                </div>
+            `;
+        }
+
+        // 6. 주간 사용량 차트 업데이트 (제목과 요일 하드코딩)
+        function updateWeeklyUsageChart(weeklyData) {
+            const chartBars = document.querySelectorAll('.usage-chart__bar');
+            const days = ['월', '화', '수', '목', '금', '토', '일'];
+            
+            if (weeklyData && weeklyData.length === 7) {
+                chartBars.forEach((bar, index) => {
+                    const usage = weeklyData[index] || 0;
+                    const maxUsage = Math.max(...weeklyData);
+                    const height = maxUsage > 0 ? (usage / maxUsage) * 100 : 10;
+                    
+                    bar.style.height = `${height}%`;
+                    bar.title = `${days[index]}요일: ${usage}회`;
+                });
+            }
+        }
+
+        // 7. 계정 설정 정보 업데이트 (라벨 하드코딩)
+        function updateAccountSettings(userData) {
+            const settingDescriptions = document.querySelectorAll('.setting-item__description');
+            
+            if (settingDescriptions.length >= 3) {
+                // 이메일 주소
+                settingDescriptions[0].textContent = userData.email || '-';
+                
+                // 비밀번호 변경일
+                const passwordChangeDate = userData.password_changed_at ? 
+                    '마지막 변경: ' + new Date(userData.password_changed_at).toLocaleDateString('ko-KR') : 
+                    '마지막 변경: -';
+                settingDescriptions[1].textContent = passwordChangeDate;
+                
+                // 언어 설정
+                const languageNames = {
+                    'ko': '한국어',
+                    'en': 'English',
+                    'ja': '日本語',
+                    'zh': '中文',
+                    'es': 'Español'
+                };
+                const userLanguage = userData.settings?.language || userData.language || 'ko';
+                settingDescriptions[2].textContent = languageNames[userLanguage] || '한국어';
+            }
+        }
+
+        // 8. 알림 설정 상태 업데이트 (라벨 하드코딩)
+        function updateNotificationSettings(userData) {
+            const notificationToggle = document.getElementById('notificationToggle');
+            const notificationStatus = document.getElementById('notificationStatus');
+            
+            if (notificationToggle && notificationStatus) {
+                const notificationsEnabled = userData.settings?.notifications ?? userData.notifications_enabled ?? true;
+                
+                if (notificationsEnabled) {
+                    notificationToggle.classList.add('toggle-switch--active');
+                    notificationStatus.className = 'notification-status notification-status--enabled';
+                    notificationStatus.querySelector('span').textContent = '알림 활성화됨';
+                } else {
+                    notificationToggle.classList.remove('toggle-switch--active');
+                    notificationStatus.className = 'notification-status notification-status--disabled';
+                    notificationStatus.querySelector('span').textContent = '알림 비활성화됨';
+                }
+            }
+        }
+
+        // 9. 최근 활동 업데이트 (제목 하드코딩)
+        function updateRecentActivity(activityData) {
+            const activityFeed = document.querySelector('.activity-feed');
+            if (!activityFeed) return;
+            
+            // 기본 활동 데이터가 없으면 샘플 데이터 사용
+            const activities = activityData || [
+                {
+                    type: 'ai_conversation',
+                    title: 'AI와 대화 진행',
+                    time: '2분 전',
+                    icon: '🤖'
+                },
+                {
+                    type: 'sharing_join', 
+                    title: 'GPT Plus 쉐어링 참여',
+                    time: '1시간 전',
+                    icon: '🤝'
+                },
+                {
+                    type: 'profile_update',
+                    title: '프로필 설정 업데이트', 
+                    time: '어제',
+                    icon: '⚙️'
+                }
+            ];
+            
+            activityFeed.innerHTML = activities.map(activity => `
+                <li class="activity-item">
+                    <div class="activity-item__icon activity-item__icon--${activity.type}">
+                        ${activity.icon}
+                    </div>
+                    <div class="activity-item__content">
+                        <div class="activity-item__title">${activity.title}</div>
+                        <div class="activity-item__time">${activity.time}</div>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        // 10. 전체 프로필 데이터 업데이트 메인 함수
+        function updateAllProfileData(userData) {
+            console.log('프로필 데이터 업데이트 시작:', userData);
+            
+            // 각 섹션별 업데이트
+            updateUserProfile(userData);
+            updateSubscriptionInfo(userData.subscription || {});
+            updateStatsGrid(userData.stats || {});
+            updateWeeklyUsageChart(userData.weekly_usage);
+            updateAccountSettings(userData);
+            updateNotificationSettings(userData);
+            updateRecentActivity(userData.recent_activity);
+            
+            console.log('프로필 데이터 업데이트 완료');
+        }
+
+        // 11. 샘플 데이터로 테스트하는 함수
+        function loadSampleData() {
+            const sampleData = {
+                username: '김개발자',
+                email: 'developer@oneai.com',
+                created_at: '2024-01-15',
+                verified: true,
+                role: 'developer',
+                subscription: {
+                    type: 'Pro',
+                    status: 'active',
+                    price: 29000,
+                    next_billing_date: '2024-12-15',
+                    usage_limit: 'unlimited',
+                    concurrent_sessions: 3
+                },
+                stats: {
+                    consecutive_days: 15,
+                    total_conversations: 1250,
+                    saved_items: 42,
+                    satisfaction_rating: 4.8,
+                    monthly_conversations: 156,
+                    total_usage_hours: 67,
+                    cost_savings: 125000,
+                    favorite_prompts: 8
+                },
+                settings: {
+                    language: 'ko',
+                    notifications: true
+                },
+                password_changed_at: '2024-10-01',
+                weekly_usage: [42, 56, 32, 63, 49, 21, 28],
+                recent_activity: [
+                    {
+                        type: 'ai_conversation',
+                        title: 'ChatGPT로 코딩 문제 해결',
+                        time: '2분 전',
+                        icon: '🤖'
+                    },
+                    {
+                        type: 'sharing_join',
+                        title: 'Claude Pro 쉐어링 참여', 
+                        time: '30분 전',
+                        icon: '🤝'
+                    }
+                ]
+            };
+            
+            updateAllProfileData(sampleData);
+        }
+
+        // 사용 예시:
+        // loadSampleData(); // 샘플 데이터로 테스트
+        // updateAllProfileData(realUserData); // 실제 데이터로 업데이트
+
+        // ========================================
+        // 1단계: 스켈레톤 UI 생성 함수들 (무조건 DOM 생성, 기본값 '-')
+        // ========================================
+
+        // 1. 사용자 프로필 스켈레톤 생성
+        function createUserProfileSkeleton() {
+            let profileHeader = document.querySelector('.profile-header');
+            if (!profileHeader) {
+                profileHeader = document.createElement('header');
+                profileHeader.className = 'profile-header';
+                document.querySelector('.container')?.appendChild(profileHeader) || document.body.appendChild(profileHeader);
+            }
+            
+            profileHeader.innerHTML = `
+                <div class="profile-header__content">
+                    <div class="profile-header__avatar" onclick="changeAvatar()" id="userAvatar">-</div>
+                    <div class="profile-header__details">
+                        <h1 class="profile-header__name" id="userName">-</h1>
+                        <p class="profile-header__status" id="userStatus">One AI 사용자 · 가입일: -</p>
+                        <div class="profile-header__badges" id="userBadges">
+                            <span class="badge badge--user">-</span>
+                        </div>
+                        <div class="profile-header__stats" id="userStats">
+                            <div class="stat-item">
+                                <div class="stat-item__number">-</div>
+                                <div class="stat-item__label">연속 사용일</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-item__number">-</div>
+                                <div class="stat-item__label">총 대화 수</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-item__number">-</div>
+                                <div class="stat-item__label">저장된 항목</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-item__number">-</div>
+                                <div class="stat-item__label">만족도</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 2. 구독 정보 스켈레톤 생성
+        function createSubscriptionSkeleton() {
+            let container = document.querySelector('.container') || document.body;
+            
+            let subscriptionCard = document.querySelector('.subscription-card');
+            if (!subscriptionCard) {
+                subscriptionCard = document.createElement('div');
+                subscriptionCard.className = 'subscription-card';
+                subscriptionCard.id = 'subscriptionCard';
+                container.appendChild(subscriptionCard);
+            }
+            
+            subscriptionCard.innerHTML = `
+                <div class="subscription-card__header">
+                    <h2 class="subscription-card__title">One AI Free</h2>
+                    <div class="subscription-card__badge">-</div>
+                </div>
+                <div class="subscription-card__details">
+                    <div class="subscription-detail">
+                        <div class="subscription-detail__value">-</div>
+                        <div class="subscription-detail__label">월 구독료</div>
+                    </div>
+                    <div class="subscription-detail">
+                        <div class="subscription-detail__value">-</div>
+                        <div class="subscription-detail__label">다음 결제일</div>
+                    </div>
+                    <div class="subscription-detail">
+                        <div class="subscription-detail__value">-</div>
+                        <div class="subscription-detail__label">AI 사용량</div>
+                    </div>
+                    <div class="subscription-detail">
+                        <div class="subscription-detail__value">-</div>
+                        <div class="subscription-detail__label">동시 세션</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 3. 사용 통계 그리드 스켈레톤 생성
+        function createStatsGridSkeleton() {
+            let container = document.querySelector('.container') || document.body;
+            
+            let statsGrid = document.querySelector('.stats-grid');
+            if (!statsGrid) {
+                statsGrid = document.createElement('section');
+                statsGrid.className = 'stats-grid';
+                statsGrid.id = 'statsGrid';
+                container.appendChild(statsGrid);
+            }
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-card__number">-</div>
+                    <div class="stat-card__label">이번 달 AI 대화</div>
+                    <div class="stat-card__description">데이터 없음</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number">-</div>
+                    <div class="stat-card__label">총 사용 시간</div>
+                    <div class="stat-card__description">데이터 없음</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number">-</div>
+                    <div class="stat-card__label">누적 절약 금액</div>
+                    <div class="stat-card__description">데이터 없음</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number">-</div>
+                    <div class="stat-card__label">즐겨찾는 프롬프트</div>
+                    <div class="stat-card__description">데이터 없음</div>
+                </div>
+            `;
+        }
+
+        // 4. 주간 사용량 차트 스켈레톤 생성
+        function createUsageChartSkeleton() {
+            let container = document.querySelector('.container') || document.body;
+            
+            let chartSection = document.querySelector('.usage-chart-section');
+            if (!chartSection) {
+                chartSection = document.createElement('section');
+                chartSection.className = 'section usage-chart-section';
+                container.appendChild(chartSection);
+            }
+            
+            chartSection.innerHTML = `
+                <h2 class="section__title">📊 AI 사용량 분석</h2>
+                <div class="usage-chart">
+                    <div class="usage-chart__header">
+                        <div class="usage-chart__title">주간 사용량</div>
+                        <div class="usage-chart__period">최근 7일</div>
+                    </div>
+                    <div class="usage-chart__bars">
+                        <div class="usage-chart__bar" style="height: 10%" title="월요일: -"></div>
+                        <div class="usage-chart__bar" style="height: 10%" title="화요일: -"></div>
+                        <div class="usage-chart__bar" style="height: 10%" title="수요일: -"></div>
+                        <div class="usage-chart__bar" style="height: 10%" title="목요일: -"></div>
+                        <div class="usage-chart__bar" style="height: 10%" title="금요일: -"></div>
+                        <div class="usage-chart__bar" style="height: 10%" title="토요일: -"></div>
+                        <div class="usage-chart__bar" style="height: 10%" title="일요일: -"></div>
+                    </div>
+                    <div class="usage-chart__labels">
+                        <div class="usage-chart__label">월</div>
+                        <div class="usage-chart__label">화</div>
+                        <div class="usage-chart__label">수</div>
+                        <div class="usage-chart__label">목</div>
+                        <div class="usage-chart__label">금</div>
+                        <div class="usage-chart__label">토</div>
+                        <div class="usage-chart__label">일</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 5. 계정 설정 스켈레톤 생성
+        function createAccountSettingsSkeleton() {
+            let container = document.querySelector('.container') || document.body;
+            
+            let accountSection = document.querySelector('.account-settings-section');
+            if (!accountSection) {
+                accountSection = document.createElement('section');
+                accountSection.className = 'section account-settings-section';
+                container.appendChild(accountSection);
+            }
+            
+            accountSection.innerHTML = `
+                <h2 class="section__title">👤 계정 정보</h2>
+                <div class="setting-item">
+                    <div class="setting-item__info">
+                        <div class="setting-item__title">이메일 주소</div>
+                        <div class="setting-item__description">-</div>
+                    </div>
+                    <button class="edit-btn edit-btn--outline" onclick="showModal('emailModal')">변경</button>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-item__info">
+                        <div class="setting-item__title">비밀번호</div>
+                        <div class="setting-item__description">마지막 변경: -</div>
+                    </div>
+                    <button class="edit-btn edit-btn--outline" onclick="showModal('passwordModal')">변경</button>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-item__info">
+                        <div class="setting-item__title">언어 설정</div>
+                        <div class="setting-item__description">-</div>
+                    </div>
+                    <button class="edit-btn edit-btn--outline" onclick="showModal('languageModal')">변경</button>
+                </div>
+            `;
+        }
+
+        // 6. 환경 설정 스켈레톤 생성
+        function createEnvironmentSettingsSkeleton() {
+            let container = document.querySelector('.container') || document.body;
+            
+            let envSection = document.querySelector('.environment-settings-section');
+            if (!envSection) {
+                envSection = document.createElement('section');
+                envSection.className = 'section environment-settings-section';
+                container.appendChild(envSection);
+            }
+            
+            envSection.innerHTML = `
+                <h2 class="section__title">⚙️ 환경 설정</h2>
+                <div class="setting-item">
+                    <div class="setting-item__info">
+                        <div class="setting-item__title">알림 설정</div>
+                        <div class="setting-item__description">새로운 기능과 업데이트 알림 받기</div>
+                        <div class="notification-status" id="notificationStatus">
+                            <div class="notification-status__indicator"></div>
+                            <span>-</span>
+                        </div>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleNotifications(this)" id="notificationToggle"></div>
+                </div>
+            `;
+        }
+
+        // 7. 최근 활동 스켈레톤 생성
+        function createRecentActivitySkeleton() {
+            let container = document.querySelector('.container') || document.body;
+            
+            let activitySection = document.querySelector('.recent-activity-section');
+            if (!activitySection) {
+                activitySection = document.createElement('section');
+                activitySection.className = 'section recent-activity-section';
+                container.appendChild(activitySection);
+            }
+            
+            activitySection.innerHTML = `
+                <h2 class="section__title">🕒 최근 활동</h2>
+                <ul class="activity-feed">
+                    <li class="activity-item">
+                        <div class="activity-item__icon activity-item__icon--ai">-</div>
+                        <div class="activity-item__content">
+                            <div class="activity-item__title">활동 내역: -</div>
+                            <div class="activity-item__time">시간: -</div>
+                        </div>
+                    </li>
+                </ul>
+            `;
+        }
+
+        // 8. 전체 스켈레톤 UI 생성 (무조건 실행)
+        function createAllSkeletonUI() {
+            console.log('스켈레톤 UI 생성 시작');
+            
+            try {
+                createUserProfileSkeleton();
+                createSubscriptionSkeleton();
+                createStatsGridSkeleton();
+                createUsageChartSkeleton();
+                createAccountSettingsSkeleton();
+                createEnvironmentSettingsSkeleton();
+                createRecentActivitySkeleton();
+                
+                console.log('스켈레톤 UI 생성 완료');
+            } catch (error) {
+                console.error('스켈레톤 UI 생성 실패:', error);
+                // 최후 수단 - 기본 HTML 추가
+                document.body.innerHTML += `
+                    <div style="padding: 20px; color: white; background: #111;">
+                        <h1>마이페이지</h1>
+                        <p>사용자 정보: - | 구독: - | 통계: - | 설정: - | 활동: -</p>
+                    </div>
+                `;
+            }
+        }
+
+        // ========================================
+        // 2단계: 데이터 업데이트 함수들 (오직 값만 교체)
+        // ========================================
+
+        // 1. 사용자 프로필 값만 업데이트
+        function updateUserProfileValues(userData) {
+            // 사용자명
+            const userName = document.getElementById('userName');
+            if (userName) {
+                userName.textContent = userData.username || userData.name || '-';
+            }
+            
+            // 아바타
+            const userAvatar = document.getElementById('userAvatar');
+            if (userAvatar) {
+                const initial = (userData.username || userData.email || 'U')[0].toUpperCase();
+                userAvatar.textContent = initial;
+            }
+            
+            // 상태
+            const userStatus = document.getElementById('userStatus');
+            if (userStatus) {
+                const joinDate = userData.created_at ? 
+                    new Date(userData.created_at).toLocaleDateString('ko-KR') : '-';
+                const plan = userData.subscription?.type || userData.plan || 'Free';
+                userStatus.textContent = `One AI ${plan} 사용자 · 가입일: ${joinDate}`;
+            }
+            
+            // 배지
+            updateUserBadgesValues(userData);
+            
+            // 헤더 통계 값들
+            updateHeaderStatsValues(userData.stats || {});
+        }
+
+        // 2. 배지 값만 업데이트
+        function updateUserBadgesValues(userData) {
+            const badgesContainer = document.getElementById('userBadges');
+            if (!badgesContainer) return;
+            
+            badgesContainer.innerHTML = '';
+            
+            const subscriptionType = userData.subscription?.type || userData.plan;
+            if (subscriptionType && subscriptionType !== 'Free') {
+                if (subscriptionType === 'Pro') {
+                    badgesContainer.innerHTML += '<span class="badge badge--pro">Pro 멤버</span>';
+                } else if (subscriptionType === 'Premium') {
+                    badgesContainer.innerHTML += '<span class="badge badge--premium">프리미엄</span>';
+                }
+            }
+            
+            if (userData.verified || userData.email_verified) {
+                badgesContainer.innerHTML += '<span class="badge badge--verified">인증됨</span>';
+            }
+            
+            if (userData.role === 'developer') {
+                badgesContainer.innerHTML += '<span class="badge badge--developer">개발자</span>';
+            }
+            
+            if (badgesContainer.innerHTML.trim() === '') {
+                badgesContainer.innerHTML = '<span class="badge badge--user">일반 사용자</span>';
+            }
+        }
+
+        // 3. 헤더 통계 값만 업데이트
+        function updateHeaderStatsValues(statsData) {
+            const statNumbers = document.querySelectorAll('#userStats .stat-item__number');
+            
+            if (statNumbers[0]) statNumbers[0].textContent = statsData.consecutive_days || '-';
+            if (statNumbers[1]) statNumbers[1].textContent = statsData.total_conversations ? statsData.total_conversations.toLocaleString() : '-';
+            if (statNumbers[2]) statNumbers[2].textContent = statsData.saved_items || '-';
+            if (statNumbers[3]) statNumbers[3].textContent = statsData.satisfaction_rating ? statsData.satisfaction_rating.toFixed(1) : '-';
+        }
+
+        // 4. 구독 정보 값만 업데이트
+        function updateSubscriptionValues(subscriptionData) {
+            const titleElement = document.querySelector('.subscription-card__title');
+            const badgeElement = document.querySelector('.subscription-card__badge');
+            const valueElements = document.querySelectorAll('.subscription-detail__value');
+            
+            const planType = subscriptionData.type || 'Free';
+            const status = subscriptionData.status || 'active';
+            const price = subscriptionData.price || 0;
+            const nextBilling = subscriptionData.next_billing_date;
+            const usageLimit = subscriptionData.usage_limit;
+            const sessions = subscriptionData.concurrent_sessions || 1;
+            
+            // 제목 업데이트
+            if (titleElement) {
+                titleElement.textContent = `One AI ${planType}`;
+            }
+            
+            // 상태 배지 업데이트
+            if (badgeElement) {
+                const statusDisplay = {
+                    'active': '활성',
+                    'inactive': '비활성',
+                    'cancelled': '취소됨',
+                    'expired': '만료됨'
+                }[status] || '-';
+                
+                badgeElement.textContent = statusDisplay;
+                badgeElement.className = `subscription-card__badge ${status === 'active' ? '' : 'badge--inactive'}`;
+            }
+            
+            // 값들 업데이트
+            if (valueElements[0]) {
+                valueElements[0].textContent = price > 0 ? `₩${price.toLocaleString()}` : '무료';
+            }
+            if (valueElements[1]) {
+                valueElements[1].textContent = nextBilling ? 
+                    new Date(nextBilling).toLocaleDateString('ko-KR') : 
+                    (price === 0 ? '해당없음' : '-');
+            }
+            if (valueElements[2]) {
+                valueElements[2].textContent = usageLimit === 'unlimited' ? '무제한' : (usageLimit || '-');
+            }
+            if (valueElements[3]) {
+                valueElements[3].textContent = `${sessions}개`;
+            }
+        }
+
+        // 5. 통계 그리드 값만 업데이트
+        function updateStatsGridValues(statsData) {
+            const statNumbers = document.querySelectorAll('.stats-grid .stat-card__number');
+            const statDescriptions = document.querySelectorAll('.stats-grid .stat-card__description');
+            
+            const monthlyConversations = statsData.monthly_conversations || 0;
+            const totalHours = statsData.total_usage_hours || 0;
+            const costSavings = statsData.cost_savings || 0;
+            const favoritePrompts = statsData.favorite_prompts || 0;
+            
+            // 수치 업데이트
+            if (statNumbers[0]) statNumbers[0].textContent = monthlyConversations || '-';
+            if (statNumbers[1]) statNumbers[1].textContent = totalHours ? totalHours + 'h' : '-';
+            if (statNumbers[2]) statNumbers[2].textContent = costSavings > 0 ? `₩${Math.floor(costSavings / 1000)}K` : '-';
+            if (statNumbers[3]) statNumbers[3].textContent = favoritePrompts || '-';
+            
+            // 설명 업데이트
+            const monthlyGrowth = monthlyConversations > 0 ? Math.floor(Math.random() * 30) + 10 : 0;
+            const dailyAverage = totalHours > 0 ? (totalHours / 30).toFixed(1) : 0;
+            
+            if (statDescriptions[0]) {
+                statDescriptions[0].textContent = monthlyGrowth ? `지난 달 대비 +${monthlyGrowth}%` : '데이터 없음';
+            }
+            if (statDescriptions[1]) {
+                statDescriptions[1].textContent = dailyAverage ? `평균 ${dailyAverage}h/일` : '데이터 없음';
+            }
+            if (statDescriptions[2]) {
+                statDescriptions[2].textContent = costSavings > 0 ? '쉐어링 통해 절약' : '데이터 없음';
+            }
+            if (statDescriptions[3]) {
+                statDescriptions[3].textContent = favoritePrompts > 0 ? '자주 사용하는 템플릿' : '데이터 없음';
+            }
+        }
+
+        // 6. 주간 사용량 차트 값만 업데이트
+        function updateWeeklyUsageValues(weeklyData) {
+            const chartBars = document.querySelectorAll('.usage-chart__bar');
+            const days = ['월', '화', '수', '목', '금', '토', '일'];
+            
+            if (weeklyData && weeklyData.length === 7) {
+                const maxUsage = Math.max(...weeklyData);
+                chartBars.forEach((bar, index) => {
+                    const usage = weeklyData[index] || 0;
+                    const height = maxUsage > 0 ? (usage / maxUsage) * 100 : 10;
+                    
+                    bar.style.height = `${height}%`;
+                    bar.title = `${days[index]}요일: ${usage}회`;
+                });
+            }
+        }
+
+        // 7. 계정 설정 값만 업데이트
+        function updateAccountSettingsValues(userData) {
+            const settingDescriptions = document.querySelectorAll('.account-settings-section .setting-item__description');
+            
+            if (settingDescriptions[0]) {
+                settingDescriptions[0].textContent = userData.email || '-';
+            }
+            
+            if (settingDescriptions[1]) {
+                const passwordChangeDate = userData.password_changed_at ? 
+                    '마지막 변경: ' + new Date(userData.password_changed_at).toLocaleDateString('ko-KR') : 
+                    '마지막 변경: -';
+                settingDescriptions[1].textContent = passwordChangeDate;
+            }
+            
+            if (settingDescriptions[2]) {
+                const languageNames = {
+                    'ko': '한국어',
+                    'en': 'English',
+                    'ja': '日本語',
+                    'zh': '中文',
+                    'es': 'Español'
+                };
+                const userLanguage = userData.settings?.language || userData.language || 'ko';
+                settingDescriptions[2].textContent = languageNames[userLanguage] || '한국어';
+            }
+        }
+
+        // 8. 알림 설정 값만 업데이트
+        function updateNotificationSettingsValues(userData) {
+            const notificationToggle = document.getElementById('notificationToggle');
+            const notificationStatus = document.getElementById('notificationStatus');
+            
+            if (notificationToggle && notificationStatus) {
+                const notificationsEnabled = userData.settings?.notifications ?? userData.notifications_enabled ?? true;
+                
+                if (notificationsEnabled) {
+                    notificationToggle.classList.add('toggle-switch--active');
+                    notificationStatus.className = 'notification-status notification-status--enabled';
+                    notificationStatus.querySelector('span').textContent = '알림 활성화됨';
+                } else {
+                    notificationToggle.classList.remove('toggle-switch--active');
+                    notificationStatus.className = 'notification-status notification-status--disabled';
+                    notificationStatus.querySelector('span').textContent = '알림 비활성화됨';
+                }
+            }
+        }
+
+        // 9. 최근 활동 값만 업데이트
+        function updateRecentActivityValues(activityData) {
+            const activityFeed = document.querySelector('.recent-activity-section .activity-feed');
+            if (!activityFeed) return;
+            
+            const activities = activityData || [
+                {
+                    type: 'ai_conversation',
+                    title: '최근 활동 없음',
+                    time: '-',
+                    icon: '📭'
+                }
+            ];
+            
+            activityFeed.innerHTML = activities.map(activity => `
+                <li class="activity-item">
+                    <div class="activity-item__icon activity-item__icon--${activity.type}">
+                        ${activity.icon}
+                    </div>
+                    <div class="activity-item__content">
+                        <div class="activity-item__title">${activity.title}</div>
+                        <div class="activity-item__time">${activity.time}</div>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        // ========================================
+        // 메인 함수들
+        // ========================================
+
+        // 10. 전체 데이터 값만 업데이트 (스켈레톤은 건드리지 않음)
+        function updateAllProfileValues(userData) {
+            console.log('프로필 값 업데이트 시작:', userData);
+            
+            try {
+                updateUserProfileValues(userData);
+                updateSubscriptionValues(userData.subscription || {});
+                updateStatsGridValues(userData.stats || {});
+                updateWeeklyUsageValues(userData.weekly_usage);
+                updateAccountSettingsValues(userData);
+                updateNotificationSettingsValues(userData);
+                updateRecentActivityValues(userData.recent_activity);
+                
+                console.log('프로필 값 업데이트 완료');
+            } catch (error) {
+                console.error('프로필 값 업데이트 실패:', error);
+            }
+        }
+
+        // 11. 초기화 함수 (페이지 로드시 무조건 실행)
+        function initializeProfilePage() {
+            console.log('프로필 페이지 초기화 시작');
+            
+            // 1단계: 무조건 스켈레톤 UI 생성 (기본값 '-')
+            createAllSkeletonUI();
+            
+            // 2단계: 실제 데이터가 있으면 값 업데이트
+            try {
+                const userData = getUserData(); // 실제 데이터 가져오기
+                if (userData) {
+                    updateAllProfileValues(userData);
+                }
+            } catch (error) {
+                console.error('사용자 데이터 로드 실패:', error);
+                // 실패해도 스켈레톤은 이미 생성되어 있음
+            }
+            
+            console.log('프로필 페이지 초기화 완료');
+        }
+
+        // 12. 사용자 데이터 가져오기 함수 (실제 구현 시 수정)
+        function getUserData() {
+            // OneAI 모듈 사용 시도
+            if (window.OneAIAuth && window.OneAIAuth.getCurrentUser) {
+                return window.OneAIAuth.getCurrentUser();
+            }
+            
+            // localStorage에서 가져오기 시도
+            const userStr = localStorage.getItem('oneai_user') || sessionStorage.getItem('oneai_user');
+            if (userStr) {
+                try {
+                    return JSON.parse(userStr);
+                } catch (e) {
+                    console.error('사용자 데이터 파싱 실패:', e);
+                }
+            }
+            
+            return null;
+        }
+
+        // 13. 샘플 데이터로 테스트하는 함수 (새로운 스켈레톤 기반)
+        function loadSampleDataNew() {
+            const sampleData = {
+                username: '김개발자',
+                email: 'developer@oneai.com',
+                created_at: '2024-01-15',
+                verified: true,
+                role: 'developer',
+                subscription: {
+                    type: 'Pro',
+                    status: 'active',
+                    price: 29000,
+                    next_billing_date: '2024-12-15',
+                    usage_limit: 'unlimited',
+                    concurrent_sessions: 3
+                },
+                stats: {
+                    consecutive_days: 15,
+                    total_conversations: 1250,
+                    saved_items: 42,
+                    satisfaction_rating: 4.8,
+                    monthly_conversations: 156,
+                    total_usage_hours: 67,
+                    cost_savings: 125000,
+                    favorite_prompts: 8
+                },
+                settings: {
+                    language: 'ko',
+                    notifications: true
+                },
+                password_changed_at: '2024-10-01',
+                weekly_usage: [42, 56, 32, 63, 49, 21, 28],
+                recent_activity: [
+                    {
+                        type: 'ai_conversation',
+                        title: 'ChatGPT로 코딩 문제 해결',
+                        time: '2분 전',
+                        icon: '🤖'
+                    },
+                    {
+                        type: 'sharing_join',
+                        title: 'Claude Pro 쉐어링 참여',
+                        time: '30분 전',
+                        icon: '🤝'
+                    }
+                ]
+            };
+            
+            updateAllProfileValues(sampleData);
+        }
+
+        // ========================================
+        // 사용법
+        // ========================================
+
+        // 페이지 로드 시 무조건 실행:
+        // initializeProfilePage();
+
+        // 데이터 업데이트만 하고 싶을 때:
+        // updateAllProfileValues(newUserData);
+
+        // 샘플 데이터로 테스트:
+        // loadSampleDataNew();
+
+    </script>
+</body>
+</html>

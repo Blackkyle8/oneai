@@ -408,6 +408,9 @@ document.addEventListener('click', function(event) {
 
 console.log('OneAI Auth System loaded');
 
+// 전역 OneAIAuth 인스턴스 생성
+window.OneAIAuth = new OneAIAuth();
+
 // 간단한 전역 함수들 생성 (bind 없이)
 window.oneAILogin = function(userData, token, rememberMe) {
     return window.OneAIAuth.login(userData, token, rememberMe);

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>One AI - 비즈니스센터</title>
+
     <style>
         /* One AI Design System - Essential CSS Variables & Components */
         :root {
@@ -122,7 +122,7 @@
             border-radius: var(--radius-sm);
         }
 
-        /* Custom Scrollbar Styling */
+        /* Custom Scrollbar Styling - 통일된 스크롤 디자인 */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -131,16 +131,20 @@
         ::-webkit-scrollbar-track {
             background: var(--color-surface-elevated);
             border-radius: var(--radius-sm);
+            margin: 2px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--text-quaternary);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: var(--radius-sm);
-            transition: background-color var(--motion-duration-normal) var(--motion-ease);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
         }
 
         ::-webkit-scrollbar-thumb:hover {
             background: var(--color-primary-500);
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
         }
 
         ::-webkit-scrollbar-corner {
@@ -150,27 +154,48 @@
         /* Firefox Scrollbar */
         html {
             scrollbar-width: thin;
-            scrollbar-color: var(--text-quaternary) var(--color-surface-elevated);
+            scrollbar-color: rgba(255, 255, 255, 0.2) var(--color-surface-elevated);
         }
 
         /* 특정 요소들의 스크롤바 커스터마이징 */
         .modal__content::-webkit-scrollbar,
         .dropdown::-webkit-scrollbar,
-        .form-textarea::-webkit-scrollbar {
-            width: 6px;
+        .form-textarea::-webkit-scrollbar,
+        .upload-area::-webkit-scrollbar,
+        .content-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .modal__content::-webkit-scrollbar-track,
+        .dropdown::-webkit-scrollbar-track,
+        .form-textarea::-webkit-scrollbar-track,
+        .upload-area::-webkit-scrollbar-track,
+        .content-container::-webkit-scrollbar-track {
+            background: var(--color-surface-elevated);
+            border-radius: var(--radius-sm);
+            margin: 2px;
         }
 
         .modal__content::-webkit-scrollbar-thumb,
         .dropdown::-webkit-scrollbar-thumb,
-        .form-textarea::-webkit-scrollbar-thumb {
+        .form-textarea::-webkit-scrollbar-thumb,
+        .upload-area::-webkit-scrollbar-thumb,
+        .content-container::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.2);
             border-radius: var(--radius-sm);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
         }
 
         .modal__content::-webkit-scrollbar-thumb:hover,
         .dropdown::-webkit-scrollbar-thumb:hover,
-        .form-textarea::-webkit-scrollbar-thumb:hover {
-            background: var(--color-primary-400);
+        .form-textarea::-webkit-scrollbar-thumb:hover,
+        .upload-area::-webkit-scrollbar-thumb:hover,
+        .content-container::-webkit-scrollbar-thumb:hover {
+            background: var(--color-primary-500);
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
         }
 
         /* 테이블 스크롤 영역 */
@@ -180,21 +205,26 @@
         }
 
         .table-container::-webkit-scrollbar {
-            height: 6px;
+            height: 8px;
         }
 
         .table-container::-webkit-scrollbar-track {
-            background: var(--color-surface-modal);
+            background: var(--color-surface-elevated);
             border-radius: var(--radius-sm);
+            margin: 2px;
         }
 
         .table-container::-webkit-scrollbar-thumb {
-            background: var(--surface-glass-border);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: var(--radius-sm);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
         }
 
         .table-container::-webkit-scrollbar-thumb:hover {
             background: var(--color-primary-500);
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
         }
 
         /* Typography Classes */
@@ -245,11 +275,10 @@
 
         .grid { display: grid; }
         .grid-cols-auto { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
-        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
-        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
         .relative { position: relative; }
-        .absolute { position: absolute; }
 
         /* Button Components */
         .btn {
@@ -282,7 +311,7 @@
         .btn--primary:hover:not(:disabled) {
             background: var(--color-primary-400);
             transform: translateY(-1px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.25);
         }
 
         .btn--secondary {
@@ -350,7 +379,7 @@
         .form-select:focus,
         .form-textarea:focus {
             border-color: var(--color-primary-500);
-            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
             outline: none;
         }
 
@@ -666,41 +695,11 @@
         /* Display Utilities */
         .hidden { display: none !important; }
         .block { display: block; }
-        .inline-block { display: inline-block; }
-
         /* Border Radius */
         .rounded-md { border-radius: var(--radius-md); }
         .rounded-lg { border-radius: var(--radius-lg); }
 
-        /* Cursor */
-        .cursor-pointer { cursor: pointer; }
-
-        /* Animations */
-        @keyframes bounce {
-            0%, 20%, 53%, 80%, 100% {
-                transform: translate3d(0,0,0) scale(1);
-            }
-            40%, 43% {
-                transform: translate3d(0, -10px, 0) scale(1.1);
-            }
-            70% {
-                transform: translate3d(0, -5px, 0) scale(1.05);
-            }
-            90% {
-                transform: translate3d(0, -2px, 0) scale(1.02);
-            }
-        }
-
         /* 추가 페이지별 스타일 */
-        .hero-section {
-            text-align: center;
-            padding: var(--spacing-3xl) 0;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent);
-            border-radius: var(--radius-2xl);
-            margin-bottom: var(--spacing-3xl);
-            position: relative;
-        }
-        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -882,302 +881,12 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: var(--spacing-lg);
-            min-height: calc(100vh - 64px);
+            min-height: calc(100vh - 50px);
         }
 
         .page-header {
             display: flex;
             align-items: center;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-2xl);
-            padding: var(--spacing-lg) 0;
-        }
-
-        /* Header Component */
-        .header {
-            height: 60px;
-            box-sizing: border-box;
-            overflow: hidden;
-            background: var(--surface-elevated);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 var(--spacing-2xl);
-            position: sticky;
-            top: 0;
-            z-index: var(--z-index-sidebar);
-            transition: background-color var(--motion-standard);
-        }
-
-        .header__logo {
-            font-size: 18px;
-            flex-shrink: 0;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .header__spacer {
-            flex: 1;
-        }
-
-        .header__actions {
-            display: flex;
-            gap: var(--spacing-md);
-            align-items: center;
-        }
-
-        .btn--header {
-            padding: 6px 16px;
-            font-size: var(--font-size-sm);
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
-        }
-
-        .btn--header:hover {
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        .nav-tab {
-            padding: 6px 16px;
-            display: flex;
-            align-items: center;
-            height: 40px;
-        }
-
-        /* 프로필 메뉴 스타일 */
-        .profile-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--color-primary-500), #3b82f6);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-
-        .profile-btn:hover {
-            transform: scale(1.05);
-            border-color: var(--color-primary-400);
-        }
-
-        .notification-dot {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 12px;
-            height: 12px;
-            background: var(--color-error);
-            border-radius: 50%;
-            border: 2px solid var(--surface-base);
-        }
-
-        .dropdown {
-            position: absolute;
-            top: calc(100% + 8px);
-            right: 0;
-            width: 280px;
-            background: var(--surface-modal);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-xl);
-            backdrop-filter: blur(20px);
-            z-index: var(--z-index-dropdown);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all var(--motion-standard);
-        }
-
-        .dropdown--show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .profile-section {
-            padding: var(--spacing-md);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .profile-info {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .profile-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-lg);
-            background: linear-gradient(135deg, var(--color-primary-500), #3b82f6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .profile-details h3 {
-            font-size: var(--font-size-sm);
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-
-        .profile-details p {
-            font-size: var(--font-size-xs);
-            color: var(--text-secondary);
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 8px;
-            border-radius: var(--radius-md);
-            font-size: 10px;
-            font-weight: 600;
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--color-primary-500);
-            border: 1px solid var(--color-primary-500);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: var(--spacing-sm);
-            background: rgba(16, 185, 129, 0.05);
-            padding: var(--spacing-sm);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            display: block;
-            font-size: var(--font-size-base);
-            font-weight: 700;
-            color: var(--color-success);
-        }
-
-        .stat-label {
-            font-size: 10px;
-            color: var(--text-tertiary);
-        }
-
-        .nav__item {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: var(--font-size-sm);
-            font-weight: 500;
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: var(--radius-md);
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-        }
-
-        .nav__item:hover {
-            color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .menu-section {
-            padding: var(--spacing-xs);
-        }
-
-        .menu-divider {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin: var(--spacing-xs) 0;
-            padding-top: var(--spacing-sm);
-        }
-
-        .text-error {
-            color: var(--color-error);
-        }
-
-        .relative {
-            position: relative;
-        }
-
-        .notification-dot {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 12px;
-            height: 12px;
-            background: var(--color-error);
-            border-radius: var(--radius-full);
-            border: 2px solid var(--color-surface-base);
-        }
-
-        .notification {
-            top: 70px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--spacing-sm);
-            padding: 10px 20px;
-            border: none;
-            border-radius: var(--radius-lg);
-            font-family: inherit;
-            font-size: var(--font-size-sm);
-            font-weight: var(--font-weight-semibold);
-            line-height: 1;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all var(--motion-duration-fast) var(--motion-ease);
-            white-space: nowrap;
-            height: 40px;
-            min-height: 40px;
-        }
-
-        .header .gap-md {
-            gap: var(--spacing-md);
-            align-items: center;
-            height: 100%;
-        }
-
-        .dropdown {
-            position: absolute;
-            top: calc(100% + var(--spacing-sm));
-            right: 0;
-            width: 280px;
-            background: var(--color-surface-modal);
-            border: 1px solid var(--surface-glass-border);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-xl);
-            backdrop-filter: blur(20px);
-            z-index: var(--z-index-dropdown);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all var(--motion-duration-slow) var(--motion-ease);
-        }
-
-        .dropdown--show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
         }
 
         .back-btn {
@@ -1210,6 +919,94 @@
             margin-bottom: var(--spacing-xl);
         }
 
+        /* Hero Section - 쉐어링 스타일 적용 */
+        .hero-section {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+            background: linear-gradient(135deg, var(--color-surface-elevated), var(--color-surface-modal));
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-2xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background var(--motion-standard);
+        }
+
+        .hero-section__title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-section__subtitle {
+            color: var(--text-secondary);
+            font-size: var(--font-size-base);
+            max-width: 600px;
+            margin: 0 auto var(--spacing-lg);
+            line-height: 1.6;
+        }
+
+        /* Profile Button */
+        .profile-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--color-primary-500), var(--color-info));
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            transition: all var(--motion-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-sm);
+        }
+
+        .profile-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--color-primary-400);
+        }
+
+        /* Dropdown */
+        .dropdown {
+            position: absolute;
+            top: calc(100% + var(--spacing-sm));
+            right: 0;
+            width: 280px;
+            background: var(--surface-modal);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            backdrop-filter: blur(20px);
+            z-index: var(--z-index-dropdown);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 350ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dropdown--show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* 버튼 헤더 스타일 */
+        .btn--header {
+            padding: 6px 16px;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn--header:hover {
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
         /* Service specific gradients */
         .service-card--builder {
             --service-gradient: linear-gradient(90deg, var(--color-primary-500), var(--color-primary-400));
@@ -1225,6 +1022,10 @@
 
         .service-card--consulting {
             --service-gradient: linear-gradient(90deg, #f97316, #fb923c);
+        }
+
+        .service-card--cloud {
+            --service-gradient: linear-gradient(90deg, #8b5cf6, #a78bfa);
         }
 
         /* 판매자 등록 페이지 스타일 개선 - 글로벌 스탠다드 */
@@ -1361,14 +1162,9 @@
 
         /* 모바일 반응형 개선 */
         @media (max-width: 768px) {
-            .header {
-                height: auto;
-                min-height: 60px;
-            }
             
-            .header__content {
-                padding: var(--spacing-md);
-                min-height: 60px;
+            .hero-section__title {
+                font-size: var(--font-size-2xl);
             }
             
             .btn span {
@@ -1412,16 +1208,35 @@
 </head>
 
 <body>
+    <!-- Global Variables -->
+    <script>
+        let promptBlocks = [];
+        let aiEngines = [];
+        let userProfile = {
+            name: '김개발자',
+            email: 'kim@example.com',
+            isSeller: false,
+            aiEngine: null
+        };
+    </script>
 
     <!-- 홈 페이지 -->
     <div id="homePage" class="page-container">
+
         <!-- Hero Section -->
         <div class="hero-section">
-            <h1 class="text-4xl font-bold mb-lg gradient-text">💼 비즈니스센터</h1>
-            <p class="text-xl text-secondary mb-2xl" style="max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6;">나만의 AI 엔진을 제작하고 판매하여 새로운 수익원을 창출하세요!<br>노코드 빌더부터 기업 맞춤 솔루션까지, AI 비즈니스의 모든 것을 지원합니다.</p>
-            <div class="flex gap-md justify-center" style="flex-wrap: wrap;">
-                <button class="btn btn--primary" onclick="showAIBuilder()">🛠️ AI 엔진 제작 시작</button>
-                <button class="btn btn--secondary" onclick="showMarketplace()">🏪 마켓플레이스 둘러보기</button>
+            <div class="flex justify-between items-start mb-lg">
+                <div style="flex: 1;">
+                    <h1 class="hero-section__title" style="text-align: left; margin-bottom: var(--spacing-md);">💼 AI 비즈니스센터</h1>
+                    <p class="hero-section__subtitle" style="text-align: left; max-width: none; margin-bottom: 0;">
+                        나만의 AI 엔진을 제작하고 판매하여 새로운 수익원을 창출하세요!<br>
+                        노코드 빌더부터 기업 맞춤 솔루션까지, AI 비즈니스의 모든 것을 지원합니다.
+                    </p>
+                </div>
+                <div class="flex flex-col gap-md" style="flex-shrink: 0;">
+                    <button class="btn btn--primary" onclick="showAIBuilder()">🛠️ AI 엔진 제작 시작</button>
+                    <button class="btn btn--secondary" onclick="showMarketplace()">🏪 AI 마켓 둘러보기</button>
+                </div>
             </div>
         </div>
         
@@ -1447,37 +1262,23 @@
 
         <!-- Services Section -->
         <div class="mb-3xl pb-3xl">
-            <h2 class="text-3xl font-semibold text-center mb-2xl">비즈니스 솔루션</h2>
+            <h2 class="text-3xl font-semibold text-center mb-2xl">💼 비즈니스 솔루션</h2>
             <div class="services-grid" style="margin-bottom: 64px;">
                 <div class="service-card service-card--builder" onclick="showAIBuilder()">
                     <div class="service-icon">🛠️</div>
-                    <h3 class="text-2xl font-semibold mb-sm">AI 엔진 빌더</h3>
-                    <p class="text-secondary mb-lg">노코드 방식으로 누구나 쉽게 AI 엔진을 제작할 수 있습니다. 드래그 앤 드롭으로 프롬프트 체인을 구성하고 맞춤형 AI를 만들어보세요.</p>
+                    <h3 class="text-2xl font-semibold mb-sm">AI 엔진 빌더 & 마켓</h3>
+                    <p class="text-secondary mb-lg">노코드 방식으로 누구나 쉽게 AI 엔진을 제작하고 판매할 수 있습니다. 드래그 앤 드롭으로 프롬프트 체인을 구성하고 맞춤형 AI를 만들어보세요.</p>
                     <ul class="feature-list">
                         <li>비주얼 프롬프트 체인 에디터</li>
                         <li>실시간 테스트 및 디버깅</li>
                         <li>원클릭 배포 및 API 생성</li>
-                        <li>사용량 기반 자동 스케일링</li>
-                    </ul>
-                    <div class="flex gap-sm">
-                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showAIBuilder();">무료로 시작하기</button>
-                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showToast('AI 엔진 빌더 데모를 시작합니다', 'info');">데모 보기</button>
-                    </div>
-                </div>
-
-                <div class="service-card service-card--marketplace" onclick="showMarketplace()">
-                    <div class="service-icon">🏪</div>
-                    <h3 class="text-2xl font-semibold mb-sm">AI 마켓플레이스</h3>
-                    <p class="text-secondary mb-lg">제작한 AI 엔진을 판매하고 수익을 창출하세요. 다양한 카테고리의 AI 솔루션을 구매할 수도 있습니다.</p>
-                    <ul class="feature-list">
                         <li>글로벌 AI 솔루션 마켓</li>
                         <li>안전한 결제 및 라이선스 관리</li>
-                        <li>실시간 수익 대시보드</li>
                         <li>고객 리뷰 및 평점 시스템</li>
                     </ul>
                     <div class="flex gap-sm">
-                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showSellerRegistration();">판매자 등록</button>
-                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showMarketplace();">제품 둘러보기</button>
+                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showAIBuilder();">AI 엔진 만들기</button>
+                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showMarketplace();">마켓 둘러보기</button>
                     </div>
                 </div>
 
@@ -1490,42 +1291,48 @@
                         <li>수익 및 비용 분석</li>
                         <li>사용자 행동 분석</li>
                         <li>성능 최적화 권장사항</li>
+                        <li>사용량 기반 자동 스케일링</li>
+                        <li>마켓 판매 현황 추적</li>
                     </ul>
                     <div class="flex gap-sm">
-                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showAnalytics();">분석 시작</button>
-                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showToast('애널리틱스 리포트 예시를 확인하세요', 'info');">리포트 예시</button>
+                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showAnalytics();">AI 비즈니스 애널리틱스</button>
+                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showToast('현황 보고서를 확인하세요', 'info');">현황 보고서 보기</button>
                     </div>
                 </div>
 
-                <div class="service-card service-card--consulting" onclick="showConsulting()">
-                    <div class="service-icon">🎯</div>
-                    <h3 class="text-2xl font-semibold mb-sm">기업 AI 컨설팅</h3>
-                    <p class="text-secondary mb-lg">기업의 특수한 요구사항에 맞는 맞춤형 AI 솔루션을 개발합니다. 전문 컨설턴트가 프로젝트 전 과정을 지원합니다.</p>
+                <div class="service-card service-card--consulting" onclick="showAutomation()">
+                    <div class="service-icon">🤖</div>
+                    <h3 class="text-2xl font-semibold mb-sm">기업 AI 업무자동화</h3>
+                    <p class="text-secondary mb-lg">AI CRM, 챗봇, 문서 처리 등 반복 업무를 자동화하여 인력 비용을 절감하고 업무 효율성을 극대화합니다. 맞춤형 AI 솔루션으로 디지털 전환을 가속화하세요.</p>
                     <ul class="feature-list">
-                        <li>전담 AI 컨설턴트 배정</li>
-                        <li>맞춤형 AI 솔루션 개발</li>
-                        <li>온프레미스 배포 지원</li>
-                        <li>24/7 기술 지원</li>
+                        <li>AI 고객 상담 챗봇 구축</li>
+                        <li>CRM 자동화 시스템</li>
+                        <li>문서 처리 및 데이터 입력 자동화</li>
+                        <li>이메일 및 일정 관리 AI</li>
+                        <li>반복 업무 프로세스 자동화</li>
+                        <li>24/7 무인 고객 지원</li>
                     </ul>
                     <div class="flex gap-sm">
-                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showConsulting();">상담 신청</button>
-                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showToast('컨설팅 포트폴리오를 확인하세요', 'info');">포트폴리오</button>
+                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showAutomation();">업무자동화 상담</button>
+                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showToast('인력 절감 효과 분석을 제공합니다', 'info');">ROI 계산기</button>
                     </div>
                 </div>
 
-                <div class="service-card" style="--service-gradient: linear-gradient(90deg, #8b5cf6, #a855f7);" onclick="showCloudSubscription()">
+                <div class="service-card service-card--cloud" onclick="showCloudSubscription()">
                     <div class="service-icon">☁️</div>
                     <h3 class="text-2xl font-semibold mb-sm">클라우드 최저가 구독</h3>
-                    <p class="text-secondary mb-lg">업계 최저가로 클라우드 AI 서비스를 이용하세요. 사용한 만큼만 결제하는 합리적인 요금제를 제공합니다.</p>
+                    <p class="text-secondary mb-lg">One AI 파트너십을 통해 AWS, GCP, Azure, NCP 등 주요 클라우드 서비스를 할인된 가격으로 이용하세요.</p>
                     <ul class="feature-list">
-                        <li>업계 최저가 요금제</li>
-                        <li>사용량 기반 과금</li>
-                        <li>무료 크레딧 제공</li>
-                        <li>24/7 클라우드 지원</li>
+                        <li>AWS 12개월 무료 + 20% 할인</li>
+                        <li>GCP $300 크레딧 + 15% 할인</li>
+                        <li>Azure $200 크레딧 + OpenAI 할인</li>
+                        <li>NCP 6개월 무료 + CLOVA AI 할인</li>
+                        <li>전용 할인 코드 제공</li>
+                        <li>클라우드 선택 가이드</li>
                     </ul>
                     <div class="flex gap-sm">
-                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showCloudSubscription();">요금제 보기</button>
-                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showToast('무료 크레딧을 지급해드립니다', 'success');">무료 체험</button>
+                        <button class="btn btn--primary flex-1" onclick="event.stopPropagation(); showCloudSubscription();">클라우드 할인 신청</button>
+                        <button class="btn btn--ghost flex-1" onclick="event.stopPropagation(); showToast('최대 50% 할인 혜택!', 'info');">할인 혜택 보기</button>
                     </div>
                 </div>
             </div>
@@ -1841,11 +1648,11 @@
         </div>
     </div>
 
-    <!-- 마켓플레이스 페이지 -->
+    <!-- 마켓 페이지 -->
     <div id="marketplacePage" class="page-container hidden">
         <div class="page-header">
             <button class="back-btn" onclick="showHome()">←</button>
-            <h1 class="page-title">🏪 AI 마켓플레이스</h1>
+            <h1 class="page-title">🏪 AI 마켓</h1>
             <div class="flex gap-md" style="margin-left: auto;">
                 <input type="text" class="form-input" placeholder="AI 엔진 검색..." style="width: 200px;">
                 <select class="form-select" style="width: 150px;">
@@ -2088,7 +1895,7 @@
             <div class="card mb-lg" style="border: 2px solid var(--color-primary-500);">
                 <h5 class="text-lg font-semibold mb-md">📊 트래킹 작동 방식</h5>
                 <ol class="text-base text-secondary" style="padding-left: 20px; line-height: 1.5;">
-                    <li class="mb-sm">고객이 One AI 마켓플레이스에서 귀하의 AI 엔진을 발견</li>
+                    <li class="mb-sm">고객이 One AI 마켓에서 귀하의 AI 엔진을 발견</li>
                     <li class="mb-sm"><strong>kim-ai-writer.oneais.com</strong> 링크를 클릭</li>
                     <li class="mb-sm">One AI 서버가 트래킹 정보를 기록</li>
                     <li class="mb-sm">고객을 귀하의 실제 AI 엔진으로 자동 리다이렉트</li>
@@ -2249,13 +2056,13 @@
     <div id="consultingPage" class="page-container hidden">
         <div class="page-header">
             <button class="back-btn" onclick="showHome()">←</button>
-            <h1 class="page-title">🎯 기업 AI 컨설팅</h1>
+            <h1 class="page-title">🎯 AI 업무자동화</h1>
         </div>
         
         <div class="content-section">
             <div class="text-center mb-xl">
-                <h2 class="text-3xl font-semibold mb-md">기업 맞춤형 AI 솔루션</h2>
-                <p class="text-secondary text-lg">전문 컨설턴트가 귀하의 비즈니스에 최적화된 AI 솔루션을 제공합니다</p>
+                <h2 class="text-3xl font-semibold mb-md">기업 맞춤형 AI 업무자동화</h2>
+                <p class="text-secondary text-lg">귀하의 비즈니스에 최적화된 AI 업무자동화 서비스를 제공합니다</p>
             </div>
             
             <div class="grid grid-cols-3 gap-lg mb-xl">
@@ -2544,6 +2351,12 @@
     </div>
 
     <script>
+        // ROI 계산기
+        function calculateROI() {
+            showToast('ROI 계산기 페이지로 이동합니다', 'info');
+            // 실제로는 ROI 계산 페이지로 이동
+        }
+
         // 페이지 네비게이션
         function showPage(pageId) {
             document.querySelectorAll('.page-container').forEach(page => {
@@ -2551,7 +2364,6 @@
             });
             
             document.getElementById(pageId).classList.remove('hidden');
-            currentPage = pageId.replace('Page', '');
             
             document.getElementById('profileDropdown').classList.remove('dropdown--show');
         }
@@ -2562,6 +2374,7 @@
         function showMarketplace() { showPage('marketplacePage'); }
         function showSettings() { showPage('settingsPage'); }
         function showConsulting() { showPage('consultingPage'); }
+        function showAutomation() { showPage('consultingPage'); }
         function showCloudSubscription() { showPage('cloudSubscriptionPage'); }
         function showSellerRegistration() { showPage('sellerRegistrationPage'); }
 
@@ -2689,54 +2502,6 @@
                         showToast(`${providerNames[provider]} 전용 링크가 클립보드에 복사되었습니다`, 'success');
                     }
                 }, 500);
-            }
-        }
-
-        function subscribeCloudPlan(planType) {
-            showToast('클라우드 서비스는 각 제공업체 사이트에서 직접 가입해주세요', 'info');
-        }
-
-        // 서비스 상세 정보 표시
-        function showServiceDetail(serviceType) {
-            const services = {
-                builder: {
-                    title: 'AI 엔진 빌더',
-                    description: '노코드 방식으로 AI 엔진을 제작하는 혁신적인 플랫폼입니다.',
-                    features: [
-                        '드래그 앤 드롭 인터페이스',
-                        '실시간 테스트 및 디버깅',
-                        '원클릭 배포',
-                        '자동 스케일링',
-                        '성능 모니터링'
-                    ]
-                },
-                marketplace: {
-                    title: 'AI 마켓플레이스',
-                    description: 'AI 엔진을 사고팔 수 있는 글로벌 마켓플레이스입니다.',
-                    features: [
-                        '글로벌 판매 네트워크',
-                        '안전한 결제 시스템',
-                        '실시간 수익 추적',
-                        '고객 리뷰 관리',
-                        '마케팅 지원'
-                    ]
-                },
-                analytics: {
-                    title: '비즈니스 애널리틱스',
-                    description: 'AI 엔진의 성과를 실시간으로 분석하고 최적화합니다.',
-                    features: [
-                        '실시간 대시보드',
-                        '수익 분석',
-                        '사용자 행동 분석',
-                        '예측 분석',
-                        '커스텀 리포트'
-                    ]
-                }
-            };
-            
-            const service = services[serviceType];
-            if (service) {
-                showToast(`${service.title} 상세 정보를 확인하세요`, 'info');
             }
         }
 
@@ -2900,10 +2665,10 @@
         }
 
         function publishEngine(engineId) {
-            showToast(`${engineId}가 마켓플레이스에 출시되었습니다`, 'success');
+            showToast(`${engineId}가 AI 마켓에 출시되었습니다`, 'success');
         }
 
-        // 마켓플레이스 기능
+        // 마켓 기능
         function showProductDetail(productId) {
             const products = {
                 'premium-writer': {
@@ -3098,12 +2863,6 @@
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey || e.metaKey) {
                 switch(e.key) {
-                    case 's':
-                        e.preventDefault();
-                        if (currentPage === 'aiBuilder') {
-                            saveEngine();
-                        }
-                        break;
                     case 'n':
                         e.preventDefault();
                         showAIBuilder();
@@ -3121,17 +2880,6 @@
             }
         });
 
-        // 실시간 데이터 시뮬레이션
-        setInterval(() => {
-            const dot = document.querySelector('.notification-dot');
-            if (dot && Math.random() < 0.1) {
-                dot.style.animation = 'bounce 1s ease-in-out';
-                setTimeout(() => {
-                    dot.style.animation = '';
-                }, 1000);
-            }
-        }, 5000);
-
         // 모달 외부 클릭시 닫기
         document.addEventListener('click', (e) => {
             const modal = document.getElementById('purchaseModal');
@@ -3139,6 +2887,68 @@
                 closeModal();
             }
         });
+        
+        // 언어 시스템 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.OneAILang) {
+                OneAILang.updateDOM();
+                
+                // 다른 탭에서 언어 변경 시 감지
+                window.addEventListener('storage', function(e) {
+                    if (e.key === 'oneai_language' && e.newValue !== e.oldValue) {
+                        OneAILang.setLanguage(e.newValue);
+                    }
+                });
+            }
+        });
+
+        // 도메인 미리보기 업데이트 함수
+        function updateDomainPreview() {
+            const subdomain = document.getElementById('oneaiSubdomain').value;
+            const domain = document.getElementById('aiEngineDomain').value;
+            
+            // 실시간 미리보기 업데이트 로직
+            const preview = document.querySelector('.tracking-demo-content');
+            if (preview && subdomain) {
+                preview.innerHTML = `
+                    <div class="text-success mb-sm">One AI 전용 링크:</div>
+                    <div class="text-primary mb-lg">https://${subdomain}.oneais.com</div>
+                    <div class="text-tertiary mb-sm">↓ 자동 리다이렉트</div>
+                    <div class="text-secondary">${domain || 'https://your-ai-engine.com'}?ref=oneai&seller=${subdomain}&tracking=oa_12345</div>
+                `;
+            }
+        }
+
+        // 전체 선택 업데이트 함수
+        function updateSelectAll() {
+            const checkboxes = document.querySelectorAll('.terms-checkbox');
+            const selectAll = document.getElementById('agreeAll');
+            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            
+            selectAll.checked = checkedCount === checkboxes.length;
+            selectAll.indeterminate = checkedCount > 0 && checkedCount < checkboxes.length;
+        }
+
+        // 전체 약관 동의 토글 함수
+        function toggleAllAgreements() {
+            const selectAll = document.getElementById('agreeAll');
+            const checkboxes = document.querySelectorAll('.terms-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+                updateTermsItemStyle(checkbox);
+            });
+        }
+
+        // 약관 아이템 스타일 업데이트 함수
+        function updateTermsItemStyle(checkbox) {
+            const item = checkbox.closest('.terms-agreement-item');
+            if (checkbox.checked) {
+                item.classList.add('selected');
+            } else {
+                item.classList.remove('selected');
+            }
+        }
     </script>
 </body>
 </html> 

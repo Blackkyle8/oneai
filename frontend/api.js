@@ -750,6 +750,13 @@ class OneAIAPI {
     }
 
     /**
+     * 사용자 프로필 정보 조회 (getCurrentUser의 별칭)
+     */
+    async getUserProfile() {
+        return this.getCurrentUser();
+    }
+
+    /**
      * 사용자 프로필 업데이트
      */
     async updateProfile(profileData) {
@@ -781,23 +788,138 @@ class OneAIAPI {
      * 사용자 통계 정보 조회
      */
     async getUserStats(userId = null, period = '30d') {
-        const endpoint = userId ? `/users/${userId}/stats` : '/users/me/stats';
-        return this.client.get(endpoint, { period });
+        try {
+            const endpoint = userId ? `/users/${userId}/stats` : '/users/me/stats';
+            const response = await this.client.get(endpoint, { period });
+            
+            if (response.success && response.data) {
+                const stats = response.data;
+                
+                // 통계 데이터를 프론트엔드에서 사용하기 쉬운 형태로 변환
+                return {
+                    consecutive_days: stats.consecutive_days || stats.streak || 0,
+                    total_conversations: stats.total_conversations || stats.conversations?.total || 0,
+                    saved_items: stats.saved_items || stats.bookmarks || 0,
+                    satisfaction_rating: stats.satisfaction_rating || stats.rating || 0,
+                    monthly_conversations: stats.monthly_conversations || stats.conversations?.monthly || 0,
+                    total_usage_hours: stats.total_usage_hours || stats.usage_time?.total || 0,
+                    cost_savings: stats.cost_savings || stats.savings || 0,
+                    favorite_prompts: stats.favorite_prompts || stats.prompts?.favorite || 0,
+                    // 추가 통계
+                    weekly_usage: stats.weekly_usage || [],
+                    growth_rate: stats.growth_rate || 0,
+                    avg_session_time: stats.avg_session_time || 0
+                };
+            }
+            
+            return null;
+        } catch (error) {
+            console.error('사용자 통계 조회 실패:', error);
+            return null;
+        }
     }
 
     /**
      * 사용자의 최근 활동 조회
      */
     async getRecentActivity(userId = null, limit = 10) {
-        const endpoint = userId ? `/users/${userId}/activity` : '/users/me/activity';
-        return this.client.get(endpoint, { limit });
+        try {
+            const endpoint = userId ? `/users/${userId}/activity` : '/users/me/activity';
+            const response = await this.client.get(endpoint, { limit });
+            
+            if (response.success && response.data) {
+                // 활동 데이터를 프론트엔드에서 사용하기 쉬운 형태로 변환
+                return response.data.map(activity => ({
+                    type: activity.type || 'ai',
+                    title: activity.title || activity.description || '활동 내역',
+                    time: this.formatActivityTime(activity.created_at || activity.timestamp),
+                    icon: this.getActivityIcon(activity.type)
+                }));
+            }
+            
+            return null;
+        } catch (error) {
+            console.error('최근 활동 조회 실패:', error);
+            return null;
+        }
+    }
+
+    /**
+     * 활동 시간 포맷팅 헬퍼
+     */
+    formatActivityTime(timestamp) {
+        if (!timestamp) return '시간 미상';
+        
+        const now = new Date();
+        const activityTime = new Date(timestamp);
+        const diffMs = now - activityTime;
+        const diffMinutes = Math.floor(diffMs / (1000 * 60));
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        
+        if (diffMinutes < 1) return '방금 전';
+        if (diffMinutes < 60) return `${diffMinutes}분 전`;
+        if (diffHours < 24) return `${diffHours}시간 전`;
+        if (diffDays < 7) return `${diffDays}일 전`;
+        
+        return activityTime.toLocaleDateString('ko-KR');
+    }
+
+    /**
+     * 활동 타입별 아이콘 반환
+     */
+    getActivityIcon(type) {
+        const icons = {
+            'ai_conversation': '🤖',
+            'ai': '🤖',
+            'sharing_join': '🤝',
+            'sharing': '🤝',
+            'share': '🤝',
+            'setting': '⚙️',
+            'settings': '⚙️',
+            'profile_update': '👤',
+            'profile': '👤',
+            'subscription': '💳',
+            'payment': '💳',
+            'file_upload': '📁',
+            'file': '📁',
+            'notification': '🔔',
+            'login': '🔑',
+            'logout': '🚪'
+        };
+        
+        return icons[type] || '📋';
     }
 
     /**
      * 사용자 구독 정보 조회
      */
     async getSubscriptionInfo() {
-        return this.client.get('/users/me/subscription');
+        try {
+            const response = await this.client.get('/users/me/subscription');
+            
+            if (response.success && response.data) {
+                const subscription = response.data;
+                
+                // 구독 정보를 프론트엔드에서 사용하기 쉬운 형태로 변환
+                return {
+                    type: subscription.plan || subscription.type || 'Free',
+                    status: subscription.status || 'active',
+                    price: subscription.price || 0,
+                    next_billing_date: subscription.next_billing_date || subscription.next_payment || null,
+                    usage_limit: subscription.usage_limit || subscription.limits?.usage || 'unlimited',
+                    concurrent_sessions: subscription.concurrent_sessions || subscription.limits?.sessions || 1,
+                    features: subscription.features || [],
+                    created_at: subscription.created_at || subscription.subscribed_at,
+                    expires_at: subscription.expires_at || subscription.valid_until
+                };
+            }
+            
+            return null;
+        } catch (error) {
+            console.error('구독 정보 조회 실패:', error);
+            return null;
+        }
     }
 
     /**
@@ -805,6 +927,31 @@ class OneAIAPI {
      */
     async getUsageStats(period = '7d') {
         return this.client.get('/users/me/usage', { period });
+    }
+
+    /**
+     * 주간 사용량 데이터 조회
+     */
+    async getWeeklyUsage() {
+        try {
+            // 일간 사용량 데이터를 7일치 가져와서 주간 배열로 변환
+            const response = await this.client.get('/users/me/usage/weekly');
+            
+            if (response.success && response.data) {
+                return response.data.weekly || response.data;
+            }
+            
+            // 실패시 getUsageStats에서 주간 데이터 추출 시도
+            const usageStats = await this.getUsageStats('7d');
+            if (usageStats && usageStats.data && usageStats.data.daily) {
+                return usageStats.data.daily.map(day => day.count || 0);
+            }
+            
+            return null;
+        } catch (error) {
+            console.error('주간 사용량 조회 실패:', error);
+            return null;
+        }
     }
 
     /**
@@ -818,7 +965,28 @@ class OneAIAPI {
      * 알림 설정 업데이트
      */
     async updateNotificationSettings(settings) {
-        return this.client.patch('/users/me/notifications/settings', settings);
+        try {
+            const response = await this.client.patch('/users/me/notifications/settings', settings);
+            
+            if (response.success) {
+                // 로컬 사용자 정보도 업데이트
+                if (window.OneAIAuth && window.OneAIAuth.currentUser) {
+                    const updatedUser = { 
+                        ...window.OneAIAuth.currentUser,
+                        settings: {
+                            ...window.OneAIAuth.currentUser.settings,
+                            notifications: settings.enabled !== undefined ? settings.enabled : settings.notifications
+                        }
+                    };
+                    window.OneAIAuth.updateUser(updatedUser);
+                }
+            }
+            
+            return response;
+        } catch (error) {
+            console.error('알림 설정 업데이트 실패:', error);
+            throw error;
+        }
     }
 
     /**
@@ -856,6 +1024,294 @@ class OneAIAPI {
             body: JSON.stringify({ password }),
             headers: { 'Content-Type': 'application/json' }
         });
+    }
+
+    /**
+     * 프로필 기본 정보만 빠르게 조회 (캐시 활용)
+     */
+    async getBasicProfile() {
+        try {
+            // 캐시에서 먼저 확인
+            const cached = this.client.userCache.get('basic_profile');
+            if (cached) {
+                return cached;
+            }
+            
+            const response = await this.client.get('/users/me/basic');
+            
+            if (response.success && response.data) {
+                // 캐시에 저장
+                this.client.userCache.set('basic_profile', response.data);
+                return response.data;
+            }
+            
+            // 실패시 getCurrentUser로 대체
+            return this.getCurrentUser();
+            
+        } catch (error) {
+            console.error('기본 프로필 조회 실패:', error);
+            // 오류시 OneAIAuth에서 가져오기
+            return window.OneAIAuth?.getCurrentUser() || null;
+        }
+    }
+
+    /**
+     * 저장된 항목 수 조회 (북마크, 즐겨찾기 등)
+     */
+    async getSavedItemsCount() {
+        try {
+            const response = await this.client.get('/users/me/saved-items/count');
+            return response.data?.count || 0;
+        } catch (error) {
+            console.error('저장된 항목 수 조회 실패:', error);
+            return 0;
+        }
+    }
+
+    /**
+     * 사용자 만족도 평점 조회
+     */
+    async getUserSatisfactionRating() {
+        try {
+            const response = await this.client.get('/users/me/satisfaction');
+            return response.data?.rating || 0;
+        } catch (error) {
+            console.error('만족도 평점 조회 실패:', error);
+            return 0;
+        }
+    }
+
+    /**
+     * 비용 절약 금액 계산 (쉐어링 통한 절약액)
+     */
+    async getCostSavings() {
+        try {
+            const response = await this.client.get('/users/me/cost-savings');
+            return response.data?.total_savings || 0;
+        } catch (error) {
+            console.error('비용 절약 정보 조회 실패:', error);
+            return 0;
+        }
+    }
+
+    /**
+     * 즐겨찾는 프롬프트 수 조회
+     */
+    async getFavoritePromptsCount() {
+        try {
+            const response = await this.client.get('/users/me/prompts/favorites/count');
+            return response.data?.count || 0;
+        } catch (error) {
+            console.error('즐겨찾는 프롬프트 수 조회 실패:', error);
+            return 0;
+        }
+    }
+
+    /**
+     * 개선된 사용자 통계 조회 - 모든 데이터 한 번에
+     */
+    async getCompleteUserStats(period = '30d') {
+        try {
+            // 여러 API를 병렬로 호출하여 완전한 통계 데이터 수집
+            const [
+                basicStats,
+                savedItems,
+                satisfaction,
+                costSavings,
+                favoritePrompts
+            ] = await Promise.allSettled([
+                this.getUserStats(null, period),
+                this.getSavedItemsCount(),
+                this.getUserSatisfactionRating(),
+                this.getCostSavings(),
+                this.getFavoritePromptsCount()
+            ]);
+
+            // 기본 통계 데이터
+            const stats = basicStats.status === 'fulfilled' ? basicStats.value : {};
+            
+            // 추가 데이터 병합
+            return {
+                ...stats,
+                saved_items: savedItems.status === 'fulfilled' ? savedItems.value : 0,
+                satisfaction_rating: satisfaction.status === 'fulfilled' ? satisfaction.value : 0,
+                cost_savings: costSavings.status === 'fulfilled' ? costSavings.value : 0,
+                favorite_prompts: favoritePrompts.status === 'fulfilled' ? favoritePrompts.value : 0,
+                // 계산된 추가 통계
+                growth_rate: this.calculateGrowthRate(stats),
+                avg_session_time: this.calculateAvgSessionTime(stats)
+            };
+        } catch (error) {
+            console.error('완전한 사용자 통계 조회 실패:', error);
+            return null;
+        }
+    }
+
+    /**
+     * 주간 사용량 데이터 안정적 조회
+     */
+    async getReliableWeeklyUsage() {
+        try {
+            // 1차 시도: 전용 주간 API
+            let response = await this.client.get('/users/me/usage/weekly');
+            if (response.success && response.data?.weekly) {
+                return response.data.weekly;
+            }
+
+            // 2차 시도: 7일 통계에서 추출
+            response = await this.client.get('/users/me/usage/daily', { days: 7 });
+            if (response.success && Array.isArray(response.data)) {
+                return response.data.map(day => day.conversations || day.count || 0);
+            }
+
+            // 3차 시도: 일반 사용량 통계에서 추출
+            response = await this.getUsageStats('7d');
+            if (response?.data?.daily) {
+                return response.data.daily.slice(-7).map(day => day.count || 0);
+            }
+
+            // 실패 시 더미 데이터 반환 (차트 깨짐 방지)
+            console.warn('주간 사용량 데이터 조회 실패 - 더미 데이터 사용');
+            return [0, 0, 0, 0, 0, 0, 0];
+
+        } catch (error) {
+            console.error('주간 사용량 조회 실패:', error);
+            return [0, 0, 0, 0, 0, 0, 0]; // 기본값 반환
+        }
+    }
+
+    /**
+     * 최근 활동 안정적 조회 및 표준화
+     */
+    async getStandardizedRecentActivity(limit = 10) {
+        try {
+            const response = await this.client.get('/users/me/activity', { limit });
+            
+            if (!response.success || !Array.isArray(response.data)) {
+                return this.generateDefaultActivity();
+            }
+
+            // 활동 데이터 표준화
+            return response.data.map(activity => {
+                return {
+                    type: this.standardizeActivityType(activity.type || activity.action),
+                    title: this.generateActivityTitle(activity),
+                    time: this.formatActivityTime(activity.created_at || activity.timestamp),
+                    icon: this.getActivityIcon(activity.type || activity.action)
+                };
+            });
+
+        } catch (error) {
+            console.error('최근 활동 조회 실패:', error);
+            return this.generateDefaultActivity();
+        }
+    }
+
+    /**
+     * 활동 타입 표준화
+     */
+    standardizeActivityType(type) {
+        const typeMap = {
+            'conversation': 'ai_conversation',
+            'chat': 'ai_conversation',
+            'ai_chat': 'ai_conversation',
+            'join_sharing': 'sharing_join',
+            'sharing_join': 'sharing_join',
+            'setting_update': 'setting',
+            'profile_edit': 'profile_update'
+        };
+        
+        return typeMap[type] || type || 'ai';
+    }
+
+    /**
+     * 활동 제목 생성
+     */
+    generateActivityTitle(activity) {
+        if (activity.title) return activity.title;
+        if (activity.description) return activity.description;
+        
+        // 타입별 기본 제목 생성
+        const titleMap = {
+            'ai_conversation': 'AI와 대화',
+            'sharing_join': '쉐어링 참여',
+            'setting': '설정 변경',
+            'profile_update': '프로필 수정',
+            'login': '로그인',
+            'file_upload': '파일 업로드'
+        };
+        
+        const type = this.standardizeActivityType(activity.type || activity.action);
+        return titleMap[type] || '활동';
+    }
+
+    /**
+     * 기본 활동 데이터 생성 (API 실패 시)
+     */
+    generateDefaultActivity() {
+        return [
+            {
+                type: 'ai',
+                title: '최근 활동 내역이 없습니다',
+                time: '정보 없음',
+                icon: '📋'
+            }
+        ];
+    }
+
+    /**
+     * 성장률 계산 헬퍼
+     */
+    calculateGrowthRate(stats) {
+        if (!stats || !stats.monthly_conversations || !stats.previous_month_conversations) {
+            return 0;
+        }
+        
+        const current = stats.monthly_conversations;
+        const previous = stats.previous_month_conversations;
+        
+        if (previous === 0) return current > 0 ? 100 : 0;
+        
+        return Math.round(((current - previous) / previous) * 100);
+    }
+
+    /**
+     * 평균 세션 시간 계산
+     */
+    calculateAvgSessionTime(stats) {
+        if (!stats || !stats.total_usage_hours || !stats.total_sessions) {
+            return 0;
+        }
+        
+        return Math.round((stats.total_usage_hours / stats.total_sessions) * 60); // 분 단위
+    }
+
+    /**
+     * 사용자 데이터 전체 새로고침
+     */
+    async refreshAllUserData() {
+        try {
+            // 캐시 클리어
+            this.client.userCache.clear();
+            
+            // 모든 사용자 관련 데이터를 병렬로 새로 가져오기
+            const [profile, subscription, stats, activity] = await Promise.allSettled([
+                this.getCurrentUser(),
+                this.getSubscriptionInfo(),
+                this.getUserStats(),
+                this.getRecentActivity()
+            ]);
+            
+            return {
+                profile: profile.status === 'fulfilled' ? profile.value : null,
+                subscription: subscription.status === 'fulfilled' ? subscription.value : null,
+                stats: stats.status === 'fulfilled' ? stats.value : null,
+                activity: activity.status === 'fulfilled' ? activity.value : null
+            };
+        } catch (error) {
+            console.error('사용자 데이터 새로고침 실패:', error);
+            throw error;
+        }
     }
 
     // ===== AI 엔진 관련 API =====
@@ -1000,10 +1456,180 @@ class OneAIAPI {
     }
 
     /**
-     * 쉐어링 결제
+     * 쉐어링 결제 (레거시)
      */
     async processPayment(sharingId, paymentData) {
         return this.client.post(`/sharing/${sharingId}/payment`, paymentData);
+    }
+
+    // ===== 결제 관련 API =====
+
+    /**
+     * 결제 인텐트 생성 (일회성 결제)
+     * @param {number} amount - 결제 금액 (원)
+     * @param {string} sharingId - 쉐어링 ID (선택사항)
+     * @param {string} description - 결제 설명
+     * @param {object} metadata - 추가 메타데이터
+     */
+    async createPaymentIntent(amount, sharingId = null, description = '', metadata = {}) {
+        const payload = {
+            amount,
+            currency: 'krw',
+            description: description || `One AI 결제 - ${amount.toLocaleString()}원`,
+            metadata: {
+                ...metadata,
+                ...(sharingId && { sharingId })
+            }
+        };
+
+        return this.client.post('/payment/create-intent', payload);
+    }
+
+    /**
+     * 구독 생성 (AI 쉐어링용)
+     * @param {string} priceId - Stripe 가격 ID
+     * @param {string} sharingId - 쉐어링 ID
+     * @param {string} paymentMethodId - 결제 방법 ID
+     */
+    async createSubscription(priceId, sharingId, paymentMethodId) {
+        return this.client.post('/payment/create-subscription', {
+            priceId,
+            sharingId,
+            paymentMethodId
+        });
+    }
+
+    /**
+     * 구독 취소
+     * @param {string} subscriptionId - 구독 ID
+     * @param {boolean} cancelAtPeriodEnd - 기간 종료시 취소 여부
+     */
+    async cancelSubscription(subscriptionId, cancelAtPeriodEnd = true) {
+        return this.client.post('/payment/cancel-subscription', {
+            subscriptionId,
+            cancelAtPeriodEnd
+        });
+    }
+
+    /**
+     * 환불 요청 (관리자용)
+     * @param {string} paymentIntentId - 결제 인텐트 ID
+     * @param {number} amount - 환불 금액 (선택사항, 없으면 전액)
+     * @param {string} reason - 환불 사유
+     */
+    async requestRefund(paymentIntentId, amount = null, reason = 'requested_by_customer') {
+        return this.client.post('/payment/refund', {
+            paymentIntentId,
+            amount,
+            reason
+        });
+    }
+
+    /**
+     * 결제 내역 조회
+     * @param {number} page - 페이지 번호
+     * @param {number} limit - 페이지당 항목 수
+     * @param {string} type - 결제 타입 필터
+     */
+    async getPaymentHistory(page = 1, limit = 20, type = null) {
+        const params = { page, limit };
+        if (type) params.type = type;
+        
+        return this.client.get('/payment/history', params);
+    }
+
+    /**
+     * 구독 목록 조회
+     */
+    async getSubscriptions() {
+        return this.client.get('/payment/subscriptions');
+    }
+
+    /**
+     * 결제 방법 목록 조회
+     */
+    async getPaymentMethods() {
+        return this.client.get('/payment/payment-methods');
+    }
+
+    /**
+     * 결제 방법 삭제
+     * @param {string} paymentMethodId - 결제 방법 ID
+     */
+    async deletePaymentMethod(paymentMethodId) {
+        return this.client.delete(`/payment/payment-methods/${paymentMethodId}`);
+    }
+
+    /**
+     * Stripe Elements용 결제 의도 확인
+     * @param {string} clientSecret - 클라이언트 시크릿
+     * @param {object} stripe - Stripe 인스턴스
+     * @param {object} elements - Stripe Elements
+     */
+    async confirmPayment(clientSecret, stripe, elements) {
+        try {
+            const { error, paymentIntent } = await stripe.confirmPayment({
+                elements,
+                clientSecret,
+                confirmParams: {
+                    return_url: `${window.location.origin}/payment/success`
+                }
+            });
+
+            if (error) {
+                throw new APIError(error.message, error.code);
+            }
+
+            return { success: true, paymentIntent };
+        } catch (error) {
+            console.error('결제 확인 실패:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * 결제 상태 확인
+     * @param {string} paymentIntentId - 결제 인텐트 ID
+     */
+    async checkPaymentStatus(paymentIntentId) {
+        return this.client.get(`/payment/status/${paymentIntentId}`, {}, { 
+            showLoading: false 
+        });
+    }
+
+    /**
+     * 쉐어링 그룹 결제 처리 (통합)
+     * @param {string} sharingId - 쉐어링 ID
+     * @param {object} paymentData - 결제 데이터
+     */
+    async processSharingPayment(sharingId, paymentData) {
+        const { amount, paymentType = 'one_time', paymentMethodId } = paymentData;
+
+        if (paymentType === 'subscription') {
+            // 구독 결제
+            return this.createSubscription(
+                paymentData.priceId, 
+                sharingId, 
+                paymentMethodId
+            );
+        } else {
+            // 일회성 결제
+            return this.createPaymentIntent(
+                amount, 
+                sharingId, 
+                `쉐어링 그룹 결제 - ${sharingId}`
+            );
+        }
+    }
+
+    /**
+     * 결제 방법 설정 (Stripe Setup Intent)
+     * @param {string} customerId - 고객 ID (선택사항)
+     */
+    async setupPaymentMethod(customerId = null) {
+        return this.client.post('/payment/setup-intent', {
+            customerId
+        });
     }
 
     // ===== 비즈니스 관련 API =====
@@ -1129,6 +1755,298 @@ class OneAIAPI {
     async getVersionInfo() {
         return this.client.get('/version', {}, { showLoading: false });
     }
+
+    // ===== 마이페이지 호환성을 위한 별칭 메서드들 =====
+    
+    /**
+     * 주간 사용량 조회 (별칭)
+     * 마이페이지에서 fetchWeeklyUsage()가 호출하는 메서드
+     */
+    async getWeeklyUsage() {
+        return this.getReliableWeeklyUsage();
+    }
+
+    /**
+     * 최근 활동 조회 (별칭)
+     * 마이페이지에서 fetchRecentActivity()가 호출하는 메서드
+     */
+    async getRecentActivity(limit = 10) {
+        return this.getStandardizedRecentActivity(limit);
+    }
+
+    /**
+     * 사용량 통계 조회 (마이페이지 호환)
+     * period 파라미터를 받아서 적절한 메서드 호출
+     */
+    async getUsageStats(period = '7d') {
+        if (period === '7d' || period === 'weekly') {
+            return {
+                success: true,
+                data: {
+                    daily: await this.getReliableWeeklyUsage()
+                }
+            };
+        }
+        
+        // 다른 기간의 경우 기본 API 호출
+        try {
+            return await this.client.get('/users/me/usage', { period });
+        } catch (error) {
+            console.error('사용량 통계 조회 실패:', error);
+            return {
+                success: false,
+                data: { daily: [0, 0, 0, 0, 0, 0, 0] }
+            };
+        }
+    }
+
+    /**
+     * 기본 사용자 정보 조회 (캐시 우선)
+     * getCurrentUser의 개선된 버전
+     */
+    async getUserProfile() {
+        try {
+            // 캐시된 기본 프로필 먼저 시도
+            const basic = await this.getBasicProfile();
+            if (basic) return { success: true, data: basic };
+            
+            // 캐시 실패시 전체 프로필 조회
+            const full = await this.getCurrentUser();
+            return { success: true, data: full.data || full };
+            
+        } catch (error) {
+            console.error('사용자 프로필 조회 실패:', error);
+            
+            // 최종 폴백: OneAIAuth에서 가져오기
+            const authUser = window.OneAIAuth?.getCurrentUser();
+            if (authUser) {
+                return { success: true, data: authUser };
+            }
+            
+            throw error;
+        }
+    }
+
+    /**
+     * 알림 설정 업데이트 (간소화된 인터페이스)
+     */
+    async updateNotificationSettings(enabled) {
+        // boolean 값을 받아서 적절한 형태로 변환
+        const settings = typeof enabled === 'boolean' 
+            ? { enabled } 
+            : enabled;
+            
+        try {
+            const response = await this.client.patch('/users/me/notifications/settings', settings);
+            
+            if (response.success) {
+                // 로컬 사용자 정보도 업데이트
+                if (window.OneAIAuth && window.OneAIAuth.currentUser) {
+                    const updatedUser = { 
+                        ...window.OneAIAuth.currentUser,
+                        settings: {
+                            ...window.OneAIAuth.currentUser.settings,
+                            notifications: settings.enabled !== undefined ? settings.enabled : settings.notifications
+                        }
+                    };
+                    window.OneAIAuth.updateUser(updatedUser);
+                }
+            }
+            
+            return response;
+        } catch (error) {
+            console.error('알림 설정 업데이트 실패:', error);
+            throw error;
+        }
+    }
+
+    // ===== 결제 관련 유틸리티 메서드 =====
+
+    /**
+     * 한국 원화 포맷팅
+     * @param {number} amount - 금액 (원)
+     */
+    formatKRW(amount) {
+        return new Intl.NumberFormat('ko-KR', {
+            style: 'currency',
+            currency: 'KRW'
+        }).format(amount);
+    }
+
+    /**
+     * 결제 상태 한국어 변환
+     * @param {string} status - 결제 상태
+     */
+    translatePaymentStatus(status) {
+        const statusMap = {
+            'pending': '대기중',
+            'succeeded': '성공',
+            'failed': '실패',
+            'canceled': '취소됨',
+            'refunded': '환불됨',
+            'processing': '처리중',
+            'requires_payment_method': '결제방법 필요',
+            'requires_confirmation': '확인 필요',
+            'requires_action': '추가 인증 필요'
+        };
+        
+        return statusMap[status] || status;
+    }
+
+    /**
+     * 구독 상태 한국어 변환
+     * @param {string} status - 구독 상태
+     */
+    translateSubscriptionStatus(status) {
+        const statusMap = {
+            'active': '활성',
+            'past_due': '연체',
+            'canceled': '취소됨',
+            'unpaid': '미결제',
+            'incomplete': '불완전',
+            'incomplete_expired': '만료됨',
+            'trialing': '체험중',
+            'paused': '일시정지'
+        };
+        
+        return statusMap[status] || status;
+    }
+
+    /**
+     * 결제 에러 메시지 한국어 변환
+     * @param {string} errorCode - Stripe 에러 코드
+     */
+    translatePaymentError(errorCode) {
+        const errorMap = {
+            'card_declined': '카드가 거부되었습니다.',
+            'insufficient_funds': '잔액이 부족합니다.',
+            'invalid_cvc': 'CVC 번호가 올바르지 않습니다.',
+            'expired_card': '카드가 만료되었습니다.',
+            'incorrect_cvc': 'CVC 번호를 확인해주세요.',
+            'processing_error': '처리 중 오류가 발생했습니다.',
+            'authentication_required': '추가 인증이 필요합니다.',
+            'payment_intent_authentication_failure': '결제 인증에 실패했습니다.',
+            'payment_method_unactivated': '결제 방법이 활성화되지 않았습니다.',
+            'payment_method_invalid': '유효하지 않은 결제 방법입니다.'
+        };
+        
+        return errorMap[errorCode] || '결제 처리 중 오류가 발생했습니다.';
+    }
+
+    /**
+     * 쉐어링 그룹의 개인 분담금 계산
+     * @param {number} totalAmount - 총 금액
+     * @param {number} participants - 참여자 수
+     */
+    calculateSharingCost(totalAmount, participants) {
+        if (participants <= 0) return 0;
+        return Math.ceil(totalAmount / participants);
+    }
+
+    /**
+     * 구독 다음 결제일 계산
+     * @param {string} interval - 결제 주기 (month, year)
+     * @param {number} intervalCount - 주기 횟수
+     * @param {Date} startDate - 시작일
+     */
+    calculateNextBillingDate(interval = 'month', intervalCount = 1, startDate = new Date()) {
+        const date = new Date(startDate);
+        
+        if (interval === 'month') {
+            date.setMonth(date.getMonth() + intervalCount);
+        } else if (interval === 'year') {
+            date.setFullYear(date.getFullYear() + intervalCount);
+        } else if (interval === 'week') {
+            date.setDate(date.getDate() + (7 * intervalCount));
+        } else if (interval === 'day') {
+            date.setDate(date.getDate() + intervalCount);
+        }
+        
+        return date;
+    }
+
+    /**
+     * 결제 방법 마스킹 (카드 번호)
+     * @param {string} cardNumber - 카드 번호
+     */
+    maskCardNumber(cardNumber) {
+        if (!cardNumber) return '';
+        const cleaned = cardNumber.replace(/\D/g, '');
+        if (cleaned.length < 4) return cleaned;
+        
+        const last4 = cleaned.slice(-4);
+        return `**** **** **** ${last4}`;
+    }
+
+    /**
+     * 카드 브랜드 아이콘 반환
+     * @param {string} brand - 카드 브랜드
+     */
+    getCardBrandIcon(brand) {
+        const brandIcons = {
+            'visa': '💳',
+            'mastercard': '💳', 
+            'amex': '💳',
+            'discover': '💳',
+            'diners': '💳',
+            'jcb': '💳',
+            'unionpay': '💳',
+            'samsung_pay': '📱',
+            'apple_pay': '📱',
+            'google_pay': '📱',
+            'kakaopay': '💛',
+            'naverpay': '💚'
+        };
+        
+        return brandIcons[brand?.toLowerCase()] || '💳';
+    }
+
+    /**
+     * 결제 실패 시 재시도 가능 여부 확인
+     * @param {string} errorCode - 에러 코드
+     */
+    isRetryablePaymentError(errorCode) {
+        const retryableErrors = [
+            'processing_error',
+            'temporary_failure',
+            'rate_limit_error',
+            'api_connection_error'
+        ];
+        
+        return retryableErrors.includes(errorCode);
+    }
+
+    /**
+     * 결제 완료 후 성공 페이지로 리다이렉트
+     * @param {string} paymentIntentId - 결제 인텐트 ID
+     * @param {string} sharingId - 쉐어링 ID (선택사항)
+     */
+    redirectToPaymentSuccess(paymentIntentId, sharingId = null) {
+        const params = new URLSearchParams({ 
+            payment_intent: paymentIntentId 
+        });
+        
+        if (sharingId) {
+            params.append('sharing_id', sharingId);
+        }
+        
+        window.location.href = `/payment/success?${params.toString()}`;
+    }
+
+    /**
+     * 결제 실패 후 실패 페이지로 리다이렉트
+     * @param {string} error - 에러 메시지
+     * @param {string} errorCode - 에러 코드
+     */
+    redirectToPaymentFailure(error, errorCode = null) {
+        const params = new URLSearchParams({ error });
+        
+        if (errorCode) {
+            params.append('error_code', errorCode);
+        }
+        
+        window.location.href = `/payment/failure?${params.toString()}`;
+    }
 }
 
 // 전역 API 인스턴스 생성
@@ -1154,6 +2072,126 @@ if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('oneai:api:ready', {
             detail: { api }
         }));
+        
+        // ===== 전역 인스턴스에 추가 헬퍼 메서드들 =====
+        
+        /**
+         * 마이페이지 전용 데이터 로더
+         * 모든 필요한 데이터를 한 번에 가져오는 헬퍼 메서드
+         */
+        window.OneAIAPI.loadMyPageData = async function() {
+            try {
+                console.log('마이페이지 데이터 로딩 시작...');
+                
+                // 모든 데이터를 병렬로 요청
+                const [
+                    userProfile,
+                    subscriptionInfo, 
+                    userStats,
+                    weeklyUsage,
+                    recentActivity
+                ] = await Promise.allSettled([
+                    this.getUserProfile(),
+                    this.getSubscriptionInfo(),
+                    this.getCompleteUserStats(),
+                    this.getReliableWeeklyUsage(),
+                    this.getStandardizedRecentActivity()
+                ]);
+
+                // 결과 정리
+                const results = {
+                    userProfile: userProfile.status === 'fulfilled' ? userProfile.value?.data : null,
+                    subscriptionInfo: subscriptionInfo.status === 'fulfilled' ? subscriptionInfo.value : null,
+                    userStats: userStats.status === 'fulfilled' ? userStats.value : null,
+                    weeklyUsage: weeklyUsage.status === 'fulfilled' ? weeklyUsage.value : null,
+                    recentActivity: recentActivity.status === 'fulfilled' ? recentActivity.value : null,
+                    
+                    // 로딩 상태 정보
+                    loadStatus: {
+                        userProfile: userProfile.status,
+                        subscriptionInfo: subscriptionInfo.status,
+                        userStats: userStats.status,
+                        weeklyUsage: weeklyUsage.status,
+                        recentActivity: recentActivity.status
+                    }
+                };
+
+                console.log('마이페이지 데이터 로딩 완료:', results);
+                return results;
+                
+            } catch (error) {
+                console.error('마이페이지 데이터 로딩 실패:', error);
+                throw error;
+            }
+        };
+
+        /**
+         * 빠른 테스트를 위한 Mock 데이터 모드 토글
+         */
+        window.OneAIAPI.enableMockMode = function() {
+            console.warn('🔧 Mock 모드 활성화 - 실제 API 대신 샘플 데이터 사용');
+            
+            // 주요 메서드들을 Mock으로 교체
+            this.getUserProfile = () => Promise.resolve({
+                success: true,
+                data: {
+                    username: 'Mock사용자',
+                    email: 'mock@oneai.com',
+                    created_at: '2024-01-15',
+                    verified: true,
+                    settings: { notifications: true, language: 'ko' }
+                }
+            });
+            
+            this.getSubscriptionInfo = () => Promise.resolve({
+                type: 'Pro',
+                status: 'active',
+                price: 29000,
+                next_billing_date: '2024-12-15',
+                usage_limit: 'unlimited',
+                concurrent_sessions: 3
+            });
+            
+            this.getCompleteUserStats = () => Promise.resolve({
+                consecutive_days: 15,
+                total_conversations: 1250,
+                saved_items: 42,
+                satisfaction_rating: 4.8,
+                monthly_conversations: 156,
+                total_usage_hours: 67,
+                cost_savings: 125000,
+                favorite_prompts: 8
+            });
+            
+            this.getReliableWeeklyUsage = () => Promise.resolve([42, 56, 32, 63, 49, 21, 28]);
+            
+            this.getStandardizedRecentActivity = () => Promise.resolve([
+                {
+                    type: 'ai_conversation',
+                    title: 'ChatGPT로 코딩 문제 해결',
+                    time: '2분 전',
+                    icon: '🤖'
+                },
+                {
+                    type: 'sharing_join', 
+                    title: 'Claude Pro 쉐어링 참여',
+                    time: '30분 전',
+                    icon: '🤝'
+                }
+            ]);
+            
+            this._mockMode = true;
+        };
+        
+        /**
+         * Mock 모드 비활성화
+         */
+        window.OneAIAPI.disableMockMode = function() {
+            if (this._mockMode) {
+                console.log('Mock 모드 비활성화 - 페이지를 새로고침하세요');
+                location.reload();
+            }
+        };
     });
 }
 
@@ -1178,6 +2216,52 @@ if (typeof window !== 'undefined') {
  * const fileInput = document.querySelector('#fileInput');
  * const file = fileInput.files[0];
  * const result = await api.uploadFile(file);
+ * 
+ * // 결제 관련 사용 예제
+ * 
+ * // 1. 일회성 결제 (쉐어링 그룹 참여비)
+ * try {
+ *   const paymentIntent = await api.createPaymentIntent(29000, 'sharing_123', '쉐어링 그룹 참여비');
+ *   console.log('결제 인텐트 생성:', paymentIntent.clientSecret);
+ *   
+ *   // Stripe Elements로 결제 처리
+ *   const stripe = Stripe('pk_test_...');
+ *   const elements = stripe.elements();
+ *   const result = await api.confirmPayment(paymentIntent.clientSecret, stripe, elements);
+ *   
+ *   if (result.success) {
+ *     api.redirectToPaymentSuccess(result.paymentIntent.id, 'sharing_123');
+ *   }
+ * } catch (error) {
+ *   console.error('결제 실패:', error);
+ *   api.redirectToPaymentFailure(api.translatePaymentError(error.code), error.code);
+ * }
+ * 
+ * // 2. 구독 결제 (AI 서비스 월정액)
+ * try {
+ *   const subscription = await api.createSubscription('price_monthly_pro', 'sharing_456', 'pm_card_123');
+ *   console.log('구독 생성 성공:', subscription);
+ * } catch (error) {
+ *   console.error('구독 생성 실패:', error);
+ * }
+ * 
+ * // 3. 결제 내역 조회
+ * const paymentHistory = await api.getPaymentHistory(1, 20);
+ * paymentHistory.payments.forEach(payment => {
+ *   console.log(`${api.formatKRW(payment.amount)} - ${api.translatePaymentStatus(payment.status)}`);
+ * });
+ * 
+ * // 4. 결제 방법 관리
+ * const paymentMethods = await api.getPaymentMethods();
+ * paymentMethods.forEach(pm => {
+ *   console.log(`${api.getCardBrandIcon(pm.card.brand)} ${api.maskCardNumber(pm.card.last4)}`);
+ * });
+ * 
+ * // 5. 쉐어링 분담금 계산
+ * const totalCost = 120000; // 연 12만원
+ * const participants = 4;
+ * const individualCost = api.calculateSharingCost(totalCost, participants);
+ * console.log(`개인 분담금: ${api.formatKRW(individualCost)}`); // 30,000원
  * 
  * // 에러 핸들링
  * try {

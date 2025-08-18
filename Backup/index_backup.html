@@ -3,18 +3,436 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>One AI - 모든 AI를 하나로</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- One AI Language System -->
-    <link rel="stylesheet" href="assets/lang.css">
-    <script src="frontend/assets/lang.js"></script>
-    
-    <!-- One AI Scripts -->
-    <script src="script.js"></script>
-    <script src="api.js"></script>
+    <title>One AI - 중앙 정렬 수정</title>
+    <style>
+        /* 기본 리셋 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* CSS 변수 */
+        :root {
+            --sidebar-width: 56px;
+            --header-height: 60px;
+            --color-surface-base: #000000;
+            --color-surface-elevated: #0a0a0a;
+            --color-primary-500: #10b981;
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-tertiary: #a3a3a3;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--color-surface-base);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        /* 🔧 주요 문제: 컨테이너 구조 수정 */
+        .main-container {
+            display: flex;
+            width: 100vw; /* 100%에서 100vw로 변경 */
+            height: 100vh;
+            position: relative; /* 추가 */
+        }
+
+        /* 사이드바 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--color-surface-elevated);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            padding: 12px 0;
+        }
+
+        /* 🔧 상단 헤더 - 정확한 위치 지정 */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width); /* 56px */
+            right: 0; /* 오른쪽 끝까지 */
+            width: calc(100vw - var(--sidebar-width)); /* 정확한 너비 계산 */
+            height: var(--header-height);
+            background: var(--color-surface-elevated);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        /* 🔧 컨텐츠 영역 - 정확한 중앙 정렬 */
+        .content-area {
+            position: fixed; /* absolute에서 fixed로 변경 */
+            top: var(--header-height); /* 60px */
+            left: var(--sidebar-width); /* 56px */
+            right: 0;
+            bottom: 0;
+            width: calc(100vw - var(--sidebar-width)); /* 정확한 너비 */
+            height: calc(100vh - var(--header-height)); /* 정확한 높이 */
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: var(--color-surface-base);
+        }
+
+        /* 🔧 페이지 컨텐츠 - 완벽한 중앙 정렬 */
+        .page-content {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            /* 중앙 정렬을 위한 flex 설정 */
+            justify-content: center;
+            align-items: flex-start; /* 상단부터 시작 */
+        }
+
+        .page-content.active {
+            display: flex;
+        }
+
+        /* 🔧 웰컴 컨텐츠 - 정확한 중앙 정렬 */
+        .welcome-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            max-width: 1200px; /* 최대 너비 제한 */
+            margin: 0 auto; /* 중앙 정렬 */
+            padding: 50px 40px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* 🔧 다른 컨텐츠들도 동일하게 중앙 정렬 */
+        .add-ai-content {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        /* 🔧 외부 모듈 컨테이너도 중앙 정렬 */
+        .external-module-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* AI 서비스 컨텐츠 */
+        .ai-service-content {
+            position: fixed !important;
+            top: var(--header-height) !important;
+            left: var(--sidebar-width) !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: calc(100vw - var(--sidebar-width)) !important;
+            height: calc(100vh - var(--header-height)) !important;
+            background: var(--color-surface-base);
+            overflow: hidden;
+            z-index: 50;
+        }
+
+        /* 🔧 모바일 대응 */
+        @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 0px;
+                --header-height: 60px;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .top-header {
+                display: none;
+            }
+
+            /* 모바일 상단 네비게이션 */
+            .mobile-top-nav {
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 60px;
+                background: var(--color-surface-elevated);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                z-index: 200;
+                padding: 8px 16px;
+                overflow-x: auto;
+            }
+
+            .content-area {
+                top: 60px;
+                left: 0;
+                width: 100vw;
+                height: calc(100vh - 60px);
+            }
+
+            .ai-service-content {
+                top: 60px !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: calc(100vh - 60px) !important;
+            }
+
+            .welcome-content {
+                padding: 40px 20px;
+            }
+
+            .add-ai-content {
+                padding: 20px;
+            }
+        }
+
+        /* 스타일링 */
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .welcome-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .feature-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--color-primary-500);
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .feature-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* 추가 스타일링 */
+        .logo-section {
+            padding: 0 10px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--color-primary-500);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .header-logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--color-surface-elevated);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--color-primary-500);
+            border-color: var(--color-primary-500);
+        }
+
+        .mobile-top-nav {
+            display: none;
+        }
+
+        /* 디버깅용 보더 (임시) */
+        .debug-borders .content-area {
+            border: 2px solid red;
+        }
+        
+        .debug-borders .page-content {
+            border: 2px solid blue;
+        }
+        
+        .debug-borders .welcome-content {
+            border: 2px solid green;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- 사이드바 -->
+        <nav class="sidebar">
+            <div class="logo-section">
+                <div class="logo-icon">1</div>
+            </div>
+        </nav>
+
+        <!-- 상단 헤더 -->
+        <header class="top-header">
+            <div class="header-logo">One AI</div>
+            <div class="header-actions">
+                <button class="btn">로그인</button>
+                <button class="btn btn-primary">회원가입</button>
+            </div>
+        </header>
+
+        <!-- 모바일 네비게이션 -->
+        <nav class="mobile-top-nav">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="background: var(--color-primary-500); border-radius: 6px; padding: 6px; color: white; font-weight: bold;">1</div>
+                <span style="color: var(--text-primary);">One AI</span>
+            </div>
+        </nav>
+
+        <!-- 컨텐츠 영역 -->
+        <main class="content-area">
+            <!-- 홈 페이지 -->
+            <div class="page-content active">
+                <div class="welcome-content">
+                    <h1 class="welcome-title">모든 AI를 하나로!</h1>
+                    <p class="welcome-subtitle">
+                        모든 AI 서비스를 한 곳에서 관리하고 사용하세요.<br>
+                        완벽한 중앙 정렬이 적용된 새로운 인터페이스입니다.
+                    </p>
+                    
+                    <div class="welcome-features">
+                        <div class="feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h3 class="feature-title">빠른 접근</h3>
+                            <p class="feature-description">자주 사용하는 AI 서비스에 원클릭으로 접근하세요</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">🔧</div>
+                            <h3 class="feature-title">맞춤 설정</h3>
+                            <p class="feature-description">필요한 AI만 추가하여 개인화된 대시보드를 만드세요</p>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">🌐</div>
+                            <h3 class="feature-title">다국어 지원</h3>
+                            <p class="feature-description">한국어, 영어, 일본어, 중국어를 지원합니다</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI 추가 페이지 (테스트용) -->
+            <div class="page-content">
+                <div class="add-ai-content">
+                    <h1 style="text-align: center; margin-bottom: 40px;">AI 엔진 추가</h1>
+                    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 40px;">
+                        이 페이지도 이제 완벽하게 중앙 정렬됩니다.
+                    </p>
+                    <div style="display: flex; justify-content: center;">
+                        <button class="btn btn-primary">중앙 정렬된 버튼</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 디버깅용 토글 함수
+        function toggleDebugBorders() {
+            document.body.classList.toggle('debug-borders');
+        }
+
+        // 페이지 전환 테스트
+        function switchPage(pageIndex) {
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach((page, index) => {
+                page.classList.toggle('active', index === pageIndex);
+            });
+        }
+
+        // 콘솔에서 테스트할 수 있는 함수들
+        console.log('테스트 함수들:');
+        console.log('- toggleDebugBorders(): 디버깅 보더 표시/숨김');
+        console.log('- switchPage(0): 홈 페이지로');
+        console.log('- switchPage(1): AI 추가 페이지로');
+        
+        // 중앙 정렬 확인
+        setTimeout(() => {
+            const contentArea = document.querySelector('.content-area');
+            const welcomeContent = document.querySelector('.welcome-content');
+            
+            console.log('컨텐츠 영역 정보:');
+            console.log('- content-area width:', contentArea.offsetWidth);
+            console.log('- content-area left:', contentArea.offsetLeft);
+            console.log('- welcome-content width:', welcomeContent.offsetWidth);
+            console.log('- welcome-content margin:', window.getComputedStyle(welcomeContent).margin);
+        }, 100);
+    </script>
+</body>
+</html>
     <style>
         /* One AI Design System - Essential CSS Variables & Components */
         :root {
@@ -294,11 +712,25 @@
             margin: 4px 0;
         }
 
+        /* 콘텐츠 영역 조정 */
+        .content-area {
+            position: absolute; /* 절대 위치 지정 */
+            top: var(--header-height); /* 헤더 바로 아래에서 시작 */
+            left: 56px; /* 사이드바 옆에서 시작 */
+            right: 0;
+            bottom: 0;
+            width: calc(100vw - 56px);
+            height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+            margin-top: 0; /* 기존 마진 제거 */
+            padding-top: 0; /* 기존 패딩 제거 */
+            -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
+        }
+
         /* 모바일에서 헤더 숨기기 */
-        /* 🔧 모바일 대응 - 중앙 정렬 유지 */
         @media (max-width: 768px) {
             :root {
-                --header-height: 60px;
+                --header-height: 60px; /* 변수로 통일 */
             }
             
             .top-header {
@@ -306,23 +738,14 @@
             }
             
             .content-area {
-                left: 0;
+                left: 0; /* 사이드바 없음 */
                 width: 100vw;
-                top: 60px;
+                top: 60px; /* 모바일 헤더 높이 */
                 height: calc(100vh - 60px);
-                margin-top: 0;
-                padding-top: 0;
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .welcome-content {
-                padding: 40px 20px;
-            }
-
-            .page-content {
-                justify-content: center;
-                align-items: flex-start;
+                margin-top: 0; /* 기존 마진 제거 */
+                padding-top: 0; /* 기존 패딩 제거 */
+                overflow-y: auto; /* 스크롤 가능하도록 변경 */
+                -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
             }
         }
 
@@ -391,75 +814,20 @@
             background: var(--color-surface-base);
             color: var(--text-primary);
             height: 100vh;
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* 🔧 메인 컨테이너 - 중앙 정렬 수정 */
-        .main-container {
-            display: flex;
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-        }
-
-        /* 🔧 컨텐츠 영역 - 정확한 중앙 정렬 */
-        .content-area {
-            position: fixed;
-            top: var(--header-height);
-            left: 0px;
-            right: 0;
-            bottom: 0;
-            width: calc(100vw);
-            height: calc(100vh - var(--header-height));
-            overflow: hidden;
-            background: var(--color-surface-base);
-            /* 🔧 중앙정렬 추가 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* 🔧 페이지 컨텐츠 - 완벽한 중앙 정렬 */
-        .page-content {
-            display: none; /* 기본 숨김 */
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            /* 🔧 중앙정렬 추가 */
-            align-items: flex-start;
-            justify-content: center;
-        }
-
-        .page-content.active {
-            display: block; /* flex에서 block으로 변경 */
-        }
-
-        /* 🔧 웰컴 컨텐츠 - 정확한 중앙 정렬 */
-        .welcome-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto; /* 🔧 중앙정렬 */
-            padding: 50px 40px;
-            text-align: center;
-            box-sizing: border-box;
-            min-height: 100%;
+            overflow: hidden; /* hidden에서 auto로 변경 */
+            -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
         html, body {
             height: 100% !important;
+        }
+
+        .main-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
         }
 
         /* 모바일 상단 네비게이션 */
@@ -809,6 +1177,18 @@
         .logo-image[src=""],
         .logo-image:not([src]) {
             display: none;
+        }
+
+        /* 이미지 로드 실패 시 버튼 스타일 */
+        .logo-icon:not(:has(img[src*=".png"]:not([src=""]))) {
+            background: var(--color-primary-500);
+        }
+
+        .logo-icon:not(:has(img[src*=".png"]:not([src=""]))):after {
+            content: "1";
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
         }
 
         /* 이미지 로드 실패 시 버튼 스타일 */
@@ -1280,6 +1660,37 @@
             visibility: visible;
         }
 
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            min-height: 100vh; /* height에서 min-height로 변경 */
+            overflow: hidden; /* hidden에서 auto로 변경 */
+            -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
+            background: var(--color-surface-base);
+            position: relative;
+        }
+
+        .page-content {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            height: 100vh;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .page-content.active {
+            display: flex;
+        }
+
         /* 🔧 외부 HTML 로드를 위한 스타일 */
         .external-module-container {
             flex: 1;
@@ -1380,9 +1791,10 @@
 
         .ai-service-fallback {
             position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important; /* 🔧 완벽한 중앙정렬 */
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
             padding: 40px;
             display: flex;
             flex-direction: column;
@@ -1391,8 +1803,8 @@
             text-align: center;
             background: var(--color-surface-base);
             z-index: 0;
-            max-width: 600px;
-            width: 90%;
+            width: 100% !important;
+            height: 100% !important;
         }
 
         .fallback-icon {
@@ -1625,13 +2037,10 @@
 
         /* AI 추가 페이지 스타일 */
         .add-ai-content {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
+            flex: 1;
             padding: 40px;
-            box-sizing: border-box;
-            min-height: 100%; /* height: 100% 대신 */
-            /* overflow-y: auto; 제거 */
+            background: var(--color-surface-base);
+            overflow-y: auto;
         }
 
         .add-ai-header {
@@ -2517,9 +2926,87 @@
             }
         }
 
+        @keyframes slideOutRight {
+            from { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+            to { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+        }
+
         /* 토스트 해제 애니메이션 */
         .toast.dismissing {
             animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* 11. AI 엔진 그라데이션 스타일 유지 */
+        .ai-engine-icon.gpt { 
+            background: var(--ai-gpt-gradient);
+        }
+        .ai-engine-icon.gpt:hover { 
+            box-shadow: 0 8px 25px rgba(16, 163, 127, 0.4);
+        }
+
+        .ai-engine-icon.gemini { 
+            background: var(--ai-gemini-gradient);
+        }
+        .ai-engine-icon.gemini:hover { 
+            box-shadow: 0 8px 25px rgba(66, 133, 244, 0.4);
+        }
+
+        .ai-engine-icon.perplexity { 
+            background: var(--ai-perplexity-gradient);
+        }
+        .ai-engine-icon.perplexity:hover { 
+            box-shadow: 0 8px 25px rgba(32, 201, 151, 0.4);
+        }
+
+        .ai-engine-icon.midjourney { 
+            background: var(--ai-midjourney-gradient);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .ai-engine-icon.midjourney:hover { 
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+        }
+
+        .ai-engine-icon.claude { 
+            background: var(--ai-claude-gradient);
+        }
+        .ai-engine-icon.claude:hover { 
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        .ai-engine-icon.copilot { 
+            background: var(--ai-copilot-gradient);
+        }
+        .ai-engine-icon.copilot:hover { 
+            box-shadow: 0 8px 25px rgba(0, 120, 212, 0.4);
+        }
+
+        /* 12. 기타 AI 아이콘 스타일 */
+        .ai-engine-icon.dalle { 
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+        .ai-engine-icon.dalle:hover { 
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .ai-engine-icon.stable { 
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+        }
+        .ai-engine-icon.stable:hover { 
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .ai-engine-icon.custom { 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+        }
+        .ai-engine-icon.custom:hover { 
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
     </style>
 </head>
@@ -2560,28 +3047,28 @@
 
         <!-- 모바일 드롭다운 메뉴 -->
         <div class="mobile-dropdown-menu" id="mobileDropdownMenu">
-            <button class="mobile-dropdown-item" onclick="OneAI.selectMenuItem('community')" type="button">
+            <button class="mobile-dropdown-item" data-module="community" onclick="OneAI.closeMobileMenu(); OneAI.showModule('community')" type="button">
                 <span class="icon">🌍</span>
                 <span data-i18n="nav.community">AI 커뮤니티</span>
             </button>
-            <button class="mobile-dropdown-item" onclick="OneAI.selectMenuItem('sharing')" type="button">
+            <button class="mobile-dropdown-item" data-module="sharing" onclick="OneAI.closeMobileMenu(); OneAI.showModule('sharing')" type="button">
                 <span class="icon">🤝</span>
                 <span data-i18n="nav.sharing">AI 쉐어링</span>
             </button>
-            <button class="mobile-dropdown-item" onclick="OneAI.selectMenuItem('healthcare')" type="button">
+            <button class="mobile-dropdown-item" data-module="healthcare" onclick="OneAI.closeMobileMenu(); OneAI.showModule('healthcare')" type="button">
                 <span class="icon">🏥</span>
                 <span data-i18n="nav.healthcare">헬스케어</span>
             </button>
-            <button class="mobile-dropdown-item" onclick="OneAI.selectMenuItem('business')" type="button">
+            <button class="mobile-dropdown-item" data-module="business" onclick="OneAI.closeMobileMenu(); OneAI.showModule('business')" type="button">
                 <span class="icon">💼</span>
                 <span data-i18n="nav.business">비즈니스센터</span>
             </button>
             <div class="mobile-dropdown-divider"></div>
-            <button class="mobile-dropdown-item" onclick="OneAI.selectMenuItem('profile')" type="button">
+            <button class="mobile-dropdown-item" data-module="profile" onclick="OneAI.closeMobileMenu(); OneAI.showModule('profile')" type="button">
                 <span class="icon">👤</span>
                 <span data-i18n="nav.profile">마이페이지</span>
             </button>
-            <button class="mobile-dropdown-item" onclick="OneAI.selectMenuItem('language')" type="button">
+            <button class="mobile-dropdown-item" onclick="OneAI.closeMobileMenu(); OneAILang.showLanguageModal()" type="button">
                 <span class="icon">🌐</span>
                 <span data-i18n="language.title">언어 변경</span>
             </button>
@@ -2961,104 +3448,6 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ===== 🔧 showToast 함수를 최상단에 즉시 정의 =====
-        function showToast(message, type = 'success', duration = 4000) {
-            console.log(`Toast (${type}): ${message}`);
-            
-            let toastContainer = document.getElementById('toastContainer');
-            if (!toastContainer) {
-                toastContainer = document.createElement('div');
-                toastContainer.id = 'toastContainer';
-                toastContainer.className = 'toast-container';
-                toastContainer.style.cssText = `
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    z-index: 1000;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 8px;
-                    max-width: 400px;
-                    pointer-events: none;
-                `;
-                document.body.appendChild(toastContainer);
-            }
-            
-            const toast = document.createElement('div');
-            const toastId = Math.random().toString(36).substr(2, 9);
-            
-            toast.className = `toast toast--${type}`;
-            toast.setAttribute('data-toast-id', toastId);
-            
-            const icons = {
-                success: '✅',
-                error: '❌',
-                warning: '⚠️',
-                info: 'ℹ️'
-            };
-            
-            toast.style.cssText = `
-                background: var(--color-surface-modal);
-                border: 1px solid var(--surface-glass-border);
-                border-radius: 8px;
-                padding: 16px;
-                backdrop-filter: blur(16px);
-                transform: translateX(100%);
-                transition: transform 200ms ease;
-                max-width: 100%;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-                border-left: 4px solid var(--color-${type === 'error' ? 'error' : type === 'warning' ? 'warning' : type === 'success' ? 'success' : 'info'});
-                pointer-events: auto;
-                min-width: 280px;
-            `;
-            
-            toast.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 16px;">${icons[type]}</span>
-                    <span style="font-size: 14px; font-weight: 500; color: var(--text-primary); flex: 1;">${message}</span>
-                    <button onclick="this.parentElement.parentElement.remove()" style="
-                        background: none;
-                        border: none;
-                        color: var(--text-tertiary);
-                        font-size: 18px;
-                        cursor: pointer;
-                        padding: 0;
-                        width: 20px;
-                        height: 20px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                    ">&times;</button>
-                </div>
-            `;
-            
-            toastContainer.appendChild(toast);
-            
-            // 애니메이션
-            requestAnimationFrame(() => {
-                toast.style.transform = 'translateX(0)';
-            });
-            
-            // 자동 제거
-            if (duration > 0) {
-                setTimeout(() => {
-                    if (toast.parentNode) {
-                        toast.style.transform = 'translateX(100%)';
-                        setTimeout(() => {
-                            if (toast.parentNode) {
-                                toast.parentNode.removeChild(toast);
-                            }
-                        }, 200);
-                    }
-                }, duration);
-            }
-            
-            return toastId;
-        }
-
-        // window 객체에도 즉시 할당
-        window.showToast = showToast;
-
         // OneAI 네임스페이스 생성
         window.OneAI = (function() {
             let currentModule = 'home';
@@ -3436,10 +3825,7 @@
                     hamburgerBtn.classList.add('active');
                     hamburgerBtn.innerHTML = '✕';
                     
-                    // 외부 클릭 이벤트 추가 (수정된 함수명 사용)
-                    setTimeout(() => {
-                        document.addEventListener('click', handleOutsideClick);
-                    }, 100);
+                    // 중복 방지: 통합된 클릭 이벤트 리스너에서 처리됨
                 } else {
                     closeMobileMenu();
                 }
@@ -3456,19 +3842,7 @@
                 hamburgerBtn.classList.remove('active');
                 hamburgerBtn.innerHTML = '☰';
                 
-                // closeMobileMenuOnOutsideClick 제거하고 아래 코드로 대체
-                document.removeEventListener('click', handleOutsideClick);
-            }
-
-            function handleOutsideClick(e) {
-                const dropdownMenu = document.getElementById('mobileDropdownMenu');
-                const hamburgerBtn = document.querySelector('.mobile-hamburger-btn');
-                
-                if (dropdownMenu && hamburgerBtn) {
-                    if (!dropdownMenu.contains(e.target) && !hamburgerBtn.contains(e.target)) {
-                        closeMobileMenu();
-                    }
-                }
+                document.removeEventListener('click', closeMobileMenuOnOutsideClick);
             }
 
             function selectMobileMenuItem(action) {
@@ -3477,20 +3851,6 @@
                 if (action === 'profile') {
                     showModule('profile');
                 } else if (action === 'language') {
-                    if (window.OneAILang && window.OneAILang.showLanguageModal) {
-                        window.OneAILang.showLanguageModal();
-                    } else {
-                        showSimpleLanguageModal();
-                    }
-                } else {
-                    showModule(action);
-                }
-            }
-
-            function selectMenuItem(action) {
-                closeMobileMenu();
-                
-                if (action === 'language') {
                     if (window.OneAILang && window.OneAILang.showLanguageModal) {
                         window.OneAILang.showLanguageModal();
                     } else {
@@ -3651,8 +4011,8 @@
                     // 홈으로 이동
                     showModule('home');
                     
-                    // 로그인 성공 메시지 (제거됨)
-                    // showToast(`${OneAI.currentUser.name}님, 로그인되었습니다! 🎉`, 'success');
+                    // 로그인 성공 메시지
+                    showToast(`${OneAI.currentUser.name}님, 로그인되었습니다! 🎉`, 'success');
                     
                     // 메시지 리스너 제거
                     window.removeEventListener('message', handleLoginMessage);
@@ -3700,7 +4060,7 @@
                             localStorage.setItem('oneai_user', JSON.stringify(data.user));
                             updateAuthUI();
                             closeModal();
-                            // showToast(`${data.user.name}님, 안녕하세요! 🎉`, 'success');
+                            showToast(`${data.user.name}님, 안녕하세요! 🎉`, 'success');
                             return { success: true };
                         } else {
                             showToast(data.error || '로그인에 실패했습니다.', 'error');
@@ -3724,7 +4084,7 @@
                         localStorage.setItem('oneai_user', JSON.stringify(OneAI.currentUser));
                         updateAuthUI();
                         closeModal();
-                        // showToast(`${OneAI.currentUser.name}님, 안녕하세요! 🎉 (데모 모드)`, 'success');
+                        showToast(`${OneAI.currentUser.name}님, 안녕하세요! 🎉 (데모 모드)`, 'success');
                         return { success: true };
                     }
                     
@@ -4665,8 +5025,106 @@
                 showToast(`${platform}용 One AI 앱 다운로드를 시작합니다.`, 'info');
             }
 
-            // 🔧 이미 전역에 정의된 showToast 함수 사용
-            // (기존의 showToast 함수 정의 부분은 제거하고 전역 함수 사용)
+            // ===== 통합된 토스트 시스템 =====
+            function showToast(message, type = 'success', duration = 4000) {
+                // 전역 Toast 시스템 사용
+                if (window.OneAI && window.OneAI.toast && window.OneAI.toast.show) {
+                    return window.OneAI.toast.show(message, type, duration);
+                }
+                
+                // 폴백: 간단한 토스트 구현
+                console.log(`Toast (${type}): ${message}`);
+                
+                let toastContainer = document.getElementById('toastContainer');
+                if (!toastContainer) {
+                    toastContainer = document.createElement('div');
+                    toastContainer.id = 'toastContainer';
+                    toastContainer.className = 'toast-container';
+                    toastContainer.style.cssText = `
+                        position: fixed;
+                        bottom: 20px;
+                        right: 20px;
+                        z-index: 1000;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 8px;
+                        max-width: 400px;
+                        pointer-events: none;
+                    `;
+                    document.body.appendChild(toastContainer);
+                }
+                
+                const toast = document.createElement('div');
+                const toastId = Math.random().toString(36).substr(2, 9);
+                
+                toast.className = `toast toast--${type}`;
+                toast.setAttribute('data-toast-id', toastId);
+                
+                const icons = {
+                    success: '✅',
+                    error: '❌',
+                    warning: '⚠️',
+                    info: 'ℹ️'
+                };
+                
+                toast.style.cssText = `
+                    background: var(--color-surface-modal);
+                    border: 1px solid var(--surface-glass-border);
+                    border-radius: 8px;
+                    padding: 16px;
+                    backdrop-filter: blur(16px);
+                    transform: translateX(100%);
+                    transition: transform 200ms ease;
+                    max-width: 100%;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                    border-left: 4px solid var(--color-${type === 'error' ? 'error' : type === 'warning' ? 'warning' : type === 'success' ? 'success' : 'info'});
+                    pointer-events: auto;
+                    min-width: 280px;
+                `;
+                
+                toast.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 16px;">${icons[type]}</span>
+                        <span style="font-size: 14px; font-weight: 500; color: var(--text-primary); flex: 1;">${message}</span>
+                        <button onclick="this.parentElement.parentElement.remove()" style="
+                            background: none;
+                            border: none;
+                            color: var(--text-tertiary);
+                            font-size: 18px;
+                            cursor: pointer;
+                            padding: 0;
+                            width: 20px;
+                            height: 20px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">&times;</button>
+                    </div>
+                `;
+                
+                toastContainer.appendChild(toast);
+                
+                // 애니메이션
+                requestAnimationFrame(() => {
+                    toast.style.transform = 'translateX(0)';
+                });
+                
+                // 자동 제거
+                if (duration > 0) {
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.style.transform = 'translateX(100%)';
+                            setTimeout(() => {
+                                if (toast.parentNode) {
+                                    toast.parentNode.removeChild(toast);
+                                }
+                            }, 200);
+                        }
+                    }, duration);
+                }
+                
+                return toastId;
+            }
 
             // 인증 상태 복원 함수
             function restoreAuthState() {
@@ -4745,8 +5203,6 @@
 
             // 공개 API 반환
             return {
-                selectMenuItem,
-                selectMobileMenuItem,
                 updateSidebar,
                 showModule,
                 // 🔧 추가: 디버깅 함수
@@ -4759,7 +5215,7 @@
                 openInNewTab,
                 downloadApp,
                 closeModal,
-                showToast: showToast, // 전역 함수 참조
+                showToast,
                 retryExternalModule,
                 loadExternalModule,
                 searchAIServices,
@@ -4771,7 +5227,6 @@
                 updateMobileSidebar,
                 toggleMobileMenu,
                 closeMobileMenu,
-                handleOutsideClick,  // ← 이 줄 추가
                 selectMobileMenuItem,
                 showAppFeatures,
                 updateUILanguage,
@@ -4801,11 +5256,6 @@
                 get currentModule() { return currentModule; }
             };
         })();
-
-        // 다른 시스템들에도 showToast 연결
-        if (typeof OneAILang !== 'undefined') {
-            OneAILang.showToast = showToast;
-        }
 
         // 헤더의 현재 AI 정보 업데이트 (함수는 유지하되 내용은 간소화)
         function updateActiveAIHeader(service) {
@@ -5031,6 +5481,11 @@
                     console.error('❌ 누락된 함수들:', missing);
                     return false;
                 }
+            },
+            
+            // 토스트 테스트
+            testToast: function() {
+                showToast('테스트 메시지입니다', 'success');
             },
             
             // 알림 토글 테스트

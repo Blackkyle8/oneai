@@ -4,6 +4,563 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>One AI - AI 쉐어링</title>
+    
+    <!-- One AI Language System -->
+    <link rel="stylesheet" href="assets/lang.css">
+    <script src="frontend/assets/lang.js"></script>
+    
+    <!-- One AI Auth System -->
+    <script src="assets/auth.js"></script>
+    
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <!-- Environment Variables -->
+    <script>
+        // Stripe 퍼블릭 키 설정 (실제 환경에서는 서버에서 주입)
+        window.STRIPE_PUBLISHABLE_KEY = 'pk_test_51234567890abcdef'; // 실제 키로 교체 필요
+    </script>
+    
+    <link rel="stylesheet" href="styles.css">
+    <script src="/script.js"></script>
+    <script src="/assets/sharing.js"></script>
+    
+    <style>
+        /* One AI Design System - Essential CSS Variables & Components */
+        :root {
+            /* Color System - Dark Theme */
+            --color-surface-base: #000000;
+            --color-surface-raised: #0a0a0a;
+            --color-surface-elevated: #111111;
+            --color-surface-overlay: #1a1a1a;
+            --color-surface-modal: #222222;
+            --surface-glass: rgba(17, 17, 17, 0.8);
+            --surface-glass-border: rgba(255, 255, 255, 0.1);
+            
+            /* Text Colors */
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-tertiary: #a3a3a3;
+            --text-quaternary: #737373;
+            --text-disabled: #525252;
+            
+            /* Brand Colors */
+            --color-primary-200: #a7f3d0;
+            --color-primary-400: #34d399;
+            --color-primary-500: #10b981;
+            --color-primary-600: #059669;
+            --color-primary-700: #047857;
+            
+            /* Status Colors */
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-info: #3b82f6;
+            
+            /* Typography Tokens */
+            --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --font-weight-extrabold: 800;
+            
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 22px;
+            --font-size-2xl: 28px;
+            --font-size-3xl: 36px;
+            --font-size-4xl: 48px;
+            
+            /* Spacing Tokens */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            --spacing-3xl: 64px;
+            
+            /* Border Radius Tokens */
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-2xl: 16px;
+            --radius-full: 9999px;
+            
+            /* Z-Index Tokens */
+            --z-index-base: 0;
+            --z-index-sidebar: 10;
+            --z-index-dropdown: 20;
+            --z-index-modal: 40;
+            --z-index-toast: 50;
+            
+            /* Shadow Tokens */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            
+            /* Motion Tokens */
+            --motion-duration-fast: 150ms;
+            --motion-duration-normal: 250ms;
+            --motion-duration-slow: 350ms;
+            --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+    
+    <script>
+/**
+ * 통합된 인증 및 쉐어링 시스템 (토스트 중복 제거 버전)
+ */
+
+// 토스트 상태 관리
+window.toastState = {
+    isShowing: false,
+    lastMessage: '',
+    lastTime: 0
+};
+
+// 메모리 기반 인증 상태 관리
+window.sharingAuthState = {
+    isLoggedIn: false,
+    userToken: null,
+    userInfo: null,
+    initialized: false
+};
+
+/**
+ * 통합된 OneAIAuth 클래스
+ */
+class SharingOneAIAuth {
+    constructor() {
+        this.currentUser = null;
+        this.token = null;
+        this.initialized = false;
+        
+        // 실제 OneAIAuth가 있으면 그것을 사용, 없으면 메모리 기반으로 동작
+        if (window.OneAIAuth && typeof window.OneAIAuth.isAuthenticated === 'function') {
+            this.useRealAuth = true;
+            this.realAuth = window.OneAIAuth;
+            console.log('실제 OneAIAuth 사용');
+        } else {
+            this.useRealAuth = false;
+            console.log('메모리 기반 인증 시스템 사용');
+        }
+        
+        this.init();
+    }
+
+    init() {
+        if (this.useRealAuth) {
+            this.currentUser = this.realAuth.getCurrentUser();
+            this.token = this.realAuth.getToken();
+        } else {
+            this.currentUser = window.sharingAuthState.userInfo;
+            this.token = window.sharingAuthState.userToken;
+        }
+        
+        this.initialized = true;
+        console.log('SharingOneAIAuth 초기화 완료');
+    }
+
+    isAuthenticated() {
+        if (this.useRealAuth) {
+            return this.realAuth.isAuthenticated();
+        }
+        return window.sharingAuthState.isLoggedIn && !!window.sharingAuthState.userToken;
+    }
+
+    getCurrentUser() {
+        if (this.useRealAuth) {
+            return this.realAuth.getCurrentUser();
+        }
+        return window.sharingAuthState.userInfo;
+    }
+
+    getToken() {
+        if (this.useRealAuth) {
+            return this.realAuth.getToken();
+        }
+        return window.sharingAuthState.userToken;
+    }
+
+    login(userData, token, rememberMe = false) {
+        if (this.useRealAuth) {
+            return this.realAuth.login(userData, token, rememberMe);
+        }
+        
+        // 메모리 기반 로그인
+        window.sharingAuthState.isLoggedIn = true;
+        window.sharingAuthState.userToken = token;
+        window.sharingAuthState.userInfo = userData;
+        
+        this.currentUser = userData;
+        this.token = token;
+        
+        this.updateUI();
+        console.log('메모리 기반 로그인 완료:', userData);
+        
+        return true;
+    }
+
+    logout() {
+        if (this.useRealAuth) {
+            return this.realAuth.logout();
+        }
+        
+        // 메모리 기반 로그아웃
+        window.sharingAuthState.isLoggedIn = false;
+        window.sharingAuthState.userToken = null;
+        window.sharingAuthState.userInfo = null;
+        
+        this.currentUser = null;
+        this.token = null;
+        
+        this.updateUI();
+        console.log('메모리 기반 로그아웃 완료');
+    }
+
+    redirectToLogin() {
+        if (this.useRealAuth && typeof this.realAuth.redirectToLogin === 'function') {
+            return this.realAuth.redirectToLogin();
+        }
+        
+        const currentUrl = window.location.pathname + window.location.search;
+        const loginUrl = `/login.html${currentUrl !== '/login.html' ? '?redirect=' + encodeURIComponent(currentUrl) : ''}`;
+        window.location.href = loginUrl;
+    }
+
+    updateUI() {
+        if (this.useRealAuth && typeof this.realAuth.updateUI === 'function') {
+            return this.realAuth.updateUI();
+        }
+        
+        // 메모리 기반 UI 업데이트
+        this.updateUIForAuthState();
+    }
+
+    updateUIForAuthState() {
+        const isLoggedIn = this.isAuthenticated();
+
+        // 로그인 상태에 따라 버튼 텍스트 변경
+        const joinButtons = document.querySelectorAll('.join-btn');
+        joinButtons.forEach(btn => {
+            btn.innerText = isLoggedIn ? '참여하기' : '로그인하여 참여하기';
+        });
+
+        // 로그인된 경우에만 보여줄 요소들
+        const authElements = document.querySelectorAll('.auth-required');
+        authElements.forEach(el => {
+            el.style.display = isLoggedIn ? 'block' : 'none';
+        });
+    }
+}
+
+/**
+ * 전역 OneAIAuth 인스턴스 생성/교체
+ */
+if (!window.OneAIAuth || typeof window.OneAIAuth.isAuthenticated !== 'function') {
+    console.log('OneAIAuth를 SharingOneAIAuth로 대체');
+    window.OneAIAuth = new SharingOneAIAuth();
+}
+
+/**
+ * 통합된 인증 관련 함수들
+ */
+
+// 로그인 상태 체크
+function isLoggedIn() {
+    return window.OneAIAuth && window.OneAIAuth.isAuthenticated();
+}
+
+// 로그인 상태에 따른 액션 처리
+function handleAuthAction(callback) {
+    console.log('handleAuthAction 호출됨');
+    if (isLoggedIn()) {
+        console.log('로그인 상태 - 콜백 실행');
+        callback();
+    } else {
+        console.log('비로그인 상태 - 자동 로그인 실행');
+        // 자동 로그인 후 콜백 실행
+        tempLogin(false); // 토스트 알림 없이 로그인
+        setTimeout(callback, 100);
+    }
+}
+
+// 특정 기능 사용 시 로그인 체크
+function checkAuthForAction(action) {
+    if (!isLoggedIn()) {
+        const confirmed = confirm('이 기능을 사용하려면 로그인이 필요합니다. 자동 로그인하시겠습니까?');
+        if (confirmed) {
+            tempLogin(true); // 토스트 알림과 함께 로그인
+        }
+        return false;
+    }
+    return true;
+}
+
+// 쉐어링 만들기 (로그인 상태 체크)
+function createSharingAction() {
+    console.log('createSharingAction 호출됨');
+    handleAuthAction(() => {
+        console.log('showCreateModal 호출');
+        showCreateModal();
+    });
+}
+
+// 모달 표시 함수
+function showCreateModal() {
+    console.log('쉐어링 만들기 모달 표시');
+    const modal = document.getElementById('createModal');
+    if (modal) {
+        modal.classList.add('modal--show');
+        // 토스트 제거 - 모달만 조용히 열기
+    } else {
+        console.error('createModal 요소를 찾을 수 없습니다');
+        alert('쉐어링 만들기 기능입니다!\n(모달 요소가 로드되지 않았습니다)');
+    }
+}
+
+function hideCreateModal() {
+    const modal = document.getElementById('createModal');
+    if (modal) {
+        modal.classList.remove('modal--show');
+    }
+}
+
+// 로그인 페이지로 리다이렉트
+function redirectToLogin() {
+    if (window.OneAIAuth && typeof window.OneAIAuth.redirectToLogin === 'function') {
+        window.OneAIAuth.redirectToLogin();
+    } else {
+        window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+    }
+}
+
+/**
+ * API 관련 함수들
+ */
+async function manageSharing(sharingId) {
+    if (!checkAuthForAction('manage')) return;
+    
+    try {
+        const response = await fetch(`/api/sharing/${sharingId}/manage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${window.OneAIAuth.getToken()}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('쉐어링 관리 요청 실패');
+        }
+
+        window.location.href = `/sharing/manage/${sharingId}`;
+    } catch (error) {
+        console.error('쉐어링 관리 오류:', error);
+        showToast('쉐어링 관리 중 오류가 발생했습니다.', 'error');
+    }
+}
+
+async function leaveSharing(sharingId) {
+    if (!checkAuthForAction('leave')) return;
+    if (!confirm('정말로 이 쉐어링에서 탈퇴하시겠습니까?')) return;
+
+    try {
+        const response = await fetch(`/api/sharing/${sharingId}/leave`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${window.OneAIAuth.getToken()}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('쉐어링 탈퇴 요청 실패');
+        }
+
+        showToast('쉐어링에서 탈퇴되었습니다.', 'info');
+        setTimeout(() => window.location.reload(), 1500);
+    } catch (error) {
+        console.error('쉐어링 탈퇴 오류:', error);
+        showToast('쉐어링 탈퇴 중 오류가 발생했습니다.', 'error');
+    }
+}
+
+/**
+ * 데모 및 테스트를 위한 헬퍼 함수들
+ */
+
+// 임시 로그인 (데모용) - 토스트 제어 가능
+function tempLogin(showToastNotification = true) {
+    const mockUser = {
+        id: 'demo-user-1',
+        username: '데모사용자',
+        email: 'demo@oneai.com',
+        created_at: '2024-01-15',
+        verified: true
+    };
+    
+    const mockToken = 'demo-token-' + Date.now();
+    
+    window.OneAIAuth.login(mockUser, mockToken);
+    console.log('임시 로그인 완료:', mockUser);
+    
+    // 토스트 메시지 표시 여부 제어
+    if (showToastNotification) {
+        showToast('자동 로그인 완료! 이제 쉐어링을 사용할 수 있습니다.', 'success');
+    }
+}
+
+// 임시 로그아웃 (데모용)
+function tempLogout() {
+    window.OneAIAuth.logout();
+    console.log('임시 로그아웃 완료');
+    showToast('로그아웃 완료', 'info');
+}
+
+// 인증 상태 확인 (디버깅용)
+function checkAuthStatus() {
+    const isAuth = isLoggedIn();
+    const user = window.OneAIAuth ? window.OneAIAuth.getCurrentUser() : null;
+    const token = window.OneAIAuth ? window.OneAIAuth.getToken() : null;
+    
+    console.log('=== 인증 상태 확인 ===');
+    console.log('로그인 상태:', isAuth);
+    console.log('사용자 정보:', user);
+    console.log('토큰:', token ? '있음' : '없음');
+    console.log('==================');
+    
+    return { isAuth, user, token };
+}
+
+/**
+ * 개선된 Toast 함수 - 중복 방지
+ */
+function showToast(message, type = 'success') {
+    const now = Date.now();
+    
+    // 중복 토스트 방지 (같은 메시지가 3초 이내에 호출되면 무시)
+    if (window.toastState.isShowing && 
+        window.toastState.lastMessage === message && 
+        (now - window.toastState.lastTime) < 3000) {
+        console.log('중복 토스트 방지:', message);
+        return;
+    }
+    
+    // 토스트 상태 업데이트
+    window.toastState.isShowing = true;
+    window.toastState.lastMessage = message;
+    window.toastState.lastTime = now;
+    
+    const toast = document.getElementById('toast');
+    if (toast) {
+        const toastMessage = document.getElementById('toastMessage');
+        if (toastMessage) {
+            toastMessage.textContent = message;
+            toast.className = `toast toast--${type} toast--show`;
+            
+            // 3초 후 토스트 숨기기
+            setTimeout(() => {
+                toast.classList.remove('toast--show');
+                window.toastState.isShowing = false;
+            }, 3000);
+            return;
+        }
+    }
+    
+    // 대체 알림 (브라우저 알림)
+    console.log(`📢 ${type.toUpperCase()}: ${message}`);
+    
+    // 간단한 커스텀 알림 생성
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 10000;
+        font-family: Inter, sans-serif;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        transition: all 0.3s ease;
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+            window.toastState.isShowing = false;
+        }, 300);
+    }, 3000);
+}
+
+/**
+ * 전역 함수로 내보내기
+ */
+window.createSharingAction = createSharingAction;
+window.showCreateModal = showCreateModal;
+window.hideCreateModal = hideCreateModal;
+window.redirectToLogin = redirectToLogin;
+window.manageSharing = manageSharing;
+window.leaveSharing = leaveSharing;
+window.checkAuthForAction = checkAuthForAction;
+window.handleAuthAction = handleAuthAction;
+window.isLoggedIn = isLoggedIn;
+window.showToast = showToast;
+
+// 데모용 함수들
+window.tempLogin = tempLogin;
+window.tempLogout = tempLogout;
+window.checkAuthStatus = checkAuthStatus;
+
+/**
+ * 페이지 로드 시 초기화 - 토스트 완전 제거
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('쉐어링 페이지 초기화 시작');
+    
+    // 자동 로그인 (토스트 알림 없이)
+    if (!isLoggedIn()) {
+        console.log('자동 로그인 실행...');
+        tempLogin(false); // 토스트 없이 로그인
+    }
+    
+    // 버튼 이벤트 재등록 (안전장치)
+    const createButtons = document.querySelectorAll('[onclick*="createSharingAction"]');
+    createButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('버튼 클릭 감지');
+            createSharingAction();
+        });
+    });
+    
+    // UI 상태 업데이트
+    if (window.OneAIAuth && typeof window.OneAIAuth.updateUI === 'function') {
+        window.OneAIAuth.updateUI();
+    }
+    
+    console.log('쉐어링 페이지 초기화 완료');
+    // 초기화 완료 토스트 완전 제거 - 조용한 로딩
+});
+
+console.log('스크립트 로드 완료 - createSharingAction 함수 사용 가능');
+    </script>
     <style>
         :root {
             /* Design Tokens - Surface System (Dark Theme Default) */
@@ -63,7 +620,7 @@
             --radius-2xl: 16px;
             
             /* Design Tokens - Layout */
-            --header-height: 60px;
+            --header-height: 50px;
             --sidebar-width: 56px;
             
             /* Design Tokens - Z-Index */
@@ -121,43 +678,6 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: var(--spacing-xl);
-        }
-
-        /* Header Component */
-        .header {
-            height: 60px;
-            box-sizing: border-box;
-            overflow: hidden;
-            background: var(--surface-elevated);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 var(--spacing-2xl);
-            position: sticky;
-            top: 0;
-            z-index: var(--z-index-sidebar);
-            transition: background-color var(--motion-standard);
-        }
-
-        .header__logo {
-            font-size: 18px;
-            flex-shrink: 0;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .header__spacer {
-            flex: 1;
-        }
-
-        .header__actions {
-            display: flex;
-            gap: var(--spacing-md);
-            align-items: center;
         }
 
         /* Button Component */
@@ -256,9 +776,8 @@
             font-weight: 400;
         }
 
-        /* Sharing Header Component */
+        /* Sharing Header Component - 수정된 버전 */
         .sharing-header {
-            text-align: center;
             margin-bottom: var(--spacing-2xl);
             background: linear-gradient(135deg, var(--surface-elevated), var(--surface-modal));
             border-radius: var(--radius-2xl);
@@ -267,8 +786,20 @@
             transition: background var(--motion-standard);
         }
 
+        .sharing-header__content {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: var(--spacing-xl);
+        }
+
+        .sharing-header__text {
+            flex: 1;
+            text-align: left;
+        }
+
         .sharing-header__title {
-            font-size: var(--font-size-2xl);
+            font-size: var(--font-size-3xl);
             font-weight: 700;
             margin-bottom: var(--spacing-md);
             background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-400));
@@ -281,7 +812,32 @@
             color: var(--text-secondary);
             font-size: var(--font-size-base);
             max-width: 600px;
-            margin: 0 auto var(--spacing-lg);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .sharing-header__actions {
+            flex-shrink: 0;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .sharing-header__content {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            
+            .sharing-header__text {
+                text-align: center;
+                margin-bottom: var(--spacing-lg);
+            }
+            
+            .sharing-header__actions {
+                justify-content: center;
+            }
         }
 
         /* Stats Section */
@@ -380,7 +936,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Custom Scrollbar Styling */
+        /* Custom Scrollbar Styling - 통일된 스크롤 디자인 */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -389,16 +945,20 @@
         ::-webkit-scrollbar-track {
             background: var(--surface-elevated);
             border-radius: 4px;
+            margin: 2px;
         }
 
         ::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.2);
             border-radius: 4px;
-            transition: background var(--motion-fast);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: var(--color-primary-500);
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
         }
 
         ::-webkit-scrollbar-corner {
@@ -816,7 +1376,7 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* Toast Notification */
+        /* Toast Notification - 개선된 버전 */
         .toast {
             position: fixed;
             top: 70px;
@@ -826,13 +1386,20 @@
             border-radius: var(--radius-lg);
             padding: var(--spacing-md);
             z-index: var(--z-index-toast);
-            transform: translateX(100%);
-            transition: transform var(--motion-toast);
+            /* 기본 상태에서 완전히 숨김 */
+            transform: translateX(calc(100% + 40px));
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--motion-toast);
             max-width: 300px;
+            box-shadow: var(--shadow-lg);
         }
 
         .toast--show {
+            /* 보여질 때만 나타남 */
             transform: translateX(0);
+            opacity: 1;
+            visibility: visible;
         }
 
         .toast--success {
@@ -843,26 +1410,12 @@
             border-left: 4px solid var(--color-error);
         }
 
+        .toast--info {
+            border-left: 4px solid var(--color-info);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
-            .header {
-                height: auto;
-                min-height: 60px;
-                padding: 0 var(--spacing-md);
-            }
-
-            .header__actions {
-                gap: var(--spacing-sm);
-            }
-
-            .btn--header {
-                padding: 8px 16px;
-                font-size: var(--font-size-xs);
-            }
-
-            .btn--header .btn__icon {
-                font-size: var(--font-size-sm);
-            }
             
             .container {
                 padding: var(--spacing-md);
@@ -904,15 +1457,21 @@
     <div class="container">
         <!-- Sharing Header -->
         <header class="sharing-header">
-            <h1 class="sharing-header__title">🤝 AI 구독 쉐어링</h1>
-            <p class="sharing-header__subtitle">
-                AI 구독비를 나누어 부담하고, 함께 사용하여 최대 80%까지 비용을 절약하세요!<br>
-                안전한 결제 시스템과 실시간 관리로 걱정 없이 이용하실 수 있습니다.
-            </p>
-            <button class="btn btn--primary" data-action="create-sharing">
-                <span class="btn__icon">+</span>
-                쉐어링 만들기
-            </button>
+            <div class="sharing-header__content">
+                <div class="sharing-header__text">
+                    <h1 class="sharing-header__title">🤝 AI 구독 쉐어링</h1>
+                    <p class="sharing-header__subtitle">
+                        AI 구독비를 나누어 부담하고, 함께 사용하여 최대 80%까지 비용을 절약하세요!<br>
+                        안전한 결제 시스템과 실시간 관리로 걱정 없이 이용하실 수 있습니다.
+                    </p>
+                </div>
+                <div class="sharing-header__actions">
+                    <button class="btn btn--primary" onclick="createSharingAction()">
+                        <span class="btn__icon">+</span>
+                        쉐어링 만들기
+                    </button>
+                </div>
+            </div>
         </header>
 
         <!-- Stats Section -->
@@ -984,11 +1543,7 @@
                         <div class="progress-bar">
                             <div class="progress-bar__fill" style="width: 75%"></div>
                         </div>
-                        <button class="btn btn--primary btn--full" 
-                                data-action="join-sharing" 
-                                data-sharing-id="gpt-001" 
-                                data-sharing-name="ChatGPT Plus 4인 쉐어링" 
-                                data-base-price="6900">참여 신청하기</button>
+                        <button class="btn btn--primary btn--full" onclick="joinSharing('gpt-001', 'ChatGPT Plus 4인 쉐어링', 6900)">참여 신청하기</button>
                     </div>
                 </div>
 
@@ -1028,11 +1583,7 @@
                         <div class="progress-bar">
                             <div class="progress-bar__fill" style="width: 40%"></div>
                         </div>
-                        <button class="btn btn--primary btn--full" 
-                                data-action="join-sharing" 
-                                data-sharing-id="midjourney-002" 
-                                data-sharing-name="Midjourney Pro 5인 쉐어링" 
-                                data-base-price="8300">참여 신청하기</button>
+                        <button class="btn btn--primary btn--full" onclick="joinSharing('midjourney-002', 'Midjourney Pro 5인 쉐어링', 8300)">참여 신청하기</button>
                     </div>
                 </div>
 
@@ -1112,11 +1663,7 @@
                         <div class="progress-bar">
                             <div class="progress-bar__fill" style="width: 60%"></div>
                         </div>
-                        <button class="btn btn--primary btn--full" 
-                                data-action="join-sharing" 
-                                data-sharing-id="copilot-005" 
-                                data-sharing-name="GitHub Copilot 5인 쉐어링" 
-                                data-base-price="2800">참여 신청하기</button>
+                        <button class="btn btn--primary btn--full" onclick="joinSharing('copilot-005', 'GitHub Copilot 5인 쉐어링', 2800)">참여 신청하기</button>
                     </div>
                 </div>
             </div>
@@ -1128,7 +1675,7 @@
                 <div class="empty-state__icon">📋</div>
                 <h3 class="empty-state__title">개설한 쉐어링이 없습니다</h3>
                 <p class="empty-state__description">AI 구독을 쉐어링하여 비용을 절약하고 수익도 창출해보세요!</p>
-                <button class="btn btn--primary" data-action="create-sharing">
+                <button class="btn btn--primary" onclick="createSharingAction()">
                     <span class="btn__icon">+</span>
                     쉐어링 만들기
                 </button>
@@ -1270,7 +1817,7 @@
         <div class="modal__content">
             <div class="modal__header">
                 <h2 class="modal__title">🤝 쉐어링 참여 신청</h2>
-                <button class="modal__close" data-action="close-modal">&times;</button>
+                <button class="modal__close" onclick="hideJoinModal()">&times;</button>
             </div>
             
             <!-- 선택한 쉐어링 정보 -->
@@ -1279,7 +1826,7 @@
                     <span id="joinServiceIcon" style="font-size: 20px;">🤖</span>
                     <div>
                         <h3 id="joinSharingName" style="color: var(--text-primary); margin: 0;">ChatGPT Plus 4인 쉐어링</h3>
-                        <p style="color: var(--text-secondary); margin: 0; font-size: var(--font-size-sm);" id="joinModalDescription">로그인이 필요합니다</p>
+                        <p style="color: var(--text-secondary); margin: 0; font-size: var(--font-size-sm);" id="joinModalDescription">신청 후 결제 페이지로 이동합니다</p>
                     </div>
                 </div>
                 
@@ -1299,7 +1846,7 @@
                 </div>
             </div>
             
-            <form id="joinForm" style="display: none;">
+            <form id="joinForm">
                 <div class="form-group">
                     <label class="form-label">참여자 닉네임</label>
                     <input type="text" class="form-input" name="nickname" placeholder="쉐어링에서 사용할 닉네임" required>
@@ -1322,8 +1869,8 @@
             
             <div class="modal__actions">
                 <button type="button" class="btn btn--cancel" onclick="hideJoinModal()">취소</button>
-                <button type="submit" class="btn btn--primary" id="joinActionButton" onclick="redirectToLogin()">
-                    로그인하고 참여하기
+                <button type="submit" class="btn btn--primary" id="joinActionButton" onclick="proceedToPayment()">
+                    결제 페이지로 이동
                 </button>
             </div>
         </div>
@@ -1334,7 +1881,7 @@
         <div class="modal__content">
             <div class="modal__header">
                 <h2 class="modal__title">쉐어링 만들기</h2>
-                <button class="modal__close" data-action="close-modal">&times;</button>
+                <button class="modal__close" onclick="hideCreateModal()">&times;</button>
             </div>
             
             <form id="createForm">
@@ -1401,7 +1948,7 @@
             
             <div class="modal__actions">
                 <button type="button" class="btn btn--cancel" onclick="hideCreateModal()">취소</button>
-                <button type="submit" class="btn btn--primary" data-action="create-sharing-submit">만들기</button>
+                <button type="submit" class="btn btn--primary" onclick="createSharing()">만들기</button>
             </div>
         </div>
     </div>
@@ -1491,95 +2038,22 @@
     </div>
 
     <script>
-        console.log('Script loading...'); // 디버깅용
-        
-        // 로그인 상태 체크 (실제로는 서버나 localStorage에서 확인)
-        function isLoggedIn() {
-            // 예시: localStorage에서 토큰 확인
-            return localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
-        }
-
-        // 로그인 상태에 따른 액션 처리
-        function handleAuthAction(callback) {
-            if (isLoggedIn()) {
-                // 로그인되어 있으면 콜백 함수 실행
-                callback();
-            } else {
-                // 로그인 안되어 있으면 로그인 페이지로 이동
-                window.location.href = 'login.html';
-            }
-        }
-
-        // 쉐어링 만들기 (로그인 상태 체크)
-        function createSharingAction() {
-            console.log('createSharingAction called'); // 디버깅용
-            handleAuthAction(showCreateModal);
-        }
-
-        // 로그인 페이지로 리다이렉트
-        function redirectToLogin() {
-            console.log('redirectToLogin called'); // 디버깅용
-            window.location.href = 'login.html';
-        }
-
-        // Show Create Modal
-        function showCreateModal() {
-            console.log('showCreateModal called'); // 디버깅용
-            document.getElementById('createModal').classList.add('modal--show');
-        }
-
         let currentTab = 'popular';
         let selectedSharingId = null;
         let currentTheme = 'dark';
 
-        // Toast Notification Function
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
-            
-            toastMessage.textContent = message;
-            toast.className = `toast toast--${type}`;
-            toast.classList.add('toast--show');
-            
-            setTimeout(() => {
-                toast.classList.remove('toast--show');
-            }, 3000);
-        }
-
         // Tab Switching
         function switchTab(tabName) {
-            // 모든 탭 버튼과 콘텐츠에서 active 클래스 제거
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('tab-btn--active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('tab-content--active'));
             
-            // 선택된 탭 버튼과 콘텐츠에 active 클래스 추가
-            const targetButton = document.querySelector(`[data-tab="${tabName}"]`);
-            const targetContent = document.getElementById(tabName + 'Tab');
-            
-            if (targetButton) targetButton.classList.add('tab-btn--active');
-            if (targetContent) targetContent.classList.add('tab-content--active');
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('tab-btn--active');
+            document.getElementById(tabName + 'Tab').classList.add('tab-content--active');
             
             currentTab = tabName;
-            
-            console.log(`Switched to tab: ${tabName}`); // 디버깅용
-        }
-
-        // Modal Functions
-        function showCreateModal() {
-            document.getElementById('createModal').classList.add('modal--show');
-        }
-
-        function hideCreateModal() {
-            document.getElementById('createModal').classList.remove('modal--show');
         }
 
         function createSharing() {
-            const form = document.getElementById('createForm');
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-            
             showToast('쉐어링이 성공적으로 생성되었습니다!', 'success');
             hideCreateModal();
             setTimeout(() => {
@@ -1587,12 +2061,31 @@
                 updateMyTab();
             }, 100);
         }
+
+        // 전역 변수
+        let currentPaymentData = null;
+        let stripe = null;
+        let elements = null;
+
+        // Stripe 초기화
+        async function initializeStripe() {
+            try {
+                if (typeof Stripe === 'undefined') {
+                    console.warn('Stripe.js가 로드되지 않았습니다. 결제 기능이 제한됩니다.');
+                    return false;
+                }
+                
+                stripe = Stripe(window.STRIPE_PUBLISHABLE_KEY || 'pk_test_example'); // 실제 키로 교체 필요
+                return true;
+            } catch (error) {
+                console.error('Stripe 초기화 오류:', error);
+                return false;
+            }
+        }
+
         function joinSharing(sharingId, sharingName, basePrice) {
-            console.log('joinSharing called with:', sharingId, sharingName, basePrice); // 디버깅용
-            
             // 로그인 상태 체크 후 참여 처리
             handleAuthAction(() => {
-                console.log('User is logged in, proceeding with join'); // 디버깅용
                 selectedSharingId = sharingId;
                 
                 // 서비스 아이콘 설정
@@ -1614,34 +2107,299 @@
                 document.getElementById('joinFeeAmount').textContent = `₩${fee.toLocaleString()}/월`;
                 document.getElementById('joinTotalAmount').textContent = `₩${total.toLocaleString()}/월`;
                 
-                // 로그인 상태에 따라 모달 내용 변경
-                updateJoinModalForLoggedInUser();
+                // 현재 참여 데이터 저장
+                currentPaymentData = {
+                    sharingId,
+                    sharingName,
+                    basePrice,
+                    fee,
+                    total
+                };
                 
                 document.getElementById('joinModal').classList.add('modal--show');
-                console.log('Join modal should be visible now'); // 디버깅용
             });
         }
 
-        // 로그인된 사용자를 위한 참여 모달 업데이트
-        function updateJoinModalForLoggedInUser() {
-            // 모달 내 설명 텍스트 변경
-            const description = document.getElementById('joinModalDescription');
-            if (description) {
-                description.textContent = '신청 후 결제 페이지로 이동합니다';
+        async function proceedToPayment() {
+            if (!currentPaymentData) {
+                showToast('참여 정보가 없습니다.', 'error');
+                return;
             }
-            
-            // 폼 표시
+
             const form = document.getElementById('joinForm');
-            if (form) {
-                form.style.display = 'block';
+            if (form && !form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            try {
+                // 로딩 상태 표시
+                const submitButton = document.getElementById('joinActionButton');
+                const originalText = submitButton.textContent;
+                submitButton.disabled = true;
+                submitButton.textContent = '처리 중...';
+
+                // 폼 데이터 수집
+                const formData = new FormData(form);
+                const participantData = {
+                    nickname: formData.get('nickname'),
+                    email: formData.get('email')
+                };
+
+                // 쉐어링 참여 신청 API 호출
+                const response = await fetch(`/api/sharing/${currentPaymentData.sharingId}/join`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify(participantData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || '참여 신청에 실패했습니다.');
+                }
+
+                // Payment Intent 정보 받기
+                const paymentIntentData = result.data.payment_intent;
+                
+                if (!paymentIntentData) {
+                    throw new Error('결제 정보를 받지 못했습니다.');
+                }
+
+                // 참여 모달 숨기고 결제 모달 표시
+                hideJoinModal();
+                await showPaymentModal(paymentIntentData, currentPaymentData);
+
+            } catch (error) {
+                console.error('결제 진행 오류:', error);
+                showToast(error.message, 'error');
+            } finally {
+                // 버튼 상태 복원
+                const submitButton = document.getElementById('joinActionButton');
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
+                }
+            }
+        }
+
+        // 결제 모달 표시
+        async function showPaymentModal(paymentIntentData, sharingData) {
+            try {
+                const modal = document.getElementById('paymentModal');
+                if (!modal) {
+                    console.error('결제 모달을 찾을 수 없습니다.');
+                    return;
+                }
+
+                // Stripe 초기화 확인
+                const stripeInitialized = await initializeStripe();
+                if (!stripeInitialized) {
+                    throw new Error('결제 시스템 초기화에 실패했습니다.');
+                }
+
+                // 결제 요소 생성
+                const options = {
+                    clientSecret: paymentIntentData.client_secret,
+                    appearance: {
+                        theme: 'stripe',
+                        variables: {
+                            colorPrimary: '#10b981',
+                            colorBackground: '#1a1a1a',
+                            colorText: '#ffffff',
+                            borderRadius: '8px'
+                        }
+                    }
+                };
+
+                elements = stripe.elements(options);
+                
+                // Payment Element 생성
+                const paymentElementOptions = {
+                    layout: 'tabs'
+                };
+                
+                const paymentElement = elements.create('payment', paymentElementOptions);
+                
+                // 결제 모달 내용 업데이트
+                modal.innerHTML = `
+                    <div class="modal__content" style="max-width: 600px;">
+                        <div class="modal__header">
+                            <h2 class="modal__title">💳 결제하기</h2>
+                            <button class="modal__close" onclick="hidePaymentModal()">&times;</button>
+                        </div>
+                        
+                        <!-- 쉐어링 정보 -->
+                        <div style="margin-bottom: 24px; padding: 20px; background: var(--surface-modal); border-radius: var(--radius-lg); border: 1px solid var(--color-primary-500);">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                <span style="font-size: 20px;">🤝</span>
+                                <div>
+                                    <h3 style="color: var(--text-primary); margin: 0;">${sharingData.sharingName}</h3>
+                                    <p style="color: var(--text-secondary); margin: 0; font-size: var(--font-size-sm);">AI 쉐어링 참여 결제</p>
+                                </div>
+                            </div>
+                            
+                            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="color: var(--text-tertiary);">월 구독료:</span>
+                                    <span style="color: var(--text-primary); font-weight: 600;">${sharingData.basePrice.toLocaleString()}원</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="color: var(--text-tertiary);">서비스 수수료 (10%):</span>
+                                    <span style="color: var(--text-primary);">${sharingData.fee.toLocaleString()}원</span>
+                                </div>
+                                <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; display: flex; justify-content: space-between;">
+                                    <span style="color: var(--text-primary); font-weight: 600;">총 결제 금액:</span>
+                                    <span style="color: var(--color-primary-500); font-weight: 700; font-size: 18px;">${sharingData.total.toLocaleString()}원</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stripe Payment Element -->
+                        <div id="payment-element" style="margin-bottom: 24px;">
+                            <!-- Payment Element가 여기에 마운트됩니다 -->
+                        </div>
+
+                        <!-- 결제 버튼 -->
+                        <div class="modal__actions">
+                            <button type="button" class="btn btn--cancel" onclick="hidePaymentModal()">취소</button>
+                            <button type="button" class="btn btn--primary" id="submit-payment" onclick="submitPayment()">
+                                ${sharingData.total.toLocaleString()}원 결제하기
+                            </button>
+                        </div>
+
+                        <!-- 결제 상태 메시지 -->
+                        <div id="payment-messages" style="margin-top: 12px; color: var(--color-error); font-size: var(--font-size-sm);"></div>
+                    </div>
+                `;
+
+                // Payment Element 마운트
+                paymentElement.mount('#payment-element');
+
+                // 모달 표시
+                modal.classList.add('modal--show');
+
+                // 전역 변수에 결제 정보 저장
+                window.currentPaymentIntent = paymentIntentData;
+
+            } catch (error) {
+                console.error('결제 모달 표시 오류:', error);
+                showToast('결제 모달을 표시하는데 실패했습니다.', 'error');
+            }
+        }
+
+        function hidePaymentModal() {
+            const modal = document.getElementById('paymentModal');
+            modal.classList.remove('modal--show');
+            
+            // Stripe Elements 정리
+            if (elements) {
+                elements = null;
+            }
+            window.currentPaymentIntent = null;
+        }
+
+        // 결제 제출
+        async function submitPayment() {
+            if (!stripe || !elements || !window.currentPaymentIntent) {
+                showToast('결제 시스템이 준비되지 않았습니다.', 'error');
+                return;
+            }
+
+            const submitButton = document.getElementById('submit-payment');
+            const originalText = submitButton.textContent;
+            
+            // 로딩 상태
+            submitButton.disabled = true;
+            submitButton.textContent = '결제 처리 중...';
+
+            try {
+                const { error, paymentIntent } = await stripe.confirmPayment({
+                    elements,
+                    confirmParams: {
+                        return_url: `${window.location.origin}/frontend/sharing.html?payment_success=true`
+                    },
+                    redirect: 'if_required'
+                });
+
+                if (error) {
+                    throw error;
+                }
+
+                if (paymentIntent.status === 'succeeded') {
+                    // 결제 성공 - 백엔드에 확인 요청
+                    await confirmPaymentSuccess(paymentIntent.id);
+                    
+                    hidePaymentModal();
+                    showToast('결제가 완료되었습니다! 쉐어링 참여가 확정되었습니다.', 'success');
+                    
+                    // 페이지 새로고침 (목록 업데이트를 위해)
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    throw new Error('결제가 완료되지 않았습니다.');
+                }
+
+            } catch (error) {
+                console.error('결제 오류:', error);
+                const messageDiv = document.getElementById('payment-messages');
+                if (messageDiv) {
+                    messageDiv.textContent = error.message || '결제 중 오류가 발생했습니다.';
+                }
+                showToast(error.message || '결제에 실패했습니다.', 'error');
+            } finally {
+                // 버튼 상태 복원
+                submitButton.disabled = false;
+                submitButton.textContent = originalText;
+            }
+        }
+
+        // 결제 성공 확인
+        async function confirmPaymentSuccess(paymentIntentId) {
+            try {
+                if (!currentPaymentData) {
+                    throw new Error('쉐어링 정보가 없습니다.');
+                }
+
+                const response = await fetch(`/api/sharing/${currentPaymentData.sharingId}/confirm-payment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({
+                        payment_intent_id: paymentIntentId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || '결제 확인에 실패했습니다.');
+                }
+
+                console.log('결제 확인 완료:', result.data);
+                
+            } catch (error) {
+                console.error('결제 확인 오류:', error);
+                // 결제는 성공했지만 확인 과정에서 오류 발생
+                showToast('결제는 완료되었으나 확인 과정에서 오류가 발생했습니다. 고객센터에 문의해주세요.', 'warning');
+            }
+        }
+
+        // 인증 토큰 가져오기
+        function getAuthToken() {
+            // OneAIAuth에서 토큰 가져오기
+            if (window.OneAIAuth && typeof window.OneAIAuth.getToken === 'function') {
+                return window.OneAIAuth.getToken();
             }
             
-            // 버튼 텍스트 변경
-            const joinButton = document.getElementById('joinActionButton');
-            if (joinButton) {
-                joinButton.textContent = '결제 페이지로 이동';
-                joinButton.onclick = proceedToPayment;
-            }
+            // 로컬 스토리지에서 가져오기 (백업)
+            return localStorage.getItem('oneai_token') || 'demo-token-' + Date.now();
         }
 
         // Custom service fields toggle
@@ -1654,38 +2412,6 @@
                     customFields.classList.remove('custom-service-fields--show');
                 }
             }
-        }
-
-        function proceedToPayment() {
-            // 폼 유효성 검사
-            const form = document.getElementById('joinForm');
-            if (form && !form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-            
-            // Join 모달에서 Payment 모달로 데이터 전달
-            const joinServiceIcon = document.getElementById('joinServiceIcon').textContent;
-            const joinSharingName = document.getElementById('joinSharingName').textContent;
-            const joinTotalAmount = document.getElementById('joinTotalAmount').textContent;
-            const joinBasePrice = document.getElementById('joinBasePrice').textContent;
-            const joinFeeAmount = document.getElementById('joinFeeAmount').textContent;
-            
-            // Payment 모달에 정보 설정
-            document.getElementById('paymentServiceIcon').textContent = joinServiceIcon;
-            document.getElementById('paymentSharingName').textContent = joinSharingName;
-            document.getElementById('paymentBasePrice').textContent = joinBasePrice.replace('/월', '');
-            document.getElementById('paymentFeeAmount').textContent = joinFeeAmount.replace('/월', '');
-            document.getElementById('paymentTotalAmount').textContent = joinTotalAmount.replace('/월', '');
-            document.getElementById('paymentButtonText').textContent = `${joinTotalAmount.replace('/월', '')} 결제하기`;
-            
-            // 모달 전환
-            hideJoinModal();
-            document.getElementById('paymentModal').classList.add('modal--show');
-        }
-
-        function hidePaymentModal() {
-            document.getElementById('paymentModal').classList.remove('modal--show');
         }
 
         function selectPaymentMethod(method) {
@@ -1766,111 +2492,26 @@
                 </div>
             `;
         }
-        function manageSharing(sharingId) {
-            showToast(`쉐어링 관리 (${sharingId})`, 'info');
-        }
-
-        function leaveSharing(sharingId) {
-            if (confirm('정말로 쉐어링에서 탈퇴하시겠습니까?')) {
-                showToast('쉐어링 탈퇴가 완료되었습니다.', 'success');
-                setTimeout(() => location.reload(), 1000);
-            }
-        }
 
         // Event Listeners
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM Content Loaded - Initializing sharing page'); // 디버깅용
+            // Stripe 초기화
+            initializeStripe();
             
+            // URL에서 결제 성공 여부 확인
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('payment_success') === 'true') {
+                showToast('결제가 성공적으로 완료되었습니다!', 'success');
+                // URL 정리
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
             // Tab Events
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            console.log('Found tab buttons:', tabButtons.length); // 디버깅용
-            
-            tabButtons.forEach((btn, index) => {
-                console.log(`Setting up tab button ${index}:`, btn.dataset.tab); // 디버깅용
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
                     const tabName = this.dataset.tab;
-                    console.log(`Tab clicked: ${tabName}`); // 디버깅용
                     switchTab(tabName);
                 });
-            });
-
-            // 쉐어링 만들기 버튼들
-            const createButtons = document.querySelectorAll('[data-action="create-sharing"]');
-            console.log('Found create sharing buttons:', createButtons.length); // 디버깅용
-            
-            createButtons.forEach((btn, index) => {
-                console.log(`Setting up create button ${index}`); // 디버깅용
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Create sharing button clicked!'); // 디버깅용
-                    createSharingAction();
-                });
-            });
-
-            // 참여 신청하기 버튼들
-            const joinButtons = document.querySelectorAll('[data-action="join-sharing"]');
-            console.log('Found join sharing buttons:', joinButtons.length); // 디버깅용
-            
-            joinButtons.forEach((btn, index) => {
-                console.log(`Setting up join button ${index}`); // 디버깅용
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    const sharingId = this.dataset.sharingId;
-                    const sharingName = this.dataset.sharingName;
-                    const basePrice = parseInt(this.dataset.basePrice);
-                    
-                    console.log('Join sharing button clicked!', {sharingId, sharingName, basePrice}); // 디버깅용
-                    joinSharing(sharingId, sharingName, basePrice);
-                });
-            });
-
-            // 기타 버튼들에 대한 이벤트 처리
-            document.addEventListener('click', function(e) {
-                const target = e.target.closest('button');
-                if (!target) return;
-                
-                const action = target.dataset.action;
-                console.log('Button clicked with action:', action); // 디버깅용
-                
-                switch(action) {
-                    case 'close-modal':
-                        e.preventDefault();
-                        const modal = target.closest('.modal');
-                        if (modal) {
-                            modal.classList.remove('modal--show');
-                            console.log('Modal closed'); // 디버깅용
-                        }
-                        break;
-                        
-                    case 'create-sharing-submit':
-                        e.preventDefault();
-                        console.log('Create sharing submit clicked'); // 디버깅용
-                        createSharing();
-                        break;
-                }
-                
-                // 모달 닫기 버튼들 (클래스 기반)
-                if (target.classList.contains('modal__close')) {
-                    e.preventDefault();
-                    const modal = target.closest('.modal');
-                    if (modal) {
-                        modal.classList.remove('modal--show');
-                    }
-                }
-                
-                // 취소 버튼들
-                if (target.classList.contains('btn--cancel')) {
-                    e.preventDefault();
-                    const modal = target.closest('.modal');
-                    if (modal) {
-                        modal.classList.remove('modal--show');
-                    }
-                }
             });
 
             // Modal Outside Click
@@ -1917,8 +2558,6 @@
                     createSharingAction();
                 }
             });
-            
-            console.log('Event listeners setup complete'); // 디버깅용
         });
     </script>
 </body>

@@ -66,6 +66,8 @@ const userRouter = require('./user');
 const sharingRouter = require('./sharing');
 const communityRouter = require('./community');
 const businessRouter = require('./business');
+const paymentRouter = require('./payment'); // 또는 './routes/payment'
+const storageRouter = require('./storage');
 
 function mountIfExists(mountPath, modulePath) {
   try {
@@ -131,6 +133,14 @@ app.get('/api/version', (req, res) => {
     node_version: process.version,
   });
 });
+
+app.use('/api/auth', authRouter);
+app.use('/api/user', userRouter);
+app.use('/api/business', businessRouter);
+app.use('/api/community', communityRouter);
+app.use('/api/sharing', sharingRouter);
+app.use('/api/payment', paymentRouter);
+//app.use('/api/storage', storageRouter);
 
 // ===== Legacy/Test =====
 app.get('/api/user/profile', async (req, res) => {

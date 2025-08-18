@@ -14,8 +14,26 @@ const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 const { authenticateToken, validateInput } = require('./middleware');
-const { getConnection, executeQuery } = require('./database');
-const { processPayment, createSubscription } = require('./payment');
+const { 
+    getConnection, 
+    executeQuery,
+    savePaymentLog,
+    updatePaymentLog,
+    getPaymentHistory,
+    saveSubscription,
+    updateSubscriptionStatus,
+    getSubscriptionByUser,
+    getUserSubscriptions,
+    saveCustomer,
+    findCustomerByUserId,
+    getUserById,
+    updateSharingPaymentStatus,
+    updateSharingParticipantStatus,
+    checkSharingGroupPaymentComplete,
+    activateSharingGroup,
+    removeSharingParticipant
+} = require('./database');
+const { processPayment, createSubscription, createSharingPaymentIntent } = require('./payment');
 
 // ===== 상수 정의 =====
 const AI_SERVICES = {
@@ -62,7 +80,7 @@ router.get('/popular', async (req, res) => {
                 COUNT(sp.id) as participant_count,
                 AVG(sr.rating) as avg_rating,
                 COUNT(sr.id) as review_count
-            FROM sharing_groups s
+            FROM sharings s
             LEFT JOIN users u ON s.creator_id = u.id
             LEFT JOIN sharing_participants sp ON s.id = sp.sharing_id AND sp.status = ?
             LEFT JOIN sharing_reviews sr ON s.id = sr.sharing_id
@@ -113,7 +131,7 @@ router.get('/popular', async (req, res) => {
         // 총 개수 조회
         let countQuery = `
             SELECT COUNT(DISTINCT s.id) as total
-            FROM sharing_groups s
+            FROM sharings s
             WHERE s.status = ?
         `;
         const countParams = [status];
@@ -208,7 +226,7 @@ router.post('/create', authenticateToken, validateInput([
 
         // 사용자가 이미 같은 서비스의 활성 쉐어링을 개설했는지 확인
         const existingSharing = await executeQuery(
-            `SELECT id FROM sharing_groups 
+            `SELECT id FROM sharings 
              WHERE creator_id = ? AND service_type = ? AND status IN (?, ?)`,
             [userId, service_type, SHARING_STATUS.RECRUITING, SHARING_STATUS.ACTIVE]
         );
@@ -223,7 +241,7 @@ router.post('/create', authenticateToken, validateInput([
         // 쉐어링 그룹 생성
         const sharingId = uuidv4();
         const insertQuery = `
-            INSERT INTO sharing_groups (
+            INSERT INTO sharings (
                 id, creator_id, service_type, title, description,
                 max_participants, custom_service_name, custom_price,
                 custom_logo, custom_website, status, created_at
@@ -258,7 +276,7 @@ router.post('/create', authenticateToken, validateInput([
         // 생성된 쉐어링 정보 반환
         const newSharing = await executeQuery(
             `SELECT s.*, u.username as creator_name
-             FROM sharing_groups s
+             FROM sharings s
              LEFT JOIN users u ON s.creator_id = u.id
              WHERE s.id = ?`,
             [sharingId]
@@ -287,6 +305,115 @@ router.post('/create', authenticateToken, validateInput([
 });
 
 /**
+ * 결제 완료 후 쉐어링 참여 확정 처리
+ * POST /api/sharing/:id/confirm-payment
+ */
+router.post('/:id/confirm-payment', authenticateToken, async (req, res) => {
+    const connection = await getConnection();
+    
+    try {
+        await connection.beginTransaction();
+        
+        const sharingId = req.params.id;
+        const userId = req.user.id;
+        const { payment_intent_id } = req.body;
+
+        // Stripe에서 결제 상태 확인
+        const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+        const paymentIntent = await stripe.paymentIntents.retrieve(payment_intent_id);
+
+        if (paymentIntent.status !== 'succeeded') {
+            return res.status(400).json({
+                success: false,
+                message: '결제가 완료되지 않았습니다.'
+            });
+        }
+
+        // 참여자 상태를 ACTIVE로 변경
+        await executeQuery(
+            `UPDATE sharing_participants 
+             SET status = ?, payment_completed_at = NOW() 
+             WHERE sharing_id = ? AND user_id = ? AND payment_intent_id = ?`,
+            [PARTICIPANT_STATUS.ACTIVE, sharingId, userId, payment_intent_id],
+            connection
+        );
+
+        // 결제 로그 업데이트
+        await executeQuery(
+            `UPDATE payment_logs 
+             SET status = 'succeeded', completed_at = NOW() 
+             WHERE stripe_payment_intent_id = ?`,
+            [payment_intent_id],
+            connection
+        );
+
+        // 현재 활성 참여자 수 확인
+        const [{ active_count }] = await executeQuery(
+            `SELECT COUNT(*) as active_count 
+             FROM sharing_participants 
+             WHERE sharing_id = ? AND status = ?`,
+            [sharingId, PARTICIPANT_STATUS.ACTIVE]
+        );
+
+        // 쉐어링 정보 조회
+        const [sharingInfo] = await executeQuery(
+            `SELECT * FROM sharings WHERE id = ?`,
+            [sharingId]
+        );
+
+        // 정원이 찬 경우 상태 변경
+        if (active_count >= sharingInfo.max_participants) {
+            await executeQuery(
+                `UPDATE sharings SET status = ?, started_at = NOW() WHERE id = ?`,
+                [SHARING_STATUS.ACTIVE, sharingId],
+                connection
+            );
+
+            // 구독 설정
+            await createSubscription({
+                sharing_id: sharingId,
+                service_type: sharingInfo.service_type,
+                participants: await executeQuery(
+                    `SELECT user_id, monthly_cost FROM sharing_participants 
+                     WHERE sharing_id = ? AND status = ?`,
+                    [sharingId, PARTICIPANT_STATUS.ACTIVE]
+                )
+            });
+        }
+
+        await connection.commit();
+
+        // 개설자에게 알림
+        await sendNotification(sharingInfo.creator_id, {
+            type: 'sharing_join_confirmed',
+            title: '새로운 참여자 결제 완료!',
+            message: `쉐어링에 새로운 참여자의 결제가 완료되었습니다.`,
+            data: { sharing_id: sharingId }
+        });
+
+        res.json({
+            success: true,
+            message: '쉐어링 참여가 완료되었습니다!',
+            data: {
+                sharing_status: active_count >= sharingInfo.max_participants ? 'active' : 'recruiting',
+                participant_count: active_count
+            }
+        });
+
+    } catch (error) {
+        await connection.rollback();
+        console.error('Payment confirmation error:', error);
+        res.status(500).json({
+            success: false,
+            message: '결제 확인 처리에 실패했습니다.',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    } finally {
+        connection.release();
+    }
+});
+
+/**
  * 쉐어링 참여 신청
  * POST /api/sharing/:id/join
  */
@@ -306,7 +433,7 @@ router.post('/:id/join', authenticateToken, validateInput([
         // 쉐어링 정보 조회
         const sharing = await executeQuery(
             `SELECT s.*, COUNT(sp.id) as participant_count
-             FROM sharing_groups s
+             FROM sharings s
              LEFT JOIN sharing_participants sp ON s.id = sp.sharing_id AND sp.status = ?
              WHERE s.id = ? AND s.status = ?
              GROUP BY s.id`,
@@ -352,33 +479,48 @@ router.post('/:id/join', authenticateToken, validateInput([
         const totalCost = individualCost + fee;
         const totalCostKRW = Math.round(totalCost * 1380);
 
-        // 결제 처리
-        const paymentResult = await processPayment({
-            user_id: userId,
-            amount: totalCostKRW,
-            currency: 'KRW',
-            payment_method,
-            description: `${sharingInfo.title} 쉐어링 참여`,
-            metadata: {
-                sharing_id: sharingId,
-                type: 'sharing_subscription'
-            }
-        });
+        // Stripe Payment Intent 생성
+        const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+        
+        try {
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: totalCostKRW,
+                currency: 'krw',
+                description: `${sharingInfo.title} 쉐어링 참여`,
+                metadata: {
+                    sharing_id: sharingId,
+                    user_id: userId.toString(),
+                    type: 'sharing_subscription',
+                    service_type: sharingInfo.service_type
+                },
+                automatic_payment_methods: {
+                    enabled: true
+                }
+            });
 
-        if (!paymentResult.success) {
+            // 결제 인텐트가 성공적으로 생성되었다면 일단 처리 중 상태로 기록
+            const paymentResult = {
+                success: true,
+                payment_id: paymentIntent.id,
+                client_secret: paymentIntent.client_secret,
+                status: paymentIntent.status
+            };
+
+        } catch (stripeError) {
+            console.error('Stripe Payment Intent 생성 오류:', stripeError);
             return res.status(400).json({
                 success: false,
-                message: '결제 처리에 실패했습니다.',
-                error: paymentResult.error
+                message: '결제 인텐트 생성에 실패했습니다.',
+                error: stripeError.message
             });
         }
 
-        // 참여자 추가
+        // 참여자 추가 (결제 인텐트 생성 시점에는 pending 상태로)
         const participantId = uuidv4();
         await executeQuery(
             `INSERT INTO sharing_participants (
                 id, sharing_id, user_id, nickname, email, status,
-                monthly_cost, joined_at, payment_id
+                monthly_cost, joined_at, payment_intent_id
             ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)`,
             [
                 participantId,
@@ -386,54 +528,47 @@ router.post('/:id/join', authenticateToken, validateInput([
                 userId,
                 nickname,
                 email,
-                PARTICIPANT_STATUS.ACTIVE,
+                PARTICIPANT_STATUS.PENDING, // 결제 완료 전까지는 pending
                 totalCostKRW,
-                paymentResult.payment_id
+                paymentIntent.id
             ],
             connection
         );
 
-        // 정원이 찬 경우 상태 변경
-        const newParticipantCount = sharingInfo.participant_count + 1;
-        if (newParticipantCount >= sharingInfo.max_participants) {
-            await executeQuery(
-                `UPDATE sharing_groups SET status = ?, started_at = NOW() WHERE id = ?`,
-                [SHARING_STATUS.ACTIVE, sharingId],
-                connection
-            );
-        }
-
-        // 구독 설정 (정원이 찬 경우)
-        if (newParticipantCount >= sharingInfo.max_participants) {
-            await createSubscription({
-                sharing_id: sharingId,
-                service_type: sharingInfo.service_type,
-                participants: await executeQuery(
-                    `SELECT user_id, monthly_cost FROM sharing_participants 
-                     WHERE sharing_id = ? AND status = ?`,
-                    [sharingId, PARTICIPANT_STATUS.ACTIVE]
-                )
-            });
-        }
+        // 결제 로그 저장
+        await executeQuery(
+            `INSERT INTO payment_logs (
+                id, user_id, sharing_id, stripe_payment_intent_id, 
+                amount, currency, description, status, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+            [
+                uuidv4(),
+                userId,
+                sharingId,
+                paymentIntent.id,
+                totalCostKRW,
+                'krw',
+                `${sharingInfo.title} 쉐어링 참여`,
+                'requires_payment_method'
+            ],
+            connection
+        );
 
         await connection.commit();
 
-        // 알림 발송 (개설자에게)
-        await sendNotification(sharingInfo.creator_id, {
-            type: 'sharing_join',
-            title: '새로운 참여자가 합류했습니다!',
-            message: `${nickname}님이 "${sharingInfo.title}" 쉐어링에 참여했습니다.`,
-            data: { sharing_id: sharingId }
-        });
-
+        // 클라이언트에 결제 인텐트 정보 반환 (프론트엔드에서 결제 진행)
         res.json({
             success: true,
-            message: '쉐어링 참여가 완료되었습니다!',
+            message: '결제를 진행해주세요.',
             data: {
                 participant_id: participantId,
+                payment_intent: {
+                    id: paymentIntent.id,
+                    client_secret: paymentIntent.client_secret,
+                    amount: totalCostKRW
+                },
                 monthly_cost: totalCostKRW,
-                sharing_status: newParticipantCount >= sharingInfo.max_participants ? 'active' : 'recruiting',
-                participant_count: newParticipantCount
+                sharing_id: sharingId
             }
         });
 
@@ -466,7 +601,7 @@ router.get('/my', authenticateToken, async (req, res) => {
                 SUM(sp.monthly_cost) as total_revenue,
                 AVG(sr.rating) as avg_rating,
                 COUNT(sr.id) as review_count
-            FROM sharing_groups s
+            FROM sharings s
             LEFT JOIN sharing_participants sp ON s.id = sp.sharing_id AND sp.status = ?
             LEFT JOIN sharing_reviews sr ON s.id = sr.sharing_id
             WHERE s.creator_id = ?
@@ -533,7 +668,7 @@ router.get('/joined', authenticateToken, async (req, res) => {
                 u.rating as creator_rating,
                 COUNT(sp2.id) as participant_count
             FROM sharing_participants sp
-            JOIN sharing_groups s ON sp.sharing_id = s.id
+            JOIN sharings s ON sp.sharing_id = s.id
             LEFT JOIN users u ON s.creator_id = u.id
             LEFT JOIN sharing_participants sp2 ON s.id = sp2.sharing_id AND sp2.status = ?
             WHERE sp.user_id = ? AND sp.status IN (?, ?)
@@ -592,7 +727,7 @@ router.post('/:id/leave', authenticateToken, async (req, res) => {
         const participant = await executeQuery(
             `SELECT sp.*, s.creator_id, s.status as sharing_status, s.title
              FROM sharing_participants sp
-             JOIN sharing_groups s ON sp.sharing_id = s.id
+             JOIN sharings s ON sp.sharing_id = s.id
              WHERE sp.sharing_id = ? AND sp.user_id = ? AND sp.status = ?`,
             [sharingId, userId, PARTICIPANT_STATUS.ACTIVE]
         );
@@ -647,7 +782,7 @@ router.post('/:id/leave', authenticateToken, async (req, res) => {
         // 참여자가 너무 적어진 경우 모집 상태로 변경
         if (active_count < 2) {
             await executeQuery(
-                `UPDATE sharing_groups 
+                `UPDATE sharings 
                  SET status = ?, started_at = NULL 
                  WHERE id = ?`,
                 [SHARING_STATUS.RECRUITING, sharingId],
@@ -702,7 +837,7 @@ router.get('/stats', async (req, res) => {
                 COUNT(DISTINCT sp.user_id) as total_participants,
                 AVG(100 - (100 / s.max_participants)) as avg_savings_percent,
                 SUM(sp.monthly_cost) as total_savings_krw
-            FROM sharing_groups s
+            FROM sharings s
             LEFT JOIN sharing_participants sp ON s.id = sp.sharing_id AND sp.status = ?
             WHERE s.status IN (?, ?)
         `, [PARTICIPANT_STATUS.ACTIVE, SHARING_STATUS.RECRUITING, SHARING_STATUS.ACTIVE]);
@@ -714,7 +849,7 @@ router.get('/stats', async (req, res) => {
                 COUNT(DISTINCT s.id) as sharing_count,
                 COUNT(sp.id) as participant_count,
                 AVG(sp.monthly_cost) as avg_monthly_cost
-            FROM sharing_groups s
+            FROM sharings s
             LEFT JOIN sharing_participants sp ON s.id = sp.sharing_id AND sp.status = ?
             WHERE s.status IN (?, ?)
             GROUP BY s.service_type
@@ -757,7 +892,7 @@ router.get('/stats/user', authenticateToken, async (req, res) => {
                 COUNT(DISTINCT CASE WHEN sp.user_id = ? AND sp.status = ? THEN sp.sharing_id END) as joined_sharings,
                 SUM(CASE WHEN sp.user_id = ? AND sp.status = ? THEN sp.monthly_cost ELSE 0 END) as monthly_spending,
                 SUM(CASE WHEN s.creator_id = ? THEN sp.monthly_cost ELSE 0 END) as monthly_revenue
-            FROM sharing_groups s
+            FROM sharings s
             LEFT JOIN sharing_participants sp ON s.id = sp.sharing_id
             WHERE (s.creator_id = ? OR sp.user_id = ?)
         `, [userId, userId, PARTICIPANT_STATUS.ACTIVE, userId, PARTICIPANT_STATUS.ACTIVE, userId, userId, userId]);
@@ -770,7 +905,7 @@ router.get('/stats/user', authenticateToken, async (req, res) => {
                 s.custom_price,
                 s.max_participants
             FROM sharing_participants sp
-            JOIN sharing_groups s ON sp.sharing_id = s.id
+            JOIN sharings s ON sp.sharing_id = s.id
             WHERE sp.user_id = ? AND sp.status = ?
         `, [userId, PARTICIPANT_STATUS.ACTIVE]);
 
@@ -889,7 +1024,7 @@ router.put('/:id/admin', authenticateToken, async (req, res) => {
         const { status, reason } = req.body;
 
         await executeQuery(
-            `UPDATE sharing_groups 
+            `UPDATE sharings 
              SET status = ?, admin_note = ?, updated_at = NOW()
              WHERE id = ?`,
             [status, reason, sharingId]
@@ -917,7 +1052,7 @@ async function cleanupExpiredSharings() {
     try {
         // 30일 이상 비활성 상태인 모집 중 쉐어링 정리
         await executeQuery(`
-            UPDATE sharing_groups 
+            UPDATE sharings 
             SET status = ? 
             WHERE status = ? 
               AND created_at < DATE_SUB(NOW(), INTERVAL 30 DAY)

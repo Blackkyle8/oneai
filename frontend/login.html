@@ -9,14 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* =========================
-           One AI Design System v2.0
-           통합 CSS 변수 및 컴포넌트
-        ========================= */
+        /* One AI Design System - Essential CSS Variables & Components */
         :root {
-            color-scheme: dark;
-            
-            /* Surface Colors - Dark Theme */
+            /* Color System - Dark Theme */
             --color-surface-base: #000000;
             --color-surface-raised: #0a0a0a;
             --color-surface-elevated: #111111;
@@ -41,11 +36,11 @@
             
             /* Status Colors */
             --color-success: #10b981;
-            --color-error: #ef4444;
             --color-warning: #f59e0b;
+            --color-error: #ef4444;
             --color-info: #3b82f6;
             
-            /* Typography */
+            /* Typography Tokens */
             --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             --font-weight-normal: 400;
             --font-weight-medium: 500;
@@ -57,13 +52,12 @@
             --font-size-sm: 14px;
             --font-size-base: 16px;
             --font-size-lg: 18px;
-            --font-size-xl: 20px;
-            --font-size-2xl: 24px;
-            --font-size-3xl: 30px;
-            --font-size-4xl: 36px;
-            --font-size-5xl: 48px;
+            --font-size-xl: 22px;
+            --font-size-2xl: 28px;
+            --font-size-3xl: 36px;
+            --font-size-4xl: 48px;
             
-            /* Spacing */
+            /* Spacing Tokens */
             --spacing-xs: 4px;
             --spacing-sm: 8px;
             --spacing-md: 16px;
@@ -72,18 +66,37 @@
             --spacing-2xl: 48px;
             --spacing-3xl: 64px;
             
-            /* Border Radius */
-            --radius-xs: 2px;
+            /* Border Radius Tokens */
             --radius-sm: 4px;
             --radius-md: 6px;
             --radius-lg: 8px;
             --radius-xl: 12px;
+            --radius-2xl: 16px;
+            --radius-full: 9999px;
             
-            /* Motion */
+            /* Z-Index Tokens */
+            --z-index-base: 0;
+            --z-index-sidebar: 10;
+            --z-index-dropdown: 20;
+            --z-index-modal: 40;
+            --z-index-toast: 50;
+            
+            /* Shadow Tokens */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            
+            /* Motion Tokens */
             --motion-duration-fast: 150ms;
-            --motion-duration-normal: 300ms;
-            --motion-duration-slow: 500ms;
+            --motion-duration-normal: 250ms;
+            --motion-duration-slow: 350ms;
             --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Legacy Variables (호환성) */
+            --radius-xs: 2px;
+            --font-size-5xl: 48px;
         }
 
         /* Reset & Base Styles */
@@ -220,10 +233,12 @@
             background: var(--color-surface-base);
             padding: var(--spacing-3xl);
             display: flex;
-            align-items: center;
+            /* 기존: align-items: center; */
+            align-items: flex-start; /* 상단 정렬로 변경 */
             justify-content: center;
             position: relative;
             overflow: hidden;
+            padding-top: var(--spacing-3xl); /* 상단 여백 명시적 설정 */
         }
 
         .features-section::before {
@@ -242,6 +257,7 @@
             z-index: 1;
             max-width: 500px;
             width: 100%;
+            margin-top: 0; /* 추가 여백 제거 */
         }
 
         .features-title {
@@ -344,14 +360,17 @@
             background: var(--color-surface-base);
             padding: var(--spacing-3xl);
             display: flex;
-            align-items: center;
+            /* 기존: align-items: center; */
+            align-items: flex-start; /* 상단 정렬로 변경 */
             justify-content: center;
             border-left: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: var(--spacing-3xl); /* 상단 여백 명시적 설정 */
         }
 
         .login-container {
             width: 100%;
             max-width: 400px;
+            margin-top: 0; /* 추가 여백 제거 */
         }
 
         @keyframes slideUp {
@@ -424,11 +443,18 @@
         /* Form Styles */
         .login-form {
             display: none;
+            /* 폼의 최소 높이 설정으로 높이 변동 방지 */
+            min-height: 450px; /* 기본 로그인 폼 높이 */
         }
 
         .login-form.active {
             display: block;
             animation: fadeIn var(--motion-duration-normal) var(--motion-ease);
+        }
+
+        /* 회원가입 폼의 추가 높이 */
+        #signupForm {
+            min-height: 600px; /* 회원가입 폼은 더 높게 */
         }
 
         @keyframes fadeIn {
