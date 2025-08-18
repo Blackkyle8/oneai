@@ -8,6 +8,8 @@
     "dev": "nodemon backend/server.js",
     "dev:watch": "nodemon --watch backend --ext js,json backend/server.js",
     "db:create": "node backend/database.js",
+    "db:setup": "./scripts/setup-database.sh",
+    "setup": "./scripts/setup-database.sh",
     "build": "npm run build:frontend",
     "build:frontend": "node scripts/build.js",
     "test": "jest --passWithNoTests",
